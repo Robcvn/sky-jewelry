@@ -64,7 +64,7 @@ export type ProductCarousel = {
   _key: string;
   overline: string;
   heading: RichSpan[];
-  /** Product ids from src/content/products.ts */
+  /** Shopify product handles, in display order (the mock products use the same handles). */
   productIds: string[];
 };
 

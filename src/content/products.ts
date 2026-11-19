@@ -1,6 +1,8 @@
 /*
- * Mock products, shaped like Sanity "product" documents. Names, prices and photos are from the Figma Home
- * frames. Descriptions replace Figma's Latin placeholder.
+ * The product type the components use, and the mock catalogue.
+ * Products now come from Shopify at build time (src/lib/catalog.ts). This mock list is the fallback used
+ * only when Shopify can't be reached or returns nothing. It is also the source of shopify/products-seed.csv.
+ * Names, prices and photos are from the Figma Home frames.
  */
 import type { ImageRef } from "@/components/ui/Picture";
 
@@ -11,7 +13,8 @@ export type Product = {
   _type: "product";
   name: string;
   slug: string;
-  category: "engagement-rings";
+  /** URL segment of the product's category, from Shopify's product type (e.g. "engagement-rings"). */
+  category: string;
   description: string;
   /** Lowest price in USD, shown as "starting at". */
   priceFrom: number;
@@ -19,10 +22,10 @@ export type Product = {
   image: ImageRef;
 };
 
-const whiteGold = (alt: string): ImageRef => ({ desktop: "ring-white-gold-d", mobile: "ring-white-gold-m", alt });
-const roseGold = (alt: string): ImageRef => ({ desktop: "ring-rose-gold-d", mobile: "ring-rose-gold-m", alt });
+export const whiteGold = (alt: string): ImageRef => ({ desktop: "ring-white-gold-d", mobile: "ring-white-gold-m", alt });
+export const roseGold = (alt: string): ImageRef => ({ desktop: "ring-rose-gold-d", mobile: "ring-rose-gold-m", alt });
 
-export const products: Product[] = [
+export const mockProducts: Product[] = [
   {
     _id: "channel-set-ring",
     _type: "product",
@@ -68,12 +71,6 @@ export const products: Product[] = [
     image: roseGold("Eternity Ring in rose gold with a round diamond"),
   },
 ];
-
-export const productById = (id: string) => {
-  const product = products.find((item) => item._id === id);
-  if (!product) throw new Error(`Unknown product ${id}`);
-  return product;
-};
 
 export const productHref = (product: Product) => `/${product.category}/${product.slug}/`;
 
