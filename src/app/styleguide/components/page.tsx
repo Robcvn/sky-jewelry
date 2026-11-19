@@ -9,6 +9,7 @@ import { DyoCard } from "@/components/ui/DyoCard";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { PostCard } from "@/components/ui/PostCard";
 import { ProductCardSummary } from "@/components/ui/ProductCardSummary";
+import { getMockProducts } from "@/lib/mockCatalog";
 import { ResourceCardLarge, ResourceCardSmall } from "@/components/ui/ResourceCard";
 import { ReviewCard } from "@/components/ui/ReviewCard";
 import { SearchPanel } from "@/components/site/SearchPanel";
@@ -21,6 +22,11 @@ import {
   PaginationDemo,
   PaginationDotsDemo,
   RemovableTagDemo,
+  CheckboxDemo,
+  NumberFieldDemo,
+  OptionTileDemo,
+  ProductCardDemo,
+  RangeFieldDemo,
 } from "@/components/styleguide/ComponentDemos";
 import { Accordion, AccordionItem } from "@/components/ui/Accordion";
 import { ModalPanel } from "@/components/ui/Modal";
@@ -81,6 +87,7 @@ const SECTIONS = [
   ["input", "Input"],
   ["radio", "Radio"],
   ["dropdown", "Dropdown"],
+  ["filter-controls", "Range slider and filters"],
   ["accordion", "Accordion"],
   ["modal", "Modal"],
   ["tabs", "Tabs"],
@@ -333,6 +340,8 @@ function DropdownMatrix({ overlay = false }: { overlay?: boolean }) {
     </div>
   );
 }
+
+const productCardSample = getMockProducts().find((product) => product.slug === "vine-natural-diamond-ring")!;
 
 export default function ComponentsPage() {
   return (
@@ -598,6 +607,39 @@ export default function ComponentsPage() {
                   }
                 />
               </Item>
+            </div>
+          </Group>
+        </Section>
+
+        <Section id="filter-controls" title="Range slider and filters">
+          <p className="type-body-sm-regular max-w-[48rem]">
+            From the product list frames (Price dropdown 5958:57571, Filters sheet 5746:89744) and the Dropdown page (Quantity Selector,
+            Slider). The slider handles are keyboard sliders: arrows move one step, Page Up and Page Down ten, Home and End to the ends. The
+            number fields take typed values (Enter or leaving the field applies them), and Arrow Up and Arrow Down step them.
+          </p>
+          <Group title="Range Slider with number fields">
+            <div className="flex flex-wrap items-start gap-space-10">
+              <Item label="Price: no steppers (step $100)"><RangeFieldDemo kind="price" /></Item>
+              <Item label="Carat: Quantity Selector steppers (step 0.05)"><RangeFieldDemo kind="carat" /></Item>
+            </div>
+          </Group>
+          <Group title="Quantity Selector, Size=LG">
+            <div className="flex flex-wrap items-start gap-space-10">
+              <Item label="Without stepper (Price)"><NumberFieldDemo /></Item>
+              <Item label="With stepper (Carat)"><NumberFieldDemo stepper /></Item>
+            </div>
+          </Group>
+          <Group title="Checkbox Option, Size=SM">
+            <Item label="Chain Length, multi-select"><CheckboxDemo /></Item>
+          </Group>
+          <Group title="Filter tiles (Radio Button SM)">
+            <div className="flex flex-col items-start gap-space-8">
+              <Item label="Metal tiles: multi-select, as in the desktop Metal panel (the Filters sheet scrolls them in one row)">
+                <span id="demo-metal-tiles" className="sr-only">Metal</span>
+                <OptionTileDemo kind="metal" />
+              </Item>
+              <Item label="Text tiles: Diamond Type"><OptionTileDemo kind="text" /></Item>
+              <Item label="Compact tiles: quick view Carat Weight, single choice"><OptionTileDemo kind="compact" /></Item>
             </div>
           </Group>
         </Section>
@@ -916,6 +958,9 @@ export default function ComponentsPage() {
                     <FeatureCard title="Amara & James" body="A pear-cut diamond on a slim band, chosen together." ctaLabel="Read Story" href="#cards" image={{ desktop: "story-face-d", mobile: "story-face-m", alt: "" }} sizes={{ desktop: "400px", mobile: "288px" }} className={bp === "desktop" ? "aspect-[4/5] w-[25rem]" : "aspect-[4/5] w-[18rem]"} />
                   </div>
                 </Item>
+                <Item label="Product Card (product list). Desktop hover or focus shows the shell, image dots, Info, Add to Bag and installments">
+                  <ProductCardDemo product={productCardSample} />
+                </Item>
                 <Item label="Product Card - Summary">
                   <div className={bp === "desktop" ? "w-[18.375rem]" : "w-[18.0625rem]"}>
                     <ProductCardSummary name="Halo Ring" body="A circle of diamonds frames the stone." priceLabel="starting at $999" href="#cards" image={{ desktop: "ring-rose-gold-d", mobile: "ring-rose-gold-m", alt: "" }} sizes={{ desktop: "294px", mobile: "289px" }} />
@@ -1115,6 +1160,26 @@ export default function ComponentsPage() {
             <li>
               Search panel focus: Figma shows no focus state. A 1px leather underline appears under the field while it has focus.
             </li>
+            <li>
+              Product list sub-type (the menu&rsquo;s ?type=, e.g. Diamond Rings): Figma has no control for it. On mobile it is one of the
+              chips; on desktop it shows as a single removable chip under the filter bar.
+            </li>
+            <li>
+              Filters sheet: choosing another category hides the groups that belong to the current page and adds one line saying metal and
+              diamond type carry over when you press Apply.
+            </li>
+            <li>
+              Question Mark icon: Figma draws the circle in gold and the dot in leather. Built in leather only: gold on skin is 2.1:1, below
+              the 3:1 an icon needs.
+            </li>
+            <li>
+              Metal badges: Figma&rsquo;s SVG export drops the Glow layer&rsquo;s overlay blend, which turns the badge dark. The blend is
+              added back, as on the card Swatch.
+            </li>
+            <li>
+              &ldquo;Added to bag&rdquo; confirmation: a temporary stand-in for the bag panel, not in Figma. A short message at the bottom of
+              the screen, announced to screen readers.
+            </li>
           </ul>
         </Section>
 
@@ -1169,6 +1234,28 @@ export default function ComponentsPage() {
               Raw colours. Figma uses unlinked hex values on some Home buttons (#baa88e border, #432f2b text, no fill), the Education
               Center divider and the FAQ body, and pure #ffffff for the Reviews heading. Built with the matching tokens: Button secondary
               (skin fill, which looks the same on the skin page), secondary/gold, primary/leather and base/white.
+            </li>
+            <li>Product list: all 16 cards repeat one placeholder product. Built with the sample catalogue.</li>
+            <li>
+              Price dropdown: the $500 to $5,000,000 range is a placeholder. The slider runs from the lowest to the highest price on the
+              page, rounded to $100; the Carat slider likewise runs over the page&rsquo;s carat weights.
+            </li>
+            <li>Price dropdown panel: placed 2px left of its trigger. Built aligned with the trigger.</li>
+            <li>Price dropdown panel shadow: raw #00000005. Built with the shadow-lg token.</li>
+            <li>Slider right handle: about 1px past the end of the track. Built flush, like the left handle.</li>
+            <li>
+              Quick view carat tiles: &ldquo;3.0&rdquo; repeats three times and the formats mix (0.50, 1.0). Built with the
+              product&rsquo;s own carat weights, each once, all with two decimals.
+            </li>
+            <li>Filters sheet Metal label &ldquo;14k Yellow Gold&rdquo;: titles and badges use &ldquo;14K&rdquo;. Built as 14K.</li>
+            <li>Filters sheet Category row: shows a scrollbar although its four tiles fit. Built without the scrollbar.</li>
+            <li>
+              Mobile chips &ldquo;Round&rdquo; and &ldquo;Cut: Excellent&rdquo;: there are no Shape or Cut filters on the page. The chips show
+              the filters that are actually applied.
+            </li>
+            <li>
+              &ldquo;Pay in 12 interest-free installments of $145&rdquo; on a $1,200 product: placeholder. The amount is the price divided by
+              12, rounded up to the cent.
             </li>
           </ul>
         </Section>
@@ -1225,6 +1312,23 @@ export default function ComponentsPage() {
               Menu icons with no proper match in Assets, kept as Figma: Wedding Bands For Him, Carved (Oval) and Alternative Metal (Pear),
               and Start with a Moissanite (Natural Diamond).
             </li>
+            <li>
+              Product list motion: the Animations page has nothing for dropdowns, sheets, card hover or View More. Built with the
+              site&rsquo;s 300ms ease-out (sheets slide up and the hovered photo zooms 1.067; the card shell appears without a fade), and none under reduced motion.
+            </li>
+            <li>Filters sheet: Figma draws no close button. Escape and a tap outside close it without applying.</li>
+            <li>Open dropdown: the chevron keeps pointing down, as in Figma.</li>
+            <li>
+              Quick view Metal and Stone tiles: their chevrons suggest pickers, which belong to the product page. For now the tiles show the
+              current metal and stone and are not interactive.
+            </li>
+            <li>&ldquo;Learn more&rdquo; in the installments line opens the Credit modal, which is held. For now it is plain text.</li>
+            <li>Bracelet lengths: not in Figma. Built as 6&ndash;7&rdquo; and 7&ndash;8&rdquo; under &ldquo;Length&rdquo;.</li>
+            <li>Ships by and Sort by options are not designed. Built with the Dropdown option list.</li>
+            <li>
+              Product photos of the other metals for necklaces, earrings and bracelets (white gold, rose gold and platinum). Figma has these
+              designs in yellow gold only, so their cards show one metal swatch.
+            </li>
           </ul>
         </Section>
 
@@ -1232,7 +1336,6 @@ export default function ComponentsPage() {
           <ul className="type-body-sm-regular flex max-w-[40rem] list-disc flex-col gap-space-2 pl-space-5">
             <li>Shop All: a checkout bar with a price. Planned for the bag and checkout tasks.</li>
             <li>Quanity Select: variants are unnamed. Planned for the bag and checkout tasks.</li>
-            <li>Dropdown Example - Price: needs a Slider. Planned for the product-list filter task.</li>
             <li>Modal - CCC Filters, Modal / Care Plan and Modal - Credit: content-specific modals, held for their page tasks.</li>
             <li>Quick Checkout (on the Accordion page): product-page content with unnamed variants (Open3, Open4), held for the product page.</li>
           </ul>

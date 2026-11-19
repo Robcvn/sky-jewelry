@@ -1,78 +1,86 @@
 /*
- * The product type the components use, and the mock catalogue.
- * Products now come from Shopify at build time (src/lib/catalog.ts). This mock list is the fallback used
- * only when Shopify can't be reached or returns nothing. It is also the source of shopify/products-seed.csv.
- * Names, prices and photos are from the Figma Home frames.
+ * The product type the components use, and helpers for it.
+ * Products come from Shopify at build time (src/lib/catalog.ts). When Shopify is unavailable, the build uses
+ * the mock catalogue made from src/content/catalog-seed.ts, run through the same mapper, so both look identical.
  */
 import type { ImageRef } from "@/components/ui/Picture";
+import type { DiamondType } from "./catalog-seed";
+import { caratLabel, fillTitle } from "./catalog-seed";
+import { metalById, type MetalId } from "./metals";
 
-export type Metal = "white-gold" | "yellow-gold" | "rose-gold";
+export type { MetalId } from "./metals";
+
+export type ProductVariant = {
+  /** Shopify variant id (gid://shopify/ProductVariant/...), or null in the mock catalogue. */
+  id: string | null;
+  metal: MetalId;
+  carat: number | null;
+  price: number;
+  available: boolean;
+};
 
 export type Product = {
   _id: string;
   _type: "product";
+  /** Title of the default variant, e.g. "14K Yellow Gold Four Prong Solitaire 0.80ct Lab-Grown Pendant". */
   name: string;
   slug: string;
-  /** URL segment of the product's category, from Shopify's product type (e.g. "engagement-rings"). */
+  /** URL segment of the product's category, from Shopify's product type (e.g. "necklaces"). */
   category: string;
   description: string;
   /** Lowest price in USD, shown as "starting at". */
   priceFrom: number;
-  metal: Metal;
+  /** Metal of the default variant. */
+  metal: MetalId;
+  /** Main photo of the default variant. */
   image: ImageRef;
+  /** The title with {metal} and {carat} placeholders, so each variant gets its own name. */
+  titleTemplate: string;
+  /** Default variant first. */
+  variants: ProductVariant[];
+  /** Photos for each metal the product comes in, main photo first. */
+  images: Partial<Record<MetalId, ImageRef[]>>;
+  /** Fine Jewelry sub-types (diamond, gemstone, gold, stackable, cocktail...). */
+  styles: string[];
+  diamondType: DiamondType | null;
+  shape: string | null;
+  /** Chain or bracelet length in inches, e.g. "16-18". */
+  length: string | null;
+  shipsInDays: number | null;
+  /** "Best Match" order within the category. */
+  rank: number;
 };
 
-export const whiteGold = (alt: string): ImageRef => ({ desktop: "ring-white-gold-d", mobile: "ring-white-gold-m", alt });
-export const roseGold = (alt: string): ImageRef => ({ desktop: "ring-rose-gold-d", mobile: "ring-rose-gold-m", alt });
+export const FINE_JEWELRY_CATEGORIES = ["rings", "necklaces", "earrings", "bracelets"] as const;
+export type FineJewelryCategory = (typeof FINE_JEWELRY_CATEGORIES)[number];
 
-export const mockProducts: Product[] = [
-  {
-    _id: "channel-set-ring",
-    _type: "product",
-    name: "Channel Set Ring",
-    slug: "channel-set-ring",
-    category: "engagement-rings",
-    description: "Diamonds set flush along the band.",
-    priceFrom: 999,
-    metal: "white-gold",
-    image: whiteGold("Channel Set Ring in white gold with a round diamond"),
-  },
-  {
-    _id: "halo-ring",
-    _type: "product",
-    name: "Halo Ring",
-    slug: "halo-ring",
-    category: "engagement-rings",
-    description: "A circle of diamonds frames the stone.",
-    priceFrom: 999,
-    metal: "rose-gold",
-    image: roseGold("Halo Ring in rose gold with a round diamond"),
-  },
-  {
-    _id: "side-stone-ring",
-    _type: "product",
-    name: "Side-Stone Ring",
-    slug: "side-stone-ring",
-    category: "engagement-rings",
-    description: "Accent stones beside the center stone.",
-    priceFrom: 999,
-    metal: "white-gold",
-    image: whiteGold("Side-Stone Ring in white gold with a round diamond"),
-  },
-  {
-    _id: "eternity-ring",
-    _type: "product",
-    name: "Eternity Ring",
-    slug: "eternity-ring",
-    category: "engagement-rings",
-    description: "Diamonds set all the way around.",
-    priceFrom: 999,
-    metal: "rose-gold",
-    image: roseGold("Eternity Ring in rose gold with a round diamond"),
-  },
-];
+export const isFineJewelry = (category: string): category is FineJewelryCategory =>
+  (FINE_JEWELRY_CATEGORIES as readonly string[]).includes(category);
 
-export const productHref = (product: Product) => `/${product.category}/${product.slug}/`;
+/** Product detail route. Fine Jewelry products live under /fine-jewelry/<category>/. */
+export const productHref = (product: Pick<Product, "category" | "slug">) =>
+  isFineJewelry(product.category) ? `/fine-jewelry/${product.category}/${product.slug}/` : `/${product.category}/${product.slug}/`;
 
 export const formatPrice = (usd: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(usd);
+
+/** Monthly amount for the "Pay in 12 interest-free installments" line: cents only when it doesn't divide evenly. */
+export function formatInstallment(usd: number, months = 12) {
+  const monthly = Math.ceil((usd / months) * 100) / 100;
+  const whole = Number.isInteger(monthly);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: whole ? 0 : 2,
+    maximumFractionDigits: whole ? 0 : 2,
+  }).format(monthly);
+}
+
+export const formatCarat = (carat: number) => carat.toFixed(2);
+
+/** The variant's own title, e.g. switching the metal swatch turns "14K Yellow Gold ..." into "14K White Gold ...". */
+export const variantName = (product: Product, variant: ProductVariant) =>
+  fillTitle(product.titleTemplate, metalById(variant.metal).label, variant.carat === null ? null : caratLabel(variant.carat));
+
+/** Photos for a metal, falling back to the default photo. */
+export const imagesFor = (product: Product, metal: MetalId) => product.images[metal] ?? [product.image];

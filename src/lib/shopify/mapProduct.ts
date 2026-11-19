@@ -1,30 +1,100 @@
-import { roseGold, whiteGold, type Metal, type Product } from "@/content/products";
+import type { ImageRef } from "@/components/ui/Picture";
+import { caratLabel, type DiamondType } from "@/content/catalog-seed";
+import { metalById, parseMetal, type MetalId } from "@/content/metals";
+import { productImageManifest } from "@/content/product-image-manifest";
+import type { Product, ProductVariant } from "@/content/products";
 import type { ShopifyProduct } from "./types";
 
 const slugify = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-const METALS: Metal[] = ["white-gold", "yellow-gold", "rose-gold"];
+/**
+ * The file name of a Shopify image without its extension, query and the "_<uuid>" Shopify adds when the same
+ * file is imported twice: ".../ring-vine-white-gold_b129...jpg?v=1" -> "ring-vine-white-gold".
+ */
+export function imageStem(url: string) {
+  const file = url.split("?")[0].split("/").pop() ?? "";
+  return file.replace(/\.[a-z0-9]+$/i, "").replace(/_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, "");
+}
 
-/** The metal from the "Metal" option of the first variant, or a metal tag such as "rose-gold". */
-function metalOf(product: ShopifyProduct): Metal {
-  const option = product.variants.nodes[0]?.selectedOptions.find((selected) => selected.name.toLowerCase() === "metal");
-  const fromOption = option ? (slugify(option.value) as Metal) : undefined;
-  if (fromOption && METALS.includes(fromOption)) return fromOption;
-  const fromTag = product.tags.map(slugify).find((tag): tag is Metal => METALS.includes(tag as Metal));
-  return fromTag ?? "white-gold";
+/** The Home best-seller crops, kept for the engagement rings imported in Task 8. */
+const HOME_CROPS: Record<string, Omit<ImageRef, "alt">> = {
+  "ring-white-gold": { desktop: "ring-white-gold-d", mobile: "ring-white-gold-m" },
+  "ring-rose-gold": { desktop: "ring-rose-gold-d", mobile: "ring-rose-gold-m" },
+};
+
+/**
+ * The site's own optimised WebP for a Shopify image, matched by file name (the Picture component serves
+ * pre-sized local files; Shopify's CDN URL is not used for display). Unknown images are skipped.
+ */
+function localImage(url: string, alt: string): ImageRef | null {
+  const stem = imageStem(url);
+  if (HOME_CROPS[stem]) return { ...HOME_CROPS[stem], alt };
+  const key = `product-${stem}`;
+  return key in productImageManifest ? { desktop: key as keyof typeof productImageManifest, alt } : null;
+}
+
+const tagValue = (tags: string[], prefix: string) => tags.find((tag) => tag.startsWith(`${prefix}:`))?.slice(prefix.length + 1) ?? null;
+
+function metalOf(options: Array<{ name: string; value: string }>, tags: string[]): MetalId {
+  const option = options.find((selected) => selected.name.toLowerCase() === "metal")?.value;
+  return parseMetal(option) ?? tags.map(parseMetal).find(Boolean) ?? "14k-white-gold";
+}
+
+function caratOf(options: Array<{ name: string; value: string }>) {
+  const value = options.find((selected) => selected.name.toLowerCase() === "carat weight")?.value;
+  const carat = value ? Number.parseFloat(value) : Number.NaN;
+  return Number.isFinite(carat) ? carat : null;
 }
 
 /**
- * Maps a Storefront API product to the Product type the components already use.
- * Name, handle, description, price, type and metal come from Shopify. The photo is the site's own optimised
- * WebP crop for that metal (Picture serves pre-sized local files); Shopify's image URL is not used yet.
- * Yellow gold has no crop yet, so it shows the white gold photo.
+ * Maps a Storefront API product to the Product type the components use. The mock catalogue goes through this
+ * same function (src/lib/mockCatalog.ts), so the site looks the same before and after the import.
+ * - Variants: metal and carat from the "Metal" and "Carat Weight" options, in Shopify's order (default first).
+ * - Photos: each metal's variant image, plus the product images that share its file name as a prefix
+ *   (extra views such as "-angled"), in position order.
+ * - Filters: tags style:, diamond:, shape:, length: and ships-in:. "Best Match" order: the number in the SKU.
  */
 export function mapShopifyProduct(product: ShopifyProduct): Product | null {
-  const price = Number(product.priceRange.minVariantPrice.amount);
-  if (!product.handle || !product.title || !Number.isFinite(price)) return null;
-  const metal = metalOf(product);
-  const alt = product.featuredImage?.altText || product.title;
+  if (!product.handle || !product.title) return null;
+
+  const variants: ProductVariant[] = product.variants.nodes
+    .map((variant) => ({
+      id: variant.id || null,
+      metal: metalOf(variant.selectedOptions, product.tags),
+      carat: caratOf(variant.selectedOptions),
+      price: Number(variant.price.amount),
+      available: variant.availableForSale,
+    }))
+    .filter((variant) => Number.isFinite(variant.price));
+  if (!variants.length) return null;
+
+  const images: Partial<Record<MetalId, ImageRef[]>> = {};
+  for (const metal of [...new Set(variants.map((variant) => variant.metal))]) {
+    const index = product.variants.nodes.findIndex((_, i) => variants[i]?.metal === metal);
+    const mainUrl = product.variants.nodes[index]?.image?.url ?? product.featuredImage?.url;
+    if (!mainUrl) continue;
+    const main = imageStem(mainUrl);
+    const views = product.images.nodes.filter((image) => {
+      const stem = imageStem(image.url);
+      return stem === main || stem.startsWith(`${main}-`);
+    });
+    const refs = (views.length ? views : [{ url: mainUrl, altText: null }])
+      .map((image) => localImage(image.url, image.altText || product.title))
+      .filter((image): image is ImageRef => image !== null);
+    if (refs.length) images[metal] = refs;
+  }
+
+  const first = variants[0];
+  const image = images[first.metal]?.[0] ?? Object.values(images)[0]?.[0];
+  if (!image) return null;
+
+  const metalLabel = metalById(first.metal).label;
+  const titleTemplate = product.title
+    .replace(metalLabel, "{metal}")
+    .replace(first.carat === null ? "\u0000" : caratLabel(first.carat), "{carat}");
+
+  const shipsIn = Number(tagValue(product.tags, "ships-in"));
+  const rank = Number(product.variants.nodes[0]?.sku?.match(/^SKY-[A-Z](\d+)-/)?.[1] ?? 0);
 
   return {
     _id: product.handle,
@@ -33,8 +103,17 @@ export function mapShopifyProduct(product: ShopifyProduct): Product | null {
     slug: product.handle,
     category: slugify(product.productType) || "products",
     description: product.description,
-    priceFrom: price,
-    metal,
-    image: metal === "rose-gold" ? roseGold(alt) : whiteGold(alt),
+    priceFrom: Math.min(...variants.map((variant) => variant.price)),
+    metal: first.metal,
+    image,
+    titleTemplate,
+    variants,
+    images,
+    styles: product.tags.filter((tag) => tag.startsWith("style:")).map((tag) => tag.slice(6)),
+    diamondType: tagValue(product.tags, "diamond") as DiamondType | null,
+    shape: tagValue(product.tags, "shape"),
+    length: tagValue(product.tags, "length"),
+    shipsInDays: Number.isFinite(shipsIn) && shipsIn > 0 ? shipsIn : null,
+    rank,
   };
 }

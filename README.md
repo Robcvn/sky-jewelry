@@ -48,15 +48,23 @@ Products and prices come from a Shopify development store through the Storefront
 
 For the GitHub Pages build, add the same two values to the build environment (for example, repository secrets passed to `npm run build`).
 
-**Code.** `src/lib/shopify/` holds the typed client (API version in `config.ts`), the queries, and the cart functions. `src/lib/catalog.ts` loads the catalogue for the build and maps Shopify products to the site's `Product` type.
+**Code.** `src/lib/shopify/` holds the typed client (API version in `config.ts`), the queries, the cart functions and the mapper from Shopify products to the site's `Product` type. `src/lib/catalog.ts` loads the catalogue once per build and picks each listing page's products. `src/lib/bag.ts` is the browser-side bag: Add to Bag creates a Shopify cart on first use and keeps its id in localStorage.
 
-**Fallback.** If the variables are missing, Shopify can't be reached, or it returns no products, the build uses the mock products in `src/content/products.ts` and prints a `[catalog] WARNING` line. The build never fails because of the store.
+**Catalogue source.** `src/content/catalog-seed.ts` is the single source for the sample catalogue: it generates the import CSV, and the mock catalogue is the same data run through the same mapper as real Shopify data, so the site looks the same before and after an import. Product photos are only ones that exist in Figma, kept in `shopify/images/`.
+
+**Fallback.** If the variables are missing, Shopify can't be reached, or it returns no products, the build uses the mock catalogue and prints a `[catalog] WARNING` line. A Fine Jewelry page whose category has no products in Shopify yet also falls back, with its own warning. The build never fails because of the store.
+
+**Collections.** Each Fine Jewelry page (`/fine-jewelry/rings/`, `necklaces`, `earrings`, `bracelets`) uses the Shopify collection with that handle when it exists and is on the Headless channel; otherwise it uses the products whose product type matches. The build log says which.
 
 **Fresh data on every build.** Next saves build-time fetch responses in `.next/cache/fetch-cache` and would reuse them on later builds, so a change in Shopify would never show. The `prebuild` script clears that folder first, so always build with `npm run build` (not `npx next build`).
 
+**Product photos.** `npm run images:products` turns `shopify/images/*.jpg` into the WebP sizes the cards use (`public/images/products/`) and writes `src/content/product-image-manifest.ts`. The site matches each Shopify image to its local WebP by file name, so the photos stay pre-sized and lazy-loaded.
+
+**Filters in Shopify data.** Options: `Metal` (e.g. "14K Yellow Gold") and `Carat Weight` (e.g. "0.80ct"), with a price per variant. Tags: `fine-jewelry`, `style:<sub-type>` (the menu's ?type=), `diamond:natural|lab-grown`, `shape:<shape>`, `length:<inches>` and `ships-in:<days>`. The number in the SKU (`SKY-R01-...`) is the "Best Match" order.
+
 **Re-importing the seed products.**
 
-1. Run `npm run shopify:seed` to regenerate `shopify/products-seed.csv` from `src/content/products.ts`.
+1. Run `npm run shopify:seed` to regenerate `shopify/products-seed.csv` from `src/content/catalog-seed.ts`, and `npm run images:products` if photos changed.
 2. Make sure the product photos in `shopify/images/` are pushed to GitHub. Shopify downloads them from their public raw URLs during the import. To use another host, set `SEED_IMAGE_BASE` when running the script.
 3. In the Shopify admin, go to **Products → Import**, choose the CSV, and tick **Overwrite products with matching handles** to update existing ones.
 4. Select the imported products and include them in the **Headless** sales channel. The CSV only controls the Online Store channel.

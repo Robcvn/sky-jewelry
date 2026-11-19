@@ -1,5 +1,9 @@
-import { imageManifest, type ImageKey } from "@/content/image-manifest";
+import { imageManifest as homeManifest } from "@/content/image-manifest";
+import { productImageManifest } from "@/content/product-image-manifest";
 import { withBasePath } from "./shared";
+
+const imageManifest = { ...homeManifest, ...productImageManifest };
+export type ImageKey = keyof typeof imageManifest;
 
 /** A Sanity-style image reference: the crop for each breakpoint, and alt text. */
 export type ImageRef = { desktop: ImageKey; mobile?: ImageKey; alt: string };

@@ -9,10 +9,11 @@ const PRODUCT_FIELDS = /* GraphQL */ `
     tags
     availableForSale
     featuredImage { url altText width height }
+    images(first: 20) { nodes { url altText width height } }
     priceRange { minVariantPrice { amount currencyCode } }
     options { name optionValues { name } }
     variants(first: 50) {
-      nodes { id title availableForSale price { amount currencyCode } selectedOptions { name value } }
+      nodes { id title sku availableForSale price { amount currencyCode } selectedOptions { name value } image { url } }
     }
   }
 `;
@@ -61,6 +62,13 @@ export const COLLECTION_PRODUCTS_QUERY = /* GraphQL */ `
   ${PRODUCT_FIELDS}
   query CollectionProducts($handle: String!, $first: Int!) {
     collection(handle: $handle) { id handle title description products(first: $first) { nodes { ...ProductFields } } }
+  }
+`;
+
+/** Only the handles in a collection: the listing pages pick those products from the build's catalogue. */
+export const COLLECTION_HANDLES_QUERY = /* GraphQL */ `
+  query CollectionHandles($handle: String!, $first: Int!) {
+    collection(handle: $handle) { handle title products(first: $first) { nodes { handle } } }
   }
 `;
 

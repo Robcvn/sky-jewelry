@@ -6,9 +6,11 @@ export type ShopifyImage = { url: string; altText: string | null; width: number 
 export type ShopifyVariant = {
   id: string;
   title: string;
+  sku: string | null;
   availableForSale: boolean;
   price: Money;
   selectedOptions: Array<{ name: string; value: string }>;
+  image: { url: string } | null;
 };
 
 export type ShopifyProduct = {
@@ -21,6 +23,7 @@ export type ShopifyProduct = {
   tags: string[];
   availableForSale: boolean;
   featuredImage: ShopifyImage | null;
+  images: { nodes: ShopifyImage[] };
   priceRange: { minVariantPrice: Money };
   options: Array<{ name: string; optionValues: Array<{ name: string }> }>;
   variants: { nodes: ShopifyVariant[] };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Icon, type IconName } from "./Icon";
 import { cx, type PreviewState } from "./shared";
 
@@ -33,6 +33,16 @@ type DropdownProps = {
   leadingIcon?: IconName;
   defaultOpen?: boolean;
   previewState?: PreviewState;
+  /** Shown before the value in regular weight, e.g. "Sort by" gives "Sort by:  Best Match" (value in medium). */
+  valuePrefix?: string;
+  /** "auto" sizes the control to its text, as the filter bar's dropdowns do. */
+  width?: "full" | "auto";
+  /** Panel width class (default: the control's width, at least 280px), border tone and alignment. */
+  panelWidth?: string;
+  panelTone?: "gold" | "leather";
+  panelAlign?: "start" | "end";
+  /** Called when the panel opens or closes. */
+  onOpenChange?: (open: boolean) => void;
   className?: string;
 };
 
@@ -55,7 +65,9 @@ function shellColors(overlay: boolean, error: boolean, disabled: boolean) {
   if (disabled) return "border-black-alpha-20 bg-secondary-skin text-black-alpha-50 [--dropdown-icon:var(--color-black-alpha-50)]";
   return cx(
     "bg-secondary-skin text-primary-leather [--dropdown-icon:var(--color-primary-leather)]",
-    error ? "border-state-error" : "border-secondary-gold ui-hover:border-black-alpha-50 ui-active:border-primary-leather",
+    error
+      ? "border-state-error"
+      : "border-secondary-gold ui-hover:border-black-alpha-50 ui-active:border-primary-leather data-[open=true]:border-primary-leather",
   );
 }
 
@@ -79,13 +91,32 @@ export function Dropdown({
   leadingIcon,
   defaultOpen = false,
   previewState,
+  valuePrefix,
+  width = "full",
+  panelWidth,
+  panelTone = "gold",
+  panelAlign = "start",
+  onOpenChange,
   className,
 }: DropdownProps) {
   const id = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const typeahead = useRef({ text: "", time: 0 });
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpenState] = useState(defaultOpen);
+  const onOpenChangeRef = useRef(onOpenChange);
+  useEffect(() => {
+    onOpenChangeRef.current = onOpenChange;
+  });
+  const setOpen = useCallback(
+    (next: boolean | ((current: boolean) => boolean)) =>
+      setOpenState((current) => {
+        const value = typeof next === "function" ? next(current) : next;
+        if (value !== current) onOpenChangeRef.current?.(value);
+        return value;
+      }),
+    [],
+  );
   const [internalValue, setInternalValue] = useState(defaultValue);
   const selectedValue = value ?? internalValue;
   const selectedIndex = options.findIndex((option) => option.value === selectedValue);
@@ -106,7 +137,7 @@ export function Dropdown({
     };
     document.addEventListener("pointerdown", closeOnOutsidePress);
     return () => document.removeEventListener("pointerdown", closeOnOutsidePress);
-  }, [open]);
+  }, [open, setOpen]);
 
   useEffect(() => {
     if (open && !panel) document.getElementById(`${id}-option-${activeIndex}`)?.scrollIntoView({ block: "nearest" });
@@ -205,7 +236,7 @@ export function Dropdown({
   return (
     <div
       ref={rootRef}
-      className={cx("relative w-full", className)}
+      className={cx("relative", width === "full" ? "w-full" : "w-max", className)}
       onBlur={(event) => {
         // Mouse presses outside are handled by the pointerdown listener. Here, close only when
         // keyboard focus moves to another element outside the dropdown. Focus moving to an
@@ -261,7 +292,14 @@ export function Dropdown({
         >
           {leadingIcon && !showClear ? <Icon name={leadingIcon} size={spec.icon} className="text-(--dropdown-icon)" /> : null}
           <span id={`${id}-value`} className={cx("min-w-0 flex-1 truncate", spec.text)}>
-            {selectedLabel ?? placeholder}
+            {valuePrefix ? (
+              <>
+                {valuePrefix}:{"\u00a0 "}
+                <span className="font-medium tracking-[-0.01em]">{selectedLabel ?? placeholder}</span>
+              </>
+            ) : (
+              (selectedLabel ?? placeholder)
+            )}
           </span>
           <Icon name="chevron-down" size={spec.chevron} className="text-(--dropdown-icon)" />
         </button>
@@ -274,18 +312,30 @@ export function Dropdown({
             role="group"
             aria-label={panelLabel ?? label}
             onKeyDown={onPanelKeyDown}
-            className="absolute inset-x-0 top-full z-30 mt-space-2 min-w-70 overflow-hidden rounded-4 border border-secondary-gold bg-secondary-skin shadow-lg"
+            className={cx(
+              "absolute top-full z-30 mt-space-2 overflow-hidden rounded-4 border bg-secondary-skin shadow-lg",
+              panelWidth ?? "inset-x-0 min-w-70",
+              panelWidth && (panelAlign === "end" ? "right-0" : "left-0"),
+              panelTone === "leather" ? "border-primary-leather" : "border-secondary-gold",
+            )}
           >
-            <div className="border-b border-black-alpha-10 p-space-2">
-              {groupLabel ? <p className="type-overline-xs-medium px-space-3 py-space-2 text-primary-hazel">{groupLabel}</p> : null}
-              {panel}
-            </div>
+            {groupLabel ? (
+              <div className="border-b border-black-alpha-10 p-space-2">
+                <p className="type-overline-xs-medium px-space-3 py-space-2 text-primary-hazel">{groupLabel}</p>
+                {panel}
+              </div>
+            ) : (
+              panel
+            )}
           </div>
         ) : null
       ) : (
         <div
           hidden={!open}
-          className="absolute inset-x-0 top-full z-30 mt-space-2 max-h-80 overflow-y-auto rounded-4 border border-secondary-gold bg-secondary-skin shadow-lg"
+          className={cx(
+            "absolute top-full z-30 mt-space-2 max-h-80 overflow-y-auto rounded-4 border border-secondary-gold bg-secondary-skin shadow-lg",
+            panelWidth ? cx(panelWidth, panelAlign === "end" ? "right-0" : "left-0") : "inset-x-0",
+          )}
         >
           <div className="border-b border-black-alpha-10 p-space-2">
             {groupLabel ? (

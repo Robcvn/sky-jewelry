@@ -9,6 +9,7 @@ import {
   CART_LINES_REMOVE_MUTATION,
   CART_LINES_UPDATE_MUTATION,
   CART_QUERY,
+  COLLECTION_HANDLES_QUERY,
   COLLECTION_PRODUCTS_QUERY,
   COLLECTIONS_QUERY,
   PRODUCT_BY_HANDLE_QUERY,
@@ -53,6 +54,15 @@ export async function getCollectionProducts(handle: string, first = 100) {
     collection: (ShopifyCollection & { products: { nodes: ShopifyProduct[] } }) | null;
   }>(COLLECTION_PRODUCTS_QUERY, { handle, first });
   return data.collection;
+}
+
+/** Handles of the products in a collection, or null when the collection doesn't exist (or isn't on the Headless channel). */
+export async function getCollectionProductHandles(handle: string, first = 250) {
+  const data = await shopifyFetch<{ collection: { handle: string; products: { nodes: Array<{ handle: string }> } } | null }>(
+    COLLECTION_HANDLES_QUERY,
+    { handle, first },
+  );
+  return data.collection ? data.collection.products.nodes.map((product) => product.handle) : null;
 }
 
 type CartPayload = { cart: ShopifyCart | null; userErrors: Array<{ field: string[] | null; message: string }> };

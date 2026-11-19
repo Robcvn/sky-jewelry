@@ -129,17 +129,24 @@ export function ModalPanel({
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-type ModalProps = Omit<ModalPanelProps, "headingId" | "bodyId" | "onClose"> & {
+type DialogShellProps = {
   open: boolean;
   onClose: () => void;
+  /** id of the element that names the dialog. */
+  labelledBy: string;
+  describedBy?: string;
+  breakpoint?: Breakpoint;
+  /** Classes for the panel wrapper, e.g. a width. Its children are the panel itself. */
+  children: (state: { visible: boolean }) => ReactNode;
 };
 
 /**
- * Dialog with backdrop, focus trap, Escape to close, scroll lock and focus returned to the trigger.
- * Opens with Figma's "Move In" from the bottom: 300ms ease-out.
+ * The dialog behaviour shared by Modal, the Filters sheet and the product quick view: a native <dialog> with
+ * a black-alpha-50 backdrop, focus trap, Escape and backdrop click to close, scroll lock, and focus returned
+ * to the trigger. Opens with Figma's "Move In" from the bottom: 300ms ease-out (instant under reduced motion).
+ * On mobile the panel sits at the bottom of the screen; from 1024px it is centred.
  */
-export function Modal({ open, onClose, breakpoint, ...panel }: ModalProps) {
-  const id = useId();
+export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint, children }: DialogShellProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
@@ -180,7 +187,7 @@ export function Modal({ open, onClose, breakpoint, ...panel }: ModalProps) {
 
   const trapFocus = (event: KeyboardEvent<HTMLDialogElement>) => {
     if (event.key !== "Tab") return;
-    const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE));
+    const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((item) => item.offsetParent !== null);
     if (items.length === 0) return;
     const first = items[0];
     const last = items[items.length - 1];
@@ -196,8 +203,8 @@ export function Modal({ open, onClose, breakpoint, ...panel }: ModalProps) {
   return (
     <dialog
       ref={dialogRef}
-      aria-labelledby={`${id}-heading`}
-      aria-describedby={panel.body ? `${id}-body` : undefined}
+      aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
       data-breakpoint={breakpoint}
       onCancel={(event) => {
         event.preventDefault();
@@ -209,7 +216,7 @@ export function Modal({ open, onClose, breakpoint, ...panel }: ModalProps) {
       <div
         aria-hidden="true"
         onClick={onClose}
-        className={cx("absolute inset-0 bg-black-alpha-50 transition-opacity duration-300 ease-out", visible ? "opacity-100" : "opacity-0")}
+        className={cx("absolute inset-0 bg-black-alpha-50 transition-opacity duration-300 ease-out motion-reduce:transition-none", visible ? "opacity-100" : "opacity-0")}
       />
       <div
         className={cx(
@@ -217,6 +224,37 @@ export function Modal({ open, onClose, breakpoint, ...panel }: ModalProps) {
           "pointer-events-none [&>*]:pointer-events-auto",
         )}
       >
+        {children({ visible })}
+      </div>
+    </dialog>
+  );
+}
+
+/** Classes for a panel inside DialogShell: slides up from the bottom (mobile) or in from below (desktop). */
+export const dialogPanelMotion = (visible: boolean) =>
+  cx(
+    "transition-[opacity,translate] duration-300 ease-out motion-reduce:transition-none",
+    visible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 ui-desktop:translate-y-space-12",
+  );
+
+type ModalProps = Omit<ModalPanelProps, "headingId" | "bodyId" | "onClose"> & {
+  open: boolean;
+  onClose: () => void;
+};
+
+/** Figma "Modal - Default" opened as a dialog. */
+export function Modal({ open, onClose, breakpoint, ...panel }: ModalProps) {
+  const id = useId();
+
+  return (
+    <DialogShell
+      open={open}
+      onClose={onClose}
+      labelledBy={`${id}-heading`}
+      describedBy={panel.body ? `${id}-body` : undefined}
+      breakpoint={breakpoint}
+    >
+      {({ visible }) => (
         <ModalPanel
           {...panel}
           breakpoint={breakpoint}
@@ -224,11 +262,11 @@ export function Modal({ open, onClose, breakpoint, ...panel }: ModalProps) {
           headingId={`${id}-heading`}
           bodyId={`${id}-body`}
           className={cx(
-            "max-h-[calc(100dvh-var(--spacing-space-6))] transition-[opacity,translate] duration-300 ease-out ui-desktop:max-h-[calc(100dvh-var(--spacing-space-12))]",
-            visible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 ui-desktop:translate-y-space-12",
+            "max-h-[calc(100dvh-var(--spacing-space-6))] ui-desktop:max-h-[calc(100dvh-var(--spacing-space-12))]",
+            dialogPanelMotion(visible),
           )}
         />
-      </div>
-    </dialog>
+      )}
+    </DialogShell>
   );
 }

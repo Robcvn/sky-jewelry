@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useBagCount } from "@/lib/bag";
 import {
   useEffect,
   useId,
@@ -21,7 +22,6 @@ import { MobileMenu } from "./MobileMenu";
 import { NavItem, navItemButtonClasses } from "./NavItem";
 import { SearchPanel } from "./SearchPanel";
 
-const BAG_COUNT = 0;
 const SEARCH = "search";
 /** Hover intent: a short wait before opening, so sweeping the pointer across the nav does not flash panels. */
 const OPEN_DELAY = 120;
@@ -66,7 +66,8 @@ export function Header({
   defaultMenuCategory,
   labelSuffix = "",
 }: HeaderProps) {
-  const bagLabel = `${content.bag.label}, ${BAG_COUNT} items`;
+  const bagCount = useBagCount();
+  const bagLabel = `${content.bag.label}, ${bagCount} ${bagCount === 1 ? "item" : "items"}`;
   const baseId = useId();
   const panelId = (key: string) => `${baseId}-panel-${key}`;
   const triggerId = (key: string) => `${baseId}-trigger-${key}`;
@@ -296,7 +297,7 @@ export function Header({
                     <li>
                       <NavItem href={content.bag.href}>
                         <span aria-hidden="true">
-                          {content.bag.label} ({BAG_COUNT})
+                          {content.bag.label} ({bagCount})
                         </span>
                         <span className="sr-only">{bagLabel}</span>
                       </NavItem>
