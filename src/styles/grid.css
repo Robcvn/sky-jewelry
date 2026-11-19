@@ -1,0 +1,32 @@
+/*
+ * Layout grid from the Figma "Grid" page (node 2982:5352).
+ * Mobile: 6 columns, 16px gutter, 20px margin at 390px wide.
+ * Desktop: 12 columns, 24px gutter, 96px margin at 1440px wide, 1920px maximum.
+ * The margin scales fluidly between 390 and 1440. Columns and gutter switch at 1024px.
+ */
+:root {
+  --grid-columns: 6;
+  --grid-gutter: var(--spacing-space-4);
+  --grid-margin: clamp(1.25rem, -0.5143rem + 7.2381vw, 6rem);
+  --grid-max-width: 120rem;
+}
+
+@media (width >= 64rem) {
+  :root {
+    --grid-columns: 12;
+    --grid-gutter: var(--spacing-space-6);
+  }
+}
+
+@utility site-container {
+  width: 100%;
+  max-width: var(--grid-max-width);
+  margin-inline: auto;
+  padding-inline: var(--grid-margin);
+}
+
+@utility site-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gutter);
+}

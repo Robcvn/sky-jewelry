@@ -1,0 +1,1195 @@
+/*
+ * Text styles from the Figma "Typography" page (node 0:1).
+ * Generated once from Figma's local text styles; sizes in rem, tracking in em.
+ * Responsive defaults scale fluidly from a 390px to a 1440px viewport.
+ * Weight, tracking and OpenType changes switch at the 1024px layout breakpoint.
+ */
+
+/* heading/default/heading-3xl */
+@utility type-heading-3xl {
+  font-family: var(--font-heading);
+  font-size: 4.5rem;
+  font-style: normal;
+  font-weight: 100;
+  line-height: 4.5rem;
+  letter-spacing: -0.04em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/default/heading-2xl */
+@utility type-heading-2xl {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-style: normal;
+  font-weight: 100;
+  line-height: 3.5rem;
+  letter-spacing: -0.04em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/default/heading-xl */
+@utility type-heading-xl {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-style: normal;
+  font-weight: 100;
+  line-height: 3rem;
+  letter-spacing: -0.04em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/default/heading-lg */
+@utility type-heading-lg {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 2.5rem;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/default/heading-md */
+@utility type-heading-md {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 2rem;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/default/heading-sm */
+@utility type-heading-sm {
+  font-family: var(--font-heading);
+  font-size: 1.375rem;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 1.625rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/default/heading-xs */
+@utility type-heading-xs {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 250;
+  line-height: 1.375rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/default/heading-2xs */
+@utility type-heading-2xs {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 250;
+  line-height: 1.125rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* heading/caps/heading-3xl */
+@utility type-heading-caps-3xl {
+  font-family: var(--font-heading);
+  font-size: 4.5rem;
+  font-style: normal;
+  font-weight: 100;
+  line-height: 4.5rem;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/caps/heading-2xl */
+@utility type-heading-caps-2xl {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-style: normal;
+  font-weight: 100;
+  line-height: 3.5rem;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  font-feature-settings: "calt" 0, "lnum" 1, "tnum" 1;
+}
+
+/* heading/caps/heading-xl */
+@utility type-heading-caps-xl {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-style: normal;
+  font-weight: 100;
+  line-height: 3rem;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/caps/heading-lg */
+@utility type-heading-caps-lg {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 2.5rem;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/caps/heading-md */
+@utility type-heading-caps-md {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 2rem;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/caps/heading-sm */
+@utility type-heading-caps-sm {
+  font-family: var(--font-heading);
+  font-size: 1.375rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1.625rem;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/caps/heading-xs */
+@utility type-heading-caps-xs {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1.375rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/caps/heading-2xs */
+@utility type-heading-caps-2xs {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1.125rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/italic/heading-3xl */
+@utility type-heading-italic-3xl {
+  font-family: var(--font-heading);
+  font-size: 4.5rem;
+  font-style: italic;
+  font-weight: 100;
+  line-height: 4.5rem;
+  letter-spacing: -0.04em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/italic/heading-2xl */
+@utility type-heading-italic-2xl {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-style: italic;
+  font-weight: 100;
+  line-height: 3.5rem;
+  letter-spacing: -0.04em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/italic/heading-xl */
+@utility type-heading-italic-xl {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-style: italic;
+  font-weight: 100;
+  line-height: 3rem;
+  letter-spacing: -0.04em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/italic/heading-lg */
+@utility type-heading-italic-lg {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-style: italic;
+  font-weight: 200;
+  line-height: 2.5rem;
+  letter-spacing: -0.04em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/italic/heading-md */
+@utility type-heading-italic-md {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-style: italic;
+  font-weight: 200;
+  line-height: 2rem;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/italic/heading-sm */
+@utility type-heading-italic-sm {
+  font-family: var(--font-heading);
+  font-size: 1.375rem;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.625rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/italic/heading-xs */
+@utility type-heading-italic-xs {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.375rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* heading/italic/heading-2xs */
+@utility type-heading-italic-2xs {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.125rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* misc/price-lg */
+@utility type-price-lg {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-style: normal;
+  font-weight: 100;
+  line-height: 1;
+  letter-spacing: -0.07em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* misc/price-md */
+@utility type-price-md {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* misc/price-sm */
+@utility type-price-sm {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-xl/ui-xl-regular */
+@utility type-ui-xl-regular {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.75rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-xl/ui-xl-medium */
+@utility type-ui-xl-medium {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.75rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-lg/ui-lg-regular */
+@utility type-ui-lg-regular {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-lg/ui-lg-medium */
+@utility type-ui-lg-medium {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-md/ui-md-regular */
+@utility type-ui-md-regular {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.25rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-md/ui-md-medium */
+@utility type-ui-md-medium {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.25rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-sm/ui-sm-regular */
+@utility type-ui-sm-regular {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.125rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-sm/ui-sm-medium */
+@utility type-ui-sm-medium {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.125rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-sm/ui-sm-link */
+@utility type-ui-sm-link {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.125rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+  text-decoration-line: underline;
+}
+
+/* ui/ui-xs/regular */
+@utility type-ui-xs-regular {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-xs/medium */
+@utility type-ui-xs-medium {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-xs/link */
+@utility type-ui-xs-link {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+  text-decoration-line: underline;
+}
+
+/* ui/ui-2xs/ui-2xs-regular */
+@utility type-ui-2xs-regular {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-2xs/ui-2xs-medium */
+@utility type-ui-2xs-medium {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-3xs/ui-3xs-regular */
+@utility type-ui-3xs-regular {
+  font-family: var(--font-body);
+  font-size: 0.5rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* ui/ui-3xs/ui-3xs-medium */
+@utility type-ui-3xs-medium {
+  font-family: var(--font-body);
+  font-size: 0.5rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-2xl/body-2xl-regular */
+@utility type-body-2xl-regular {
+  font-family: var(--font-body);
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-2xl/body-2xl-medium */
+@utility type-body-2xl-medium {
+  font-family: var(--font-body);
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-xl/body-xl-regular */
+@utility type-body-xl-regular {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-xl/body-xl-medium */
+@utility type-body-xl-medium {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-lg/body-lg-regular */
+@utility type-body-lg-regular {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-lg/body-lg-medium */
+@utility type-body-lg-medium {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-md/body-md-regular */
+@utility type-body-md-regular {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-md/body-md-medium */
+@utility type-body-md-medium {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-sm/body-sm-regular */
+@utility type-body-sm-regular {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-sm/body-sm-medium */
+@utility type-body-sm-medium {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-xs/body-xs-regular */
+@utility type-body-xs-regular {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-xs/body-xs-medium */
+@utility type-body-xs-medium {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-2xs/body-2xs-regular */
+@utility type-body-2xs-regular {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* body/body-2xs/body-2xs-medium */
+@utility type-body-2xs-medium {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-2xl/p-2xl-regular */
+@utility type-p-2xl-regular {
+  font-family: var(--font-body);
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-2xl/p-2xl-medium */
+@utility type-p-2xl-medium {
+  font-family: var(--font-body);
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-xl/p-xl-regular */
+@utility type-p-xl-regular {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-xl/p-xl-medium */
+@utility type-p-xl-medium {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-lg/p-lg-regular */
+@utility type-p-lg-regular {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-lg/p-lg-medium */
+@utility type-p-lg-medium {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-md/p-md-regular */
+@utility type-p-md-regular {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-md/p-md-medium */
+@utility type-p-md-medium {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-sm/p-sm-regular */
+@utility type-p-sm-regular {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-sm/p-sm-medium */
+@utility type-p-sm-medium {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-xs/p-xs-regular */
+@utility type-p-xs-regular {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-xs/p-xs-medium */
+@utility type-p-xs-medium {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-2xs/p-2xs-regular */
+@utility type-p-2xs-regular {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* p/p-2xs/p-2xs-medium */
+@utility type-p-2xs-medium {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* overline/overline-md/regular */
+@utility type-overline-md-regular {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.25rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* overline/overline-md/medium */
+@utility type-overline-md-medium {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.25rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* overline/overline-sm/regular */
+@utility type-overline-sm-regular {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* overline/overline-sm/medium */
+@utility type-overline-sm-medium {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* overline/overline-xs/regular */
+@utility type-overline-xs-regular {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 0.875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* overline/overline-xs/medium */
+@utility type-overline-xs-medium {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0.875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* overline/overline-xs/link */
+@utility type-overline-xs-link {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0.875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+  text-decoration-line: underline;
+}
+
+/* overline/overline-2xs/medium */
+@utility type-overline-2xs-medium {
+  font-family: var(--font-body);
+  font-size: 0.5rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-feature-settings: normal;
+}
+
+/* Responsive semantic defaults from "Type Defaults" (2985:5755) and "Legal Page Defaults" (4142:80527). */
+
+/* H1: desktop heading/default/heading-3xl, mobile heading/default/heading-xl */
+@utility type-h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 2.4429rem + 2.2857vw, 4.5rem);
+  font-style: normal;
+  font-weight: 100;
+  line-height: clamp(3rem, 2.4429rem + 2.2857vw, 4.5rem);
+  letter-spacing: -0.04em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* H2: desktop heading/default/heading-2xl, mobile heading/default/heading-lg */
+@utility type-h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.25rem, 1.7857rem + 1.9048vw, 3.5rem);
+  font-style: normal;
+  font-weight: 200;
+  line-height: clamp(2.5rem, 2.1286rem + 1.5238vw, 3.5rem);
+  letter-spacing: -0.03em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+
+  @variant desktop {
+    font-weight: 100;
+    letter-spacing: -0.04em;
+  }
+}
+
+/* H3: desktop heading/default/heading-xl, mobile heading/default/heading-md */
+@utility type-h3 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 1.2857rem + 1.9048vw, 3rem);
+  font-style: normal;
+  font-weight: 200;
+  line-height: clamp(2rem, 1.6286rem + 1.5238vw, 3rem);
+  letter-spacing: -0.03em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+
+  @variant desktop {
+    font-weight: 100;
+    letter-spacing: -0.04em;
+  }
+}
+
+/* H4: desktop heading/default/heading-lg, mobile heading/default/heading-sm */
+@utility type-h4 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.375rem, 1.05rem + 1.3333vw, 2.25rem);
+  font-style: normal;
+  font-weight: 200;
+  line-height: clamp(1.625rem, 1.3rem + 1.3333vw, 2.5rem);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+
+  @variant desktop {
+    letter-spacing: -0.03em;
+  }
+}
+
+/* H5: desktop heading/default/heading-md, mobile heading/default/heading-xs */
+@utility type-h5 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.125rem, 0.8929rem + 0.9524vw, 1.75rem);
+  font-style: normal;
+  font-weight: 250;
+  line-height: clamp(1.375rem, 1.1429rem + 0.9524vw, 2rem);
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+
+  @variant desktop {
+    font-weight: 200;
+    letter-spacing: -0.03em;
+  }
+}
+
+/* H6: desktop heading/default/heading-sm, mobile heading/default/heading-2xs */
+@utility type-h6 {
+  font-family: var(--font-heading);
+  font-size: clamp(0.875rem, 0.6893rem + 0.7619vw, 1.375rem);
+  font-style: normal;
+  font-weight: 250;
+  line-height: clamp(1.125rem, 0.9393rem + 0.7619vw, 1.625rem);
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+
+  @variant desktop {
+    font-weight: 200;
+    letter-spacing: -0.01em;
+    font-feature-settings: "calt" 0;
+  }
+}
+
+/* Body: desktop body/body-md/body-md-regular, mobile body/body-sm/body-sm-regular */
+@utility type-body {
+  font-family: var(--font-body);
+  font-size: clamp(0.875rem, 0.8286rem + 0.1905vw, 1rem);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* Paragraph: desktop p/p-md/p-md-regular, mobile p/p-sm/p-sm-regular */
+@utility type-paragraph {
+  font-family: var(--font-body);
+  font-size: clamp(0.875rem, 0.8286rem + 0.1905vw, 1rem);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+}
+
+/* Unordered list: desktop p/p-md/p-md-regular, mobile p/p-sm/p-sm-regular */
+@utility type-list-unordered {
+  font-family: var(--font-body);
+  font-size: clamp(0.875rem, 0.8286rem + 0.1905vw, 1rem);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+  list-style-type: disc;
+  padding-inline-start: clamp(1.3125rem, 1.2429rem + 0.2857vw, 1.5rem);
+
+  & > li + li {
+    margin-block-start: clamp(0.25rem, 0.1571rem + 0.381vw, 0.5rem);
+  }
+}
+
+/* Ordered list: desktop p/p-md/p-md-regular, mobile p/p-sm/p-sm-regular */
+@utility type-list-ordered {
+  font-family: var(--font-body);
+  font-size: clamp(0.875rem, 0.8286rem + 0.1905vw, 1rem);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: normal;
+  list-style-type: decimal;
+  padding-inline-start: clamp(1.3125rem, 1.2429rem + 0.2857vw, 1.5rem);
+
+  & > li + li {
+    margin-block-start: clamp(0.25rem, 0.1571rem + 0.381vw, 0.5rem);
+  }
+}
+
+/* Blockquote: desktop heading/italic/heading-lg, mobile heading/italic/heading-sm */
+@utility type-blockquote {
+  font-family: var(--font-heading);
+  font-size: clamp(1.375rem, 1.05rem + 1.3333vw, 2.25rem);
+  font-style: italic;
+  font-weight: 300;
+  line-height: clamp(1.625rem, 1.3rem + 1.3333vw, 2.5rem);
+  letter-spacing: -0.02em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+
+  @variant desktop {
+    font-weight: 200;
+    letter-spacing: -0.04em;
+  }
+}
+
+/* Legal H1: desktop heading/default/heading-2xl, mobile heading/default/heading-lg */
+@utility type-legal-h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.25rem, 1.7857rem + 1.9048vw, 3.5rem);
+  font-style: normal;
+  font-weight: 200;
+  line-height: clamp(2.5rem, 2.1286rem + 1.5238vw, 3.5rem);
+  letter-spacing: -0.03em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+
+  @variant desktop {
+    font-weight: 100;
+    letter-spacing: -0.04em;
+  }
+}
+
+/* Legal H2: desktop heading/default/heading-lg, mobile heading/default/heading-md */
+@utility type-legal-h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 1.5643rem + 0.7619vw, 2.25rem);
+  font-style: normal;
+  font-weight: 200;
+  line-height: clamp(2rem, 1.8143rem + 0.7619vw, 2.5rem);
+  letter-spacing: -0.03em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+}
+
+/* Legal H3: desktop heading/default/heading-md, mobile heading/default/heading-sm */
+@utility type-legal-h3 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.375rem, 1.2357rem + 0.5714vw, 1.75rem);
+  font-style: normal;
+  font-weight: 200;
+  line-height: clamp(1.625rem, 1.4857rem + 0.5714vw, 2rem);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+
+  @variant desktop {
+    letter-spacing: -0.03em;
+  }
+}
+
+/* Legal H4: desktop heading/default/heading-sm, mobile heading/default/heading-xs */
+@utility type-legal-h4 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.125rem, 1.0321rem + 0.381vw, 1.375rem);
+  font-style: normal;
+  font-weight: 250;
+  line-height: clamp(1.375rem, 1.2821rem + 0.381vw, 1.625rem);
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: "calt" 0;
+
+  @variant desktop {
+    font-weight: 200;
+    letter-spacing: -0.01em;
+  }
+}

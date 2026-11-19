@@ -1,0 +1,129 @@
+/*
+ * Design tokens from the Sky Jewelry Figma file (VVG5FgIey4WmlA7MkooNZi).
+ * Names follow the Figma variables and styles: primary/leather becomes --color-primary-leather.
+ */
+@theme static {
+  --color-*: initial;
+
+  /* Base */
+  --color-base-white: #fcfcfa;
+  --color-base-black: #141829;
+
+  /* Primary */
+  --color-primary-leather: #432f2b;
+  --color-primary-blue: #242a40;
+  --color-primary-hazel: #746345;
+  --color-primary-navy: #141829;
+
+  /* Secondary */
+  --color-secondary-skin: #fdfbf7;
+  --color-secondary-ivory: #f3f1e7;
+  --color-secondary-peach: #f2e6d4;
+  --color-secondary-gold: #baa88e;
+  --color-secondary-pure-white: #ffffff;
+
+  /* State */
+  --color-state-success: #537864;
+  --color-state-success-light: #53786414;
+  --color-state-warning: #725d38;
+  --color-state-warning-light: #725d3814;
+  --color-state-error: #8d3b2b;
+  --color-state-error-light: #8d3b2b14;
+
+  /* White alpha */
+  --color-white-alpha-0: #fcfcfa00;
+  --color-white-alpha-2: #fcfcfa05;
+  --color-white-alpha-5: #fcfcfa0d;
+  --color-white-alpha-10: #fcfcfa1a;
+  --color-white-alpha-15: #fcfcfa26;
+  --color-white-alpha-20: #fcfcfa33;
+  --color-white-alpha-25: #fcfcfa40;
+  --color-white-alpha-30: #fcfcfa4d;
+  --color-white-alpha-40: #fcfcfa66;
+  --color-white-alpha-50: #fcfcfa80;
+  --color-white-alpha-60: #fcfcfa99;
+  --color-white-alpha-70: #fcfcfab2;
+  --color-white-alpha-80: #fcfcfacc;
+  --color-white-alpha-90: #fcfcfae5;
+  --color-white-alpha-95: #fcfcfaf2;
+
+  /* Black alpha */
+  --color-black-alpha-0: #1b141300;
+  --color-black-alpha-2: #1b141305;
+  --color-black-alpha-5: #1b14130d;
+  --color-black-alpha-10: #1b14131a;
+  --color-black-alpha-15: #1b141326;
+  --color-black-alpha-20: #1b141333;
+  --color-black-alpha-25: #1b141340;
+  --color-black-alpha-30: #1b14134d;
+  --color-black-alpha-40: #1b141366;
+  --color-black-alpha-50: #1b141380;
+  --color-black-alpha-60: #1b141399;
+  --color-black-alpha-70: #1b1413b2;
+  --color-black-alpha-80: #1b1413cc;
+  --color-black-alpha-90: #1b1413e5;
+  --color-black-alpha-95: #1b1413f2;
+
+  /* Figma Globals: Spacing/space-1 to space-20 */
+  --spacing-space-1: 0.25rem; /* 4px */
+  --spacing-space-2: 0.5rem; /* 8px */
+  --spacing-space-3: 0.75rem; /* 12px */
+  --spacing-space-4: 1rem; /* 16px */
+  --spacing-space-5: 1.25rem; /* 20px */
+  --spacing-space-6: 1.5rem; /* 24px */
+  --spacing-space-7: 1.75rem; /* 28px */
+  --spacing-space-8: 2rem; /* 32px */
+  --spacing-space-9: 2.25rem; /* 36px */
+  --spacing-space-10: 2.5rem; /* 40px */
+  --spacing-space-11: 3rem; /* 48px */
+  --spacing-space-12: 3.5rem; /* 56px */
+  --spacing-space-13: 4rem; /* 64px */
+  --spacing-space-14: 4.5rem; /* 72px */
+  --spacing-space-15: 5rem; /* 80px */
+  --spacing-space-16: 5.5rem; /* 88px */
+  --spacing-space-17: 6rem; /* 96px */
+  --spacing-space-18: 7.5rem; /* 120px */
+  --spacing-space-19: 10rem; /* 160px */
+  --spacing-space-20: 12.5rem; /* 200px */
+
+  /* Figma effect styles. Layer order matches Figma's stacking. */
+  --shadow-*: initial;
+  --shadow-base: 0 1px 2px -1px var(--color-black-alpha-5), 0 1px 3px 0 var(--color-white-alpha-2);
+  --shadow-inset: inset 0 8px 8px -2px var(--color-black-alpha-2), inset 0 2px 4px -1px var(--color-black-alpha-5);
+  --shadow-sm: 0 1px 2px 0 var(--color-black-alpha-5);
+  --shadow-md: 0 2px 4px -2px var(--color-black-alpha-5), 0 4px 6px -1px var(--color-black-alpha-5);
+  --shadow-lg: 0 4px 6px -4px var(--color-black-alpha-5), 0 10px 15px -3px var(--color-black-alpha-5);
+  --shadow-xl: 0 8px 10px -6px var(--color-black-alpha-5), 0 20px 25px -5px var(--color-black-alpha-5);
+  --shadow-2xl: 0 25px 50px -12px var(--color-black-alpha-5);
+  --shadow-stone: -3px 4px 6px 0 rgb(0 0 0 / 0.14);
+
+  --text-shadow-*: initial;
+  --text-shadow-sm: 0 0 16px var(--color-black-alpha-50);
+  --text-shadow-lg: 0 0 24px var(--color-black-alpha-50);
+
+  /* Figma background blur radius is twice the CSS blur value: 5 becomes 2.5px, 30 becomes 15px. */
+  --blur-*: initial;
+  --blur-sm: 2.5px;
+  --blur-md: 15px;
+
+  /* Figma defines no radius variables. These are the common values on Mobile - Approved. */
+  --radius-*: initial;
+  --radius-2: 0.125rem;
+  --radius-4: 0.25rem;
+  --radius-8: 0.5rem;
+
+  /* Layout switches from mobile to desktop at 1024px. */
+  --breakpoint-*: initial;
+  --breakpoint-desktop: 64rem;
+
+  /* Sizes come from the type-* utilities in typography.css. */
+  --text-*: initial;
+  --font-*: initial;
+}
+
+/* The font variables are set on <html> by src/fonts/index.ts. */
+@theme inline static {
+  --font-heading: var(--font-bd-megalona);
+  --font-body: var(--font-ivy-epic);
+  --default-font-family: var(--font-body);
+}
