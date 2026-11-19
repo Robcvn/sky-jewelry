@@ -208,8 +208,11 @@ export function Dropdown({
       className={cx("relative w-full", className)}
       onBlur={(event) => {
         // Mouse presses outside are handled by the pointerdown listener. Here, close only when
-        // keyboard focus moves to another element outside the dropdown.
-        if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+        // keyboard focus moves to another element outside the dropdown. Focus moving to an
+        // ancestor (such as <main tabindex="-1">, after a click inside the panel) is not leaving.
+        const next = event.relatedTarget;
+        const root = event.currentTarget;
+        if (next && !root.contains(next) && !next.contains(root)) setOpen(false);
       }}
     >
       <span id={labelId} className="sr-only">

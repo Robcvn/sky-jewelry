@@ -32,7 +32,8 @@ export function InputMessage({
 type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "placeholder"> & {
   /** Shown as the placeholder, and as the small floating label on filled MD inputs. */
   label: string;
-  size?: "md" | "sm";
+  /** "responsive" is SM below 1024px and MD from 1024px, without the floating label. */
+  size?: "md" | "sm" | "responsive";
   /** Figma "Input - Dark". */
   dark?: boolean;
   error?: boolean;
@@ -75,7 +76,11 @@ export function Input({
         data-state={previewState}
         className={cx(
           "ui-transition flex items-center rounded-4 border has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2",
-          size === "md" ? "min-h-space-12 gap-space-2 px-space-4" : "min-h-space-10 gap-space-1 px-space-3",
+          size === "md"
+            ? "min-h-space-12 gap-space-2 px-space-4"
+            : size === "sm"
+              ? "min-h-space-10 gap-space-1 px-space-3"
+              : "min-h-space-10 gap-space-1 px-space-3 ui-desktop:min-h-space-12 ui-desktop:gap-space-2 ui-desktop:px-space-4",
           dark
             ? "has-[input:focus-visible]:outline-base-white text-secondary-skin"
             : "has-[input:focus-visible]:outline-primary-leather text-primary-leather",
@@ -100,7 +105,7 @@ export function Input({
             aria-describedby={message ? messageId : undefined}
             className={cx(
               "peer w-full min-w-0 bg-transparent placeholder:text-transparent focus-visible:outline-none disabled:cursor-not-allowed",
-              size === "md" ? "type-ui-sm-regular" : "type-ui-xs-regular",
+              size === "md" ? "type-ui-sm-regular" : size === "sm" ? "type-ui-xs-regular" : "type-ui-xs-regular ui-desktop:type-ui-sm-regular",
               disabled && (dark ? "text-white-alpha-40" : "text-black-alpha-50"),
             )}
             {...rest}
@@ -117,7 +122,7 @@ export function Input({
                   )
                 : cx(
                     "absolute inset-x-space-1 top-1/2 -translate-y-1/2 peer-[:not(:placeholder-shown)]:sr-only",
-                    size === "md" ? "type-ui-sm-regular" : "type-ui-xs-regular",
+                    size === "md" ? "type-ui-sm-regular" : size === "sm" ? "type-ui-xs-regular" : "type-ui-xs-regular ui-desktop:type-ui-sm-regular",
                     dark ? (disabled ? "text-white-alpha-40" : "text-white-alpha-60") : disabled ? "text-black-alpha-50" : "text-black-alpha-60",
                   ),
             )}

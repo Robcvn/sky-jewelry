@@ -18,7 +18,7 @@ const entries = fs
     const body = inner
       .replace(/\s*\n\s*/g, "")
       .replace(/fill="#D9D9D9"/gi, 'fill="var(--icon-accent, #d9d9d9)"')
-      .replace(/(stroke|fill)="#(?:432F2B|343330)"/gi, '$1="currentColor"')
+      .replace(/(stroke|fill)="(?!none|var\()[^"]+"/gi, '$1="currentColor"')
       .replace(/stroke-width="/g, 'vector-effect="non-scaling-stroke" stroke-width="');
     return [file.replace(/\.svg$/, ""), { viewBox, body }];
   });

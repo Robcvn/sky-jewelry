@@ -132,7 +132,7 @@ function Tile({ label, detail, children }: { label: string; detail: string; chil
 export default function StyleGuidePage() {
   return (
     <>
-      <main className="site-container flex flex-col gap-space-17 py-space-13">
+      <main id="main-content" tabIndex={-1} className="site-container flex flex-col gap-space-17 py-space-13">
         <header>
           <p className="type-overline-sm-medium">Sky Jewelry design system v1.0</p>
           <h1 className="mt-space-3">Style guide</h1>

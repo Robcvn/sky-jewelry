@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AnnouncementBar } from "@/components/site/AnnouncementBar";
+import { Header } from "@/components/site/Header";
+import { NavItem } from "@/components/site/NavItem";
+import { Newsletter } from "@/components/site/Newsletter";
 import { GridOverlay } from "@/components/styleguide/GridOverlay";
 import {
   ModalDemo,
@@ -74,9 +78,11 @@ const SECTIONS = [
   ["step-indicator", "Step Indicator"],
   ["status", "Status"],
   ["scrollbar", "Scrollbar"],
+  ["site-chrome", "Header and footer"],
   ["icons", "Icons"],
   ["deviations", "Deviations from Figma"],
   ["kept-as-figma", "Kept as Figma"],
+  ["open-questions", "Open questions"],
   ["held", "Held for review"],
 ] as const;
 
@@ -319,7 +325,7 @@ function DropdownMatrix({ overlay = false }: { overlay?: boolean }) {
 export default function ComponentsPage() {
   return (
     <>
-      <main className="site-container flex flex-col gap-space-15 py-space-13">
+      <main id="main-content" tabIndex={-1} className="site-container flex flex-col gap-space-15 py-space-13">
         <header>
           <p className="type-overline-sm-medium">Sky Jewelry design system v1.0</p>
           <h1 className="mt-space-3">Components</h1>
@@ -877,6 +883,98 @@ export default function ComponentsPage() {
           </Group>
         </Section>
 
+        <Section id="site-chrome" title="Header and footer">
+          <p className="type-body-sm-regular max-w-[40rem]">
+            The live announcement bar, header and footer are on every page. These previews force each Figma breakpoint and state, and
+            scroll sideways when the window is narrower than the design.
+          </p>
+          <Group title="Nav Item and Nav Item - Overlay">
+            <Row>
+              {[
+                { name: "Default" },
+                { name: "Hover", state: "hover" as const },
+                { name: "Active", state: "current" as const },
+              ].map((state) => (
+                <Item key={state.name} label={`Nav Item, State=${state.name}`}>
+                  <nav aria-label={`Nav Item preview ${state.name}`} className="bg-secondary-ivory p-space-2">
+                    <NavItem href="#site-chrome" previewState={state.state}>Nav Item</NavItem>
+                  </nav>
+                </Item>
+              ))}
+            </Row>
+          </Group>
+          <Group title="Nav Item - Overlay" overlay surface="leather">
+            <Row>
+              {[
+                { name: "Default" },
+                { name: "Hover", state: "hover" as const },
+                { name: "Active", state: "current" as const },
+              ].map((state) => (
+                <Item overlay key={state.name} label={`Nav Item - Overlay, State=${state.name}`}>
+                  <nav aria-label={`Overlay nav item preview ${state.name}`}>
+                    <NavItem href="#site-chrome" overlay previewState={state.state}>Nav Item</NavItem>
+                  </nav>
+                </Item>
+              ))}
+            </Row>
+          </Group>
+          <Group title="Top Bar (announcement bar)">
+            <div className="flex flex-col gap-space-6">
+              {(["desktop", "mobile"] as const).flatMap((breakpoint) =>
+                (["messages", "countdown"] as const).map((mode) => (
+                  <Item
+                    key={`${breakpoint}-${mode}`}
+                    label={`Variant=${mode === "messages" ? "Default" : "Timer"}, Breakpoint=${breakpoint === "desktop" ? "Desktop" : "Mobile"}`}
+                  >
+                    <div role="region" aria-label={`Top bar preview, ${mode}, ${breakpoint}`} tabIndex={0} className="overflow-x-auto">
+                      <div className={breakpoint === "desktop" ? "w-[90rem]" : "w-[24.375rem]"}>
+                        <AnnouncementBar
+                          breakpoint={breakpoint}
+                          mode={mode}
+                          label={`Announcements preview, ${mode}, ${breakpoint}`}
+                        />
+                      </div>
+                    </div>
+                  </Item>
+                )),
+              )}
+            </div>
+          </Group>
+          <Group title="Header">
+            <div className="flex flex-col gap-space-6">
+              {[
+                { name: "Breakpoint=Desktop, two-row (default)", breakpoint: "desktop" as const, layout: "two-row" as const },
+                { name: "Breakpoint=Desktop, one-row (when to use it is not defined in Figma)", breakpoint: "desktop" as const, layout: "one-row" as const },
+                { name: "Breakpoint=Mobile, Menu Open=False", breakpoint: "mobile" as const, layout: "two-row" as const },
+                { name: "Breakpoint=Mobile, Menu Open=True", breakpoint: "mobile" as const, layout: "two-row" as const, open: true },
+              ].map((variant) => (
+                <Item key={variant.name} label={variant.name}>
+                  <div role="region" aria-label={`Header preview, ${variant.name}`} tabIndex={0} className="overflow-x-auto">
+                    <div className={variant.breakpoint === "desktop" ? "w-[90rem]" : "w-[24.375rem]"}>
+                      <Header
+                        breakpoint={variant.breakpoint}
+                        layout={variant.layout}
+                        defaultMenuOpen={variant.open}
+                        labelSuffix={` preview, ${variant.name}`}
+                      />
+                    </div>
+                  </div>
+                </Item>
+              ))}
+            </div>
+          </Group>
+          <Group title="Footer newsletter states" overlay>
+            <div className="grid grid-cols-1 gap-space-8 desktop:grid-cols-2">
+              <Item overlay label="Footer Signup - Error">
+                <div className="bg-primary-blue p-space-5"><Newsletter previewState="error" /></div>
+              </Item>
+              <Item overlay label="Footer Signup - Confirmation">
+                <div className="bg-primary-blue p-space-5"><Newsletter previewState="success" /></div>
+              </Item>
+            </div>
+          </Group>
+        </Section>
+
         <Section id="icons" title="Icons">
           <ul className="flex flex-wrap gap-space-5">
             {(Object.keys(iconData) as IconName[]).map((name) => (
@@ -905,6 +1003,12 @@ export default function ComponentsPage() {
             <li>Focus rings: Figma defines no focus state. A 2px ring is added, leather on light surfaces and white on overlays.</li>
             <li>Tab Item hover: Figma uses black-alpha-50, 3.42:1 on secondary/skin, which fails AA. Built with black-alpha-60, 4.70:1.</li>
             <li>Pagination Number hover text: Figma hard-codes #1f2937, which is not a token. Built with base/black #141829, 14.29:1 on peach.</li>
+            <li>Nav Item hover: Figma uses black-alpha-50, 3.34:1 on ivory, which fails AA. Built with black-alpha-60, 4.56:1.</li>
+            <li>Top Bar countdown units (D, H, M, S): Figma uses white-alpha-50, 4.31:1 on leather. Built with white-alpha-60, 5.48:1.</li>
+            <li>
+              Footer Privacy Policy and Contact Us links: Figma marks them only by color, ivory against gold text at 2.04:1, below the 3:1
+              needed to tell links apart. Built with an underline.
+            </li>
             <li>
               Modal backdrop: black-alpha-50, not defined in Figma. Confirm against the first approved page frame that shows a modal.
             </li>
@@ -922,10 +1026,21 @@ export default function ComponentsPage() {
               rule.
             </li>
             <li>Status Marker, Completed=False: secondary/gold dot border, 2.24:1. Not text, and the label beside it names the step.</li>
+            <li>Top Bar countdown colons: white-alpha-50, 4.31:1 on leather. Decorative separators.</li>
             <li>
               Step Indicator, Unavailable=True: the item name in leather at 50% opacity, 2.82:1 on skin and 2.73:1 on error-light. This is
               text and does not meet AA. It is kept by decision because the unavailable item is meant to read as de-emphasised.
             </li>
+          </ul>
+        </Section>
+
+        <Section id="open-questions" title="Open questions">
+          <ul className="type-body-sm-regular flex max-w-[48rem] list-disc flex-col gap-space-2 pl-space-5">
+            <li>
+              When is the one-row header used, and is the header sticky? For now the header is two-row and scrolls with the page, and the
+              one-row bar is an unused option.
+            </li>
+            <li>Should the mobile announcement messages auto-scroll as a ticker? For now they scroll sideways by swipe or keyboard.</li>
           </ul>
         </Section>
 

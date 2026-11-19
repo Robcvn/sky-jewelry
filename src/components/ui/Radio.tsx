@@ -77,7 +77,7 @@ export function RadioSelect({ color = "default", heading, price, previewState, c
     <label
       data-state={previewState}
       className={cx(
-        "group/radio ui-transition flex min-h-space-14 cursor-pointer items-center gap-space-3 rounded-4 border border-black-alpha-20 px-space-4 py-space-3 text-primary-leather has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary-leather ui-hover:not-has-checked:border-secondary-gold",
+        "group/radio ui-transition flex min-h-space-13 cursor-pointer items-center gap-space-3 rounded-4 border border-black-alpha-20 px-space-4 py-[calc(var(--spacing-space-3)-1px)] text-primary-leather has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary-leather ui-hover:not-has-checked:border-secondary-gold",
         color === "success" ? "has-checked:border-state-success" : "has-checked:border-primary-leather",
         MARK_COLORS[color],
         className,
@@ -139,7 +139,7 @@ const IMAGE_SIZE = {
   },
   md: {
     box: "gap-space-1 border-transparent bg-secondary-skin px-space-2 py-space-3 ui-hover:not-has-checked:bg-secondary-ivory",
-    media: "size-space-12",
+    media: "size-space-11",
     text: "type-overline-xs-medium",
   },
   sm: {

@@ -11,6 +11,8 @@ type ButtonStyleProps = {
   variant?: ButtonVariant;
   /** Figma "Button - Overlay", for use on images and dark surfaces. */
   overlay?: boolean;
+  /** "pill" is the Figma default. "square" is the 4px-corner override, used by the newsletter signup. */
+  shape?: "pill" | "square";
   leftIcon?: IconName;
   rightIcon?: IconName;
   /** Style guide only. */
@@ -36,7 +38,7 @@ const COLORS = {
     "border-secondary-gold bg-white-alpha-2 text-base-white backdrop-blur-sm ui-hover:bg-secondary-gold ui-hover:text-primary-leather ui-hover:backdrop-blur-none ui-pressed:bg-secondary-gold ui-pressed:text-primary-leather ui-pressed:shadow-inset ui-pressed:backdrop-blur-none disabled:bg-white-alpha-0 disabled:opacity-50 disabled:backdrop-blur-none",
 };
 
-function buttonClasses({ size = "md", variant = "default", overlay }: ButtonStyleProps) {
+function buttonClasses({ size = "md", variant = "default", overlay, shape = "pill" }: ButtonStyleProps) {
   const color = overlay
     ? variant === "default"
       ? COLORS.overlayDefault
@@ -44,7 +46,8 @@ function buttonClasses({ size = "md", variant = "default", overlay }: ButtonStyl
     : COLORS[variant];
 
   return cx(
-    "ui-transition inline-flex cursor-pointer items-center justify-center rounded-full border text-center disabled:cursor-not-allowed",
+    "ui-transition inline-flex cursor-pointer items-center justify-center border text-center disabled:cursor-not-allowed",
+    shape === "square" ? "rounded-4" : "rounded-full",
     SIZE[size],
     color,
     overlay && "ui-focus:outline-base-white",
@@ -73,6 +76,7 @@ export function Button({
   size,
   variant,
   overlay,
+  shape,
   leftIcon,
   rightIcon,
   previewState,
@@ -85,7 +89,7 @@ export function Button({
     <button
       type={type}
       data-state={previewState}
-      className={cx(buttonClasses({ size, variant, overlay }), className)}
+      className={cx(buttonClasses({ size, variant, overlay, shape }), className)}
       {...rest}
     >
       <ButtonContent size={size} overlay={overlay} leftIcon={leftIcon} rightIcon={rightIcon}>
@@ -101,6 +105,7 @@ export function ButtonLink({
   size,
   variant,
   overlay,
+  shape,
   leftIcon,
   rightIcon,
   previewState,
@@ -111,7 +116,7 @@ export function ButtonLink({
   return (
     <Link
       data-state={previewState}
-      className={cx(buttonClasses({ size, variant, overlay }), className)}
+      className={cx(buttonClasses({ size, variant, overlay, shape }), className)}
       {...rest}
     >
       <ButtonContent size={size} overlay={overlay} leftIcon={leftIcon} rightIcon={rightIcon}>
@@ -149,7 +154,7 @@ export function HeroButton({
         overlay
           ? "ui-focus:outline-base-white flex-col text-base-white [--hero-icon:var(--color-base-white)] ui-hover:[--hero-icon:var(--color-secondary-peach)] ui-pressed:[--hero-icon:var(--color-secondary-peach)]"
           : "gap-space-2 bg-secondary-ivory px-space-17 py-space-4 text-primary-leather [--hero-icon:var(--color-primary-leather)] ui-hover:bg-secondary-skin ui-hover:[--hero-icon:var(--color-secondary-gold)]",
-        overlay && (compact ? "gap-space-1 px-space-2 pt-space-6 pb-space-8" : "gap-space-2 px-space-17 py-space-12"),
+        overlay && (compact ? "gap-space-1 px-space-2 pt-space-6 pb-space-8" : "gap-space-2 px-space-17 py-space-11"),
         !overlay && "min-h-space-18",
         className,
       )}
