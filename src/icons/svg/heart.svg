@@ -1,0 +1,12 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 12C20.63 11.16 21 10.13 21 9C21 6.24 18.76 4 16 4C14.36 4 12.91 4.8 12 6.03C11.09 4.81 9.64 4 8 4C5.24 4 3 6.24 3 9C3 10.13 3.37 11.16 4 12L12 21L20 12Z" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+<path d="M12 11L9 8H7V10L12 16L17 10V8H15L12 11Z" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+<path d="M12 11.0003V6.03027" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+<path d="M12 16V21" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+<path d="M17 10H20.9" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+<path d="M3.09998 10C4.66207 10 5.43785 10 6.99995 10" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+<path d="M15 8L16 4" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+<path d="M9 8L8 4" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+<path d="M7 8L4 6" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+<path d="M17 8L20 6" stroke="#432F2B" stroke-width="0.75" stroke-miterlimit="10"/>
+</svg>

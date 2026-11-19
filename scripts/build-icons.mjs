@@ -15,7 +15,19 @@ const entries = fs
     const viewBox = svg.match(/viewBox="([^"]+)"/)?.[1];
     const inner = svg.match(/<svg[^>]*>([\s\S]*)<\/svg>/)?.[1];
     if (!viewBox || !inner) throw new Error(`Could not read ${file}`);
-    const body = inner
+    const [, , w, h] = viewBox.split(/\s+/);
+    // Figma adds a clip the size of the icon frame. The SVG already clips to its viewBox, and the clip ids
+    // would repeat when an icon shows more than once on a page, so full-frame clips are removed.
+    const fullClips = [...inner.matchAll(/<clipPath id="([^"]+)">\s*<rect width="(\d+)" height="(\d+)"[^>]*\/>\s*<\/clipPath>/g)]
+      .filter(([, , cw, ch]) => cw === w && ch === h)
+      .map(([whole, id]) => ({ whole, id }));
+    let cleaned = inner;
+    for (const { whole, id } of fullClips) {
+      cleaned = cleaned.replace(whole, "").replaceAll(` clip-path="url(#${id})"`, "");
+    }
+    cleaned = cleaned.replace(/<defs>\s*<\/defs>/g, "");
+    if (/clip-path|<clipPath/.test(cleaned)) throw new Error(`${file} has a clip that is not full-frame`);
+    const body = cleaned
       .replace(/\s*\n\s*/g, "")
       .replace(/fill="#D9D9D9"/gi, 'fill="var(--icon-accent, #d9d9d9)"')
       .replace(/(stroke|fill)="(?!none|var\()[^"]+"/gi, '$1="currentColor"')

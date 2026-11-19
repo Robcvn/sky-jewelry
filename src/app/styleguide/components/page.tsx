@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { Header } from "@/components/site/Header";
+import { MegaMenuPanel } from "@/components/site/MegaMenu";
+import { SearchPanel } from "@/components/site/SearchPanel";
+import { siteHeader } from "@/content/site";
 import { NavItem } from "@/components/site/NavItem";
 import { Newsletter } from "@/components/site/Newsletter";
 import { GridOverlay } from "@/components/styleguide/GridOverlay";
@@ -81,6 +84,7 @@ const SECTIONS = [
   ["site-chrome", "Header and footer"],
   ["icons", "Icons"],
   ["deviations", "Deviations from Figma"],
+  ["corrected-oversights", "Corrected design oversights"],
   ["kept-as-figma", "Kept as Figma"],
   ["open-questions", "Open questions"],
   ["held", "Held for review"],
@@ -946,7 +950,14 @@ export default function ComponentsPage() {
                 { name: "Breakpoint=Desktop, two-row (default)", breakpoint: "desktop" as const, layout: "two-row" as const },
                 { name: "Breakpoint=Desktop, one-row (when to use it is not defined in Figma)", breakpoint: "desktop" as const, layout: "one-row" as const },
                 { name: "Breakpoint=Mobile, Menu Open=False", breakpoint: "mobile" as const, layout: "two-row" as const },
-                { name: "Breakpoint=Mobile, Menu Open=True", breakpoint: "mobile" as const, layout: "two-row" as const, open: true },
+                { name: "Breakpoint=Mobile, Menu Open=True (Nav / Main)", breakpoint: "mobile" as const, layout: "two-row" as const, open: true },
+                {
+                  name: "Breakpoint=Mobile, Menu Open=True (Nav / Engagement Rings)",
+                  breakpoint: "mobile" as const,
+                  layout: "two-row" as const,
+                  open: true,
+                  category: "engagement-rings",
+                },
               ].map((variant) => (
                 <Item key={variant.name} label={variant.name}>
                   <div role="region" aria-label={`Header preview, ${variant.name}`} tabIndex={0} className="overflow-x-auto">
@@ -955,12 +966,33 @@ export default function ComponentsPage() {
                         breakpoint={variant.breakpoint}
                         layout={variant.layout}
                         defaultMenuOpen={variant.open}
+                        defaultMenuCategory={"category" in variant ? variant.category : undefined}
                         labelSuffix={` preview, ${variant.name}`}
                       />
                     </div>
                   </div>
                 </Item>
               ))}
+            </div>
+          </Group>
+          <Group title="Mega menus (desktop panels, shown open)">
+            <div className="flex flex-col gap-space-6">
+              {siteHeader.primary.map((link) => (
+                <Item key={link._key} label={`Mega Menu / ${link.label}`}>
+                  <div role="region" aria-label={`Mega menu preview, ${link.label}`} tabIndex={0} className="overflow-x-auto">
+                    <div className="w-[90rem]" data-breakpoint="desktop">
+                      <MegaMenuPanel menu={link.menu} label={`${link.label} preview`} inline />
+                    </div>
+                  </div>
+                </Item>
+              ))}
+              <Item label="Mega Menu / Search">
+                <div role="region" aria-label="Search panel preview" tabIndex={0} className="overflow-x-auto">
+                  <div className="w-[90rem]" data-breakpoint="desktop">
+                    <SearchPanel content={siteHeader.searchPanel} inline />
+                  </div>
+                </div>
+              </Item>
             </div>
           </Group>
           <Group title="Footer newsletter states" overlay>
@@ -1012,6 +1044,44 @@ export default function ComponentsPage() {
             <li>
               Modal backdrop: black-alpha-50, not defined in Figma. Confirm against the first approved page frame that shows a modal.
             </li>
+            <li>Nav Item - Child hover: Figma uses black-alpha-50, 3.36:1 on ivory. Built with black-alpha-60, 4.58:1, as for Nav Item.</li>
+            <li>Post Card topic and date: Figma uses black-alpha-50, 3.36:1 on ivory. Built with black-alpha-60, 4.58:1.</li>
+            <li>Mobile menu search placeholder: Figma uses black-alpha-50, 3.36:1. Built with black-alpha-60, 4.58:1.</li>
+            <li>
+              Search panel focus: Figma shows no focus state. A 1px leather underline appears under the field while it has focus.
+            </li>
+          </ul>
+        </Section>
+
+        <Section id="corrected-oversights" title="Corrected design oversights">
+          <ul className="type-body-sm-regular flex max-w-[48rem] list-disc flex-col gap-space-2 pl-space-5">
+            <li>
+              Stand-in menu icons. Figma shows setting and shape icons on band and jewelry links. Built with the matching Assets icons:
+              Wedding Bands For Her, Classic, Diamond, Solid, Pave, Eternity, Anniversary and Prong (Figma: Channel Set, Hidden Halo,
+              Solitaire, Pave, Halo, Channel Set, Nature) use Band Classic, Band Diamonds, Band Solid, Band Pave, Band Eternity, Band
+              Anniversary and Band Prong. For Him, Classic and Diamond (Figma: Round, Gemstone) use Band Classic and Band Diamonds. Diamond
+              Jewelry, Eternity Rings, Anniversary Rings, Diamond Studs, Diamond Pendants and Tennis Bracelets (Figma: Solitaire, Nature,
+              Pave, Halo, Channel Set) use Eternity Ring, Band Anniversary, Diamond Stud, Pendant Solitaire and Tennis Bracelet. Start with
+              a Pendant (Figma: Three Stone) uses Pendant Solitaire. Start with a Sapphire (Figma: Round) uses Gemstone. Gold Bracelets
+              (Figma: Bracelets) uses Gold Bracelet.
+            </li>
+            <li>
+              Bezel icon. Figma shows an archived &ldquo;Nature&rdquo; icon (a vine band) for Shop by Style, Bezel. Built with the Assets
+              &ldquo;Bezel&rdquo; icon.
+            </li>
+            <li>
+              Shape lists. Figma&rsquo;s desktop Loose Diamonds and Gemstones By Shape have Elongated Cushion and no Heart; the mobile
+              frames have Heart and no Elongated Cushion, in another order. Built with the desktop list on both breakpoints.
+            </li>
+            <li>Spelling. Figma shows &ldquo;Shop All Engagment Rings&rdquo;. Built as &ldquo;Shop All Engagement Rings&rdquo;.</li>
+            <li>
+              Education placeholders. Figma shows Fine Jewelry product names under the Diamonds, Rings and Gemstones &amp; Fine Jewelry
+              labels, and Latin blog titles with &ldquo;Topic&rdquo; and the same date. Built with education topics (The 4Cs of Diamonds,
+              Ring Size Guide, Sapphires and others) and three titled posts with their own topics and dates.
+            </li>
+            <li>
+              Fine Jewelry row height. Figma shows one 40px row (Diamond Rings) among 34px rows on desktop. Built with all rows at 34px.
+            </li>
           </ul>
         </Section>
 
@@ -1027,6 +1097,12 @@ export default function ComponentsPage() {
             </li>
             <li>Status Marker, Completed=False: secondary/gold dot border, 2.24:1. Not text, and the label beside it names the step.</li>
             <li>Top Bar countdown colons: white-alpha-50, 4.31:1 on leather. Decorative separators.</li>
+            <li>Mobile menu category chevrons: secondary/gold, 2.04:1 on ivory. Decorative; the row text names the link.</li>
+            <li>Post Card divider: black-alpha-20. Decorative separator between topic and date.</li>
+            <li>
+              Search panel placeholder: secondary/gold, 2.04:1 on ivory. Display-size hint text on a field that has a visible label
+              (&ldquo;Search the site&rdquo;).
+            </li>
             <li>
               Step Indicator, Unavailable=True: the item name in leather at 50% opacity, 2.82:1 on skin and 2.73:1 on error-light. This is
               text and does not meet AA. It is kept by decision because the unavailable item is meant to read as de-emphasised.
@@ -1041,6 +1117,10 @@ export default function ComponentsPage() {
               one-row bar is an unused option.
             </li>
             <li>Should the mobile announcement messages auto-scroll as a ticker? For now they scroll sideways by swipe or keyboard.</li>
+            <li>
+              Menu icons with no proper match in Assets, kept as Figma: Wedding Bands For Him, Carved (Oval) and Alternative Metal (Pear),
+              and Start with a Moissanite (Natural Diamond).
+            </li>
           </ul>
         </Section>
 
