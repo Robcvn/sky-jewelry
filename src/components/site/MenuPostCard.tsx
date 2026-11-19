@@ -5,8 +5,8 @@ import type { BlogTeaser } from "@/content/site";
 
 const DATE = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 
-/** Figma "Post Card": a 64px thumbnail, topic and date, and the post title. The whole card is one link. */
-export function PostCard({ post }: { post: BlogTeaser }) {
+/** Figma "Post Card" as used in the Education mega menu: a 64px thumbnail, topic and date, and the post title. The whole card is one link. */
+export function MenuPostCard({ post }: { post: BlogTeaser }) {
   return (
     <Link href={post.href} className="group flex w-full items-center gap-space-2">
       <Image

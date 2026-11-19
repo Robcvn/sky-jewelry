@@ -292,6 +292,10 @@ export const iconData = {
     "viewBox": "0 0 24 24",
     "body": "<path d=\"M10.5 17C14.0899 17 17 14.0899 17 10.5C17 6.91015 14.0899 4 10.5 4C6.91015 4 4 6.91015 4 10.5C4 14.0899 6.91015 17 10.5 17Z\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\"/><path d=\"M15.1 15.0996L20 19.9996\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\"/>"
   },
+  "setting-empty": {
+    "viewBox": "0 0 24 24",
+    "body": "<path d=\"M12 22C16.4183 22 20 18.4183 20 14C20 9.58172 16.4183 6 12 6C7.58172 6 4 9.58172 4 14C4 18.4183 7.58172 22 12 22Z\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\"/><path d=\"M12 7.875C15.3827 7.875 18.125 10.6173 18.125 14C18.125 17.3827 15.3827 20.125 12 20.125C8.61726 20.125 5.875 17.3827 5.875 14C5.875 10.6173 8.61726 7.875 12 7.875Z\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\"/><path d=\"M10 3L9 4L11 6M14 3L15 4L13 6\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-linejoin=\"bevel\"/><path d=\"M12 6V3\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\"/>"
+  },
   "setting": {
     "viewBox": "0 0 24 24",
     "body": "<path d=\"M12 22C16.4183 22 20 18.4183 20 14C20 9.58172 16.4183 6 12 6C7.58172 6 4 9.58172 4 14C4 18.4183 7.58172 22 12 22Z\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\"/><path d=\"M12 7.875C15.3827 7.875 18.125 10.6173 18.125 14C18.125 17.3827 15.3827 20.125 12 20.125C8.61726 20.125 5.875 17.3827 5.875 14C5.875 10.6173 8.61726 7.875 12 7.875Z\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\"/><path d=\"M10 2H14L15 3L12 6L9 3L10 2Z\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-linejoin=\"bevel\"/>"
@@ -311,6 +315,10 @@ export const iconData = {
   "stackable-rings": {
     "viewBox": "0 0 24 24",
     "body": "<path d=\"M12.7742 7.74457C11.6385 6.63157 10.083 5.94531 8.36719 5.94531C4.88952 5.94531 2.07031 8.76452 2.07031 12.2422C2.07031 14.9907 3.83124 17.3279 6.28644 18.1872\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11 8.93991C10.2614 8.35229 9.31881 8 8.29202 8C5.9216 8 4 9.87749 4 12.1936C4 13.8802 5.01905 15.3343 6.48839 16\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11.2734 3.03906L8.36719 5.94531L5.46094 3.03906L6.42969 1.10156H10.3047L11.2734 3.03906Z\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M15.6328 22.8984C19.1105 22.8984 21.9297 20.0793 21.9297 16.6016C21.9297 13.1238 19.1105 10.3047 15.6328 10.3047C12.1551 10.3047 9.33594 13.1238 9.33594 16.6016C9.33594 20.0793 12.1551 22.8984 15.6328 22.8984Z\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M15.6328 20.9912C18.0571 20.9912 20.0225 19.0259 20.0225 16.6016C20.0225 14.1773 18.0571 12.2119 15.6328 12.2119C13.2085 12.2119 11.2432 14.1773 11.2432 16.6016C11.2432 19.0259 13.2085 20.9912 15.6328 20.9912Z\" stroke=\"currentColor\" vector-effect=\"non-scaling-stroke\" stroke-width=\"0.75\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>"
+  },
+  "star-filled": {
+    "viewBox": "0 0 24 24",
+    "body": "<g><path d=\"M12 1.54004L15.26 8.62004L23 9.53004L17.27 14.82L18.8 22.46L12 18.64L5.2 22.46L6.73 14.82L1 9.53004L8.74 8.62004L12 1.54004Z\" fill=\"currentColor\" stroke=\"currentColor\"/></g>"
   },
   "tennis-bracelet": {
     "viewBox": "0 0 24 24",

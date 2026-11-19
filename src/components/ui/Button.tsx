@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
 import { cx, type PreviewState } from "./shared";
 
-export type ButtonSize = "md" | "sm" | "xs";
+/** "responsive" is SM below 1024px and MD from 1024px, as most Home buttons are in Figma. */
+export type ButtonSize = "md" | "sm" | "xs" | "responsive";
 export type ButtonVariant = "default" | "secondary";
 
 type ButtonStyleProps = {
@@ -23,9 +24,11 @@ const SIZE = {
   md: "min-h-space-12 px-space-5 type-overline-sm-medium",
   sm: "min-h-space-10 px-space-4 type-overline-xs-medium",
   xs: "min-h-space-8 px-space-3 type-overline-xs-medium",
+  responsive:
+    "min-h-space-10 px-space-4 type-overline-xs-medium ui-desktop:min-h-space-12 ui-desktop:px-space-5 ui-desktop:type-overline-sm-medium",
 };
 
-const LABEL_PADDING = { md: "px-space-3", sm: "px-space-2", xs: "px-1.5" };
+const LABEL_PADDING = { md: "px-space-3", sm: "px-space-2", xs: "px-1.5", responsive: "px-space-2 ui-desktop:px-space-3" };
 
 const COLORS = {
   default:

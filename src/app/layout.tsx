@@ -11,6 +11,8 @@ export const metadata: Metadata = {
     template: "%s | Sky Jewelry",
   },
   description: "Sky Jewelry website, in development.",
+  // Portfolio build of a real brand: keep it out of search results.
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

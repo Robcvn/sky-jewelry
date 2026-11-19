@@ -4,6 +4,7 @@
  * Copy is from the Figma Header and Footer pages. Hrefs point at routes that later tasks will build.
  */
 import type { IconName } from "@/icons/icon-data";
+import { blogPosts, postHref } from "./blog";
 
 export type NavLink = { _key: string; label: string; href: string };
 
@@ -96,6 +97,8 @@ export type FooterContent = {
   social: Array<{ _key: string; label: string; href: string; icon: IconName }>;
   columns: Array<{ _key: string; title: string; links: NavLink[] }>;
   copyright: string;
+  /** Deliberate addition, not in Figma: says this is a portfolio build with sample content. */
+  demoNotice: string;
   payments: Array<{ _key: string; label: string; icon: IconName }>;
 };
 
@@ -436,32 +439,14 @@ const educationMenu: MegaMenu = {
   ],
   blog: {
     title: "Explore Our Blog",
-    posts: [
-      {
-        _key: "choosing-a-setting",
-        title: "How to Choose the Right Engagement Ring Setting",
-        topic: "Engagement",
-        date: "2026-10-28",
-        href: "/blog/how-to-choose-the-right-engagement-ring-setting/",
-        image: { src: "/images/education/blog-thumb-1.jpg", alt: "" },
-      },
-      {
-        _key: "lab-vs-natural",
-        title: "Lab-Grown or Natural: What Sets Them Apart",
-        topic: "Diamonds",
-        date: "2026-09-16",
-        href: "/blog/lab-grown-or-natural-what-sets-them-apart/",
-        image: { src: "/images/education/blog-thumb-2.jpg", alt: "" },
-      },
-      {
-        _key: "stacking-rings",
-        title: "Stacking Rings: Mixing Metals and Shapes",
-        topic: "Style",
-        date: "2026-08-05",
-        href: "/blog/stacking-rings-mixing-metals-and-shapes/",
-        image: { src: "/images/education/blog-thumb-3.jpg", alt: "" },
-      },
-    ],
+    posts: blogPosts.map((post) => ({
+      _key: post._id,
+      title: post.title,
+      topic: post.topic,
+      date: post.date,
+      href: postHref(post),
+      image: post.thumbnail,
+    })),
     footerLink: { _key: "all", label: "All Blog Posts", href: "/blog/" },
   },
   shopAll: { _key: "shop-all", label: "All Education", href: "/education/" },
@@ -522,8 +507,8 @@ export const siteFooter: FooterContent = {
     contact: { _key: "contact", label: "Contact Us", href: "/contact/" },
     after: ".",
   },
-  description:
-    "Volutpat ridiculus amet tortor amet consectetur. Pulvinar integer dis pellentesque aliquam viverra ultricies in adipiscing velit. Blandit sit aliquet ante eu. Tempor aliquam ultrices sollicitudin.",
+  // Figma has Latin filler here; replaced with one neutral sentence.
+  description: "Engagement rings, wedding bands and fine jewelry from Sky Jewelry in New York.",
   contact: {
     address: "354 Lenox Ave, New York NY 10027",
     phone: "+1 (212) 601-2750",
@@ -561,6 +546,7 @@ export const siteFooter: FooterContent = {
     },
   ],
   copyright: "© All Rights Reserved to Sky Jewelry",
+  demoNotice: "Portfolio build by Rob Coven. Not the live Sky Jewelry store; products, prices and reviews are sample content.",
   payments: [
     { _key: "visa", label: "Visa", icon: "visa" },
     { _key: "mastercard", label: "Mastercard", icon: "mastercard" },

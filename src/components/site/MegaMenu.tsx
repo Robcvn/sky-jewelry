@@ -5,7 +5,7 @@ import { TextButtonLink } from "@/components/ui/TextButton";
 import { cx } from "@/components/ui/shared";
 import type { MegaMenu, MenuGroup, NavLink } from "@/content/site";
 import { MenuLinkItem } from "./MenuLinkItem";
-import { PostCard } from "./PostCard";
+import { MenuPostCard } from "./MenuPostCard";
 
 /** One labelled group of menu links, shared by the desktop panel and the mobile sub-screens. */
 export function MenuGroupBlock({
@@ -60,7 +60,7 @@ export function MenuBlogBlock({ blog, headingLevel = 2 }: { blog: NonNullable<Me
       <ul aria-labelledby={headingId} className="flex flex-col gap-space-4">
         {blog.posts.map((post) => (
           <li key={post._key}>
-            <PostCard post={post} />
+            <MenuPostCard post={post} />
           </li>
         ))}
       </ul>

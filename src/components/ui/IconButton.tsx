@@ -1,10 +1,11 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, Ref } from "react";
 import { Icon, type IconName } from "./Icon";
 import { cx, type PreviewState } from "./shared";
 
 type IconButtonSize = "xs" | "sm" | "md" | "lg";
 
 type IconButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
+  ref?: Ref<HTMLButtonElement>;
   icon: IconName;
   /** Required accessible name. */
   label: string;

@@ -4,6 +4,13 @@ import Link from "next/link";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { Header } from "@/components/site/Header";
 import { MegaMenuPanel } from "@/components/site/MegaMenu";
+import { CategoryCard } from "@/components/ui/CategoryCard";
+import { DyoCard } from "@/components/ui/DyoCard";
+import { FeatureCard } from "@/components/ui/FeatureCard";
+import { PostCard } from "@/components/ui/PostCard";
+import { ProductCardSummary } from "@/components/ui/ProductCardSummary";
+import { ResourceCardLarge, ResourceCardSmall } from "@/components/ui/ResourceCard";
+import { ReviewCard } from "@/components/ui/ReviewCard";
 import { SearchPanel } from "@/components/site/SearchPanel";
 import { siteHeader } from "@/content/site";
 import { NavItem } from "@/components/site/NavItem";
@@ -81,6 +88,7 @@ const SECTIONS = [
   ["step-indicator", "Step Indicator"],
   ["status", "Status"],
   ["scrollbar", "Scrollbar"],
+  ["cards", "Cards"],
   ["site-chrome", "Header and footer"],
   ["icons", "Icons"],
   ["deviations", "Deviations from Figma"],
@@ -887,6 +895,58 @@ export default function ComponentsPage() {
           </Group>
         </Section>
 
+        <Section id="cards" title="Cards">
+          {(["desktop", "mobile"] as const).map((bp) => (
+            <Group key={bp} title={`Breakpoint=${bp === "desktop" ? "Desktop" : "Mobile"}`}>
+              <div role="region" aria-label={`Cards preview, ${bp}`} tabIndex={0} className="relative overflow-x-auto pb-space-2">
+              <div data-breakpoint={bp} className="flex w-max items-start gap-space-8">
+                <Item label="Category Card - Quick">
+                  <div className={bp === "desktop" ? "w-[18rem]" : "w-[16.25rem]"}>
+                    <CategoryCard label="engagement rings" href="#cards" image={{ desktop: "cat-engagement-rings-d", mobile: "cat-engagement-rings-m", alt: "" }} sizes={{ desktop: "288px", mobile: "260px" }} />
+                  </div>
+                </Item>
+                <Item label="DYO Card">
+                  <div className="w-[25rem] max-w-full">
+                    <DyoCard icon="setting-empty" title="Setting" body="Celebrate your love with our stunning selection of engagement ring designs." cta={{ label: "Start with a setting", href: "#cards" }} />
+                  </div>
+                </Item>
+                <Item label="Feature Card (no body, and with body)">
+                  <div className="flex gap-space-4">
+                    <FeatureCard title="Gemstones" ctaLabel="Shop Now" href="#cards" image={{ desktop: "feature-gemstones-d", mobile: "feature-gemstones-m", alt: "" }} sizes={{ desktop: "400px", mobile: "171px" }} className={bp === "desktop" ? "aspect-[4/5] w-[25rem]" : "aspect-[4/5] w-[10.6875rem]"} />
+                    <FeatureCard title="Amara & James" body="A pear-cut diamond on a slim band, chosen together." ctaLabel="Read Story" href="#cards" image={{ desktop: "story-face-d", mobile: "story-face-m", alt: "" }} sizes={{ desktop: "400px", mobile: "288px" }} className={bp === "desktop" ? "aspect-[4/5] w-[25rem]" : "aspect-[4/5] w-[18rem]"} />
+                  </div>
+                </Item>
+                <Item label="Product Card - Summary">
+                  <div className={bp === "desktop" ? "w-[18.375rem]" : "w-[18.0625rem]"}>
+                    <ProductCardSummary name="Halo Ring" body="A circle of diamonds frames the stone." priceLabel="starting at $999" href="#cards" image={{ desktop: "ring-rose-gold-d", mobile: "ring-rose-gold-m", alt: "" }} sizes={{ desktop: "294px", mobile: "289px" }} />
+                  </div>
+                </Item>
+                <Item label="Post Card, Size=LG">
+                  <div className={bp === "desktop" ? "w-[25rem]" : "w-[18rem]"}>
+                    <PostCard title="Stacking Rings: Mixing Metals and Shapes" excerpt="Simple rules for pairing bands with your engagement ring." topic="Style" date="2026-08-05" readTime="3 Min Read" href="#cards" image={{ desktop: "story-hand-post", alt: "" }} sizes={{ desktop: "400px", mobile: "288px" }} />
+                  </div>
+                </Item>
+                <Item label="Resource Card, Size=LG">
+                  <div className={bp === "desktop" ? "w-[44.875rem]" : "w-[21.875rem]"}>
+                    <ResourceCardLarge topic="Diamonds" title="The 4Cs of Diamonds" body="Cut, color, clarity and carat weight decide how a diamond looks and what it costs." href="#cards" ctaLabel="Read More" image={{ desktop: "story-arms-wide", alt: "" }} sizes={{ desktop: "702px", mobile: "350px" }} />
+                  </div>
+                </Item>
+                <Item label="Resource Card, Size=SM">
+                  <div className={bp === "desktop" ? "w-[31.625rem]" : "w-[21.875rem]"}>
+                    <ResourceCardSmall topic="Rings" title="Finding the right ring size at home" href="#cards" image={{ desktop: "story-hand-sq", alt: "" }} sizes={{ desktop: "128px", mobile: "104px" }} />
+                  </div>
+                </Item>
+                <Item label="Review Card">
+                  <div className={bp === "desktop" ? "w-[25rem] bg-primary-leather p-space-4" : "w-[18rem] bg-primary-leather p-space-4"}>
+                    <ReviewCard name="Maya R." rating={5} date="2026-10-12" body="We designed my ring from the setting up. The finished ring is exactly what I pictured." />
+                  </div>
+                </Item>
+              </div>
+              </div>
+            </Group>
+          ))}
+        </Section>
+
         <Section id="site-chrome" title="Header and footer">
           <p className="type-body-sm-regular max-w-[40rem]">
             The live announcement bar, header and footer are on every page. These previews force each Figma breakpoint and state, and
@@ -1048,6 +1108,11 @@ export default function ComponentsPage() {
             <li>Post Card topic and date: Figma uses black-alpha-50, 3.36:1 on ivory. Built with black-alpha-60, 4.58:1.</li>
             <li>Mobile menu search placeholder: Figma uses black-alpha-50, 3.36:1. Built with black-alpha-60, 4.58:1.</li>
             <li>
+              Footer demo notice: a deliberate addition, not in Figma. One line under the copyright, in the same style: &ldquo;Portfolio
+              build by Rob Coven. Not the live Sky Jewelry store; products, prices and reviews are sample content.&rdquo;
+            </li>
+            <li>Review Card date and Post Card meta (Home): Figma uses black-alpha-50, 3.36:1 on skin. Built with black-alpha-60, 4.58:1.</li>
+            <li>
               Search panel focus: Figma shows no focus state. A 1px leather underline appears under the field while it has focus.
             </li>
           </ul>
@@ -1082,6 +1147,29 @@ export default function ComponentsPage() {
             <li>
               Fine Jewelry row height. Figma shows one 40px row (Diamond Rings) among 34px rows on desktop. Built with all rows at 34px.
             </li>
+            <li>
+              Home placeholder copy. Figma shows Latin filler or repeated placeholders in: the collection and guarantee hero bodies, Best
+              Sellers card text (&ldquo;Cursus placerat&hellip;&rdquo; on every card), Customer Stories (&ldquo;John &amp; Maria
+              Smith&rdquo; on all six), Education Center (&ldquo;Featured Resource Title&rdquo;, &ldquo;Topic Name&rdquo;, &ldquo;Dorem
+              ipsum&hellip;&rdquo;), Reviews (&ldquo;Omar Little&rdquo; and the same Latin review three times), the blog row (&ldquo;Post
+              Title&rdquo;, &ldquo;Topic&rdquo;, Apr 30, 2025), About, and all five FAQs. Built with short real copy; the layout is as
+              designed.
+            </li>
+            <li>
+              Footer blurb. Figma shows Latin filler (&ldquo;Volutpat ridiculus amet tortor&hellip;&rdquo;). Built as &ldquo;Engagement
+              rings, wedding bands and fine jewelry from Sky Jewelry in New York.&rdquo;
+            </li>
+            <li>Spelling. Figma shows &ldquo;counter part&rdquo; in the Home hero and mobile Design Your Own body. Built as &ldquo;counterpart&rdquo;.</li>
+            <li>
+              Design Your Own setting photo. Figma stretches it to fill a box of a different shape (about 14% out of proportion). Built
+              undistorted, contained and aligned to the bottom, so the ring is slightly narrower but keeps Figma&rsquo;s gap below the
+              diamond.
+            </li>
+            <li>
+              Raw colours. Figma uses unlinked hex values on some Home buttons (#baa88e border, #432f2b text, no fill), the Education
+              Center divider and the FAQ body, and pure #ffffff for the Reviews heading. Built with the matching tokens: Button secondary
+              (skin fill, which looks the same on the skin page), secondary/gold, primary/leather and base/white.
+            </li>
           </ul>
         </Section>
 
@@ -1100,6 +1188,14 @@ export default function ComponentsPage() {
             <li>Mobile menu category chevrons: secondary/gold, 2.04:1 on ivory. Decorative; the row text names the link.</li>
             <li>Post Card divider: black-alpha-20. Decorative separator between topic and date.</li>
             <li>
+              Home hero text over the photo, measured against the photo behind it (10th percentile): the overline 1.8:1 on desktop
+              and 2.4:1 on mobile, the heading 2.2:1 on desktop and 2.9:1 on mobile. Kept by decision.
+            </li>
+            <li>
+              Feature Card text over photos (Home feature grid and Customer Stories): titles as low as 2.8:1 (Fine Jewelry, mobile) and
+              2.9:1 (a story title, desktop); the &ldquo;Shop Now&rdquo; line 3.6:1 on mobile and 4.4:1 on desktop. Kept by decision.
+            </li>
+            <li>
               Search panel placeholder: secondary/gold, 2.04:1 on ivory. Display-size hint text on a field that has a visible label
               (&ldquo;Search the site&rdquo;).
             </li>
@@ -1117,6 +1213,14 @@ export default function ComponentsPage() {
               one-row bar is an unused option.
             </li>
             <li>Should the mobile announcement messages auto-scroll as a ticker? For now they scroll sideways by swipe or keyboard.</li>
+            <li>
+              Home hero photo needs a larger original from the designer: Figma&rsquo;s source is 1098px wide; the desktop slot is 1440px,
+              so 1440px (2880px for 2x screens) is needed.
+            </li>
+            <li>
+              Sky guarantee photo (Home section 12) needs a larger original from the designer: Figma&rsquo;s source is 603px wide; the
+              desktop slot is 1440px, so 1440px (2880px for 2x screens) is needed.
+            </li>
             <li>
               Menu icons with no proper match in Assets, kept as Figma: Wedding Bands For Him, Carved (Oval) and Alternative Metal (Pear),
               and Start with a Moissanite (Natural Diamond).

@@ -84,7 +84,10 @@ export function Footer({ content = siteFooter, breakpoint, newsletterPreview, la
         </div>
 
         <div className="flex w-full flex-col gap-space-4 border-t border-secondary-gold pt-space-6 ui-desktop:flex-row ui-desktop:items-center ui-desktop:justify-between ui-desktop:pt-space-8">
-          <p className="type-body-xs-regular">{content.copyright}</p>
+          <div className="flex flex-col gap-space-1">
+            <p className="type-body-xs-regular">{content.copyright}</p>
+            <p className="type-body-xs-regular">{content.demoNotice}</p>
+          </div>
           <ul aria-label="Accepted payment methods" className="flex items-center gap-space-4 text-secondary-gold">
             {content.payments.map((payment) => (
               <li key={payment._key} className="flex">

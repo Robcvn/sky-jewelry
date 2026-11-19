@@ -1,13 +1,16 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import { HomeSections } from "@/components/home/HomeSections";
+import { homePage } from "@/content/home";
+
+export const metadata: Metadata = {
+  title: { absolute: homePage.seo.title },
+  description: homePage.seo.description,
+};
 
 export default function Home() {
   return (
-    <main id="main-content" tabIndex={-1} className="site-container flex flex-1 flex-col items-start justify-center gap-space-6 py-space-17">
-      <h1>Sky Jewelry</h1>
-      <p>The website is in development.</p>
-      <Link href="/styleguide/" className="type-ui-sm-link inline-block py-space-1">
-        View the style guide
-      </Link>
+    <main id="main-content" tabIndex={-1} className="flex-1">
+      <HomeSections sections={homePage.sections} />
     </main>
   );
 }

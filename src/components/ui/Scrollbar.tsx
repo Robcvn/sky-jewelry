@@ -24,6 +24,32 @@ export function Scrollbar({ progress, overlay = false, className }: ScrollbarPro
   );
 }
 
+/** Tracks a horizontal scroller: progress (0 to 1), whether it can scroll, and whether it is at either end. */
+export function useScrollProgress<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const [state, setState] = useState({ progress: 0, scrollable: false, atStart: true, atEnd: true });
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const update = () => {
+      const max = node.scrollWidth - node.clientWidth;
+      const left = node.scrollLeft;
+      setState({ progress: max > 0 ? left / max : 0, scrollable: max > 1, atStart: left <= 1, atEnd: left >= max - 1 });
+    };
+    update();
+    node.addEventListener("scroll", update, { passive: true });
+    const observer = new ResizeObserver(update);
+    observer.observe(node);
+    return () => {
+      node.removeEventListener("scroll", update);
+      observer.disconnect();
+    };
+  }, []);
+
+  return { ref, ...state };
+}
+
 type ScrollAreaProps = {
   /** Accessible name for the scrolling region. */
   label: string;
@@ -34,24 +60,7 @@ type ScrollAreaProps = {
 
 /** A horizontal scroller that hides the native scrollbar and shows the Figma one below. */
 export function ScrollArea({ label, overlay = false, className, children }: ScrollAreaProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    const update = () => {
-      const max = node.scrollWidth - node.clientWidth;
-      setProgress(max > 0 ? node.scrollLeft / max : 0);
-    };
-    update();
-    node.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      node.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, []);
+  const { ref, progress } = useScrollProgress<HTMLDivElement>();
 
   return (
     <div className={className}>
