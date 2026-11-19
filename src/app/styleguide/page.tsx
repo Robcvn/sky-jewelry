@@ -146,6 +146,11 @@ export default function StyleGuidePage() {
                 </li>
               ))}
               <li>
+                <Link href="/styleguide/components/" className="type-ui-sm-link inline-block py-space-1">
+                  Components
+                </Link>
+              </li>
+              <li>
                 <Link href="/" className="type-ui-sm-link inline-block py-space-1">
                   Home
                 </Link>
@@ -190,7 +195,7 @@ export default function StyleGuidePage() {
         <Section
           id="colors"
           title="Colors"
-          intro="Every color variable in the Figma file. Swatches marked “variable only” exist as variables but are not shown on the Figma Colors page."
+          intro="Every color variable in the Figma file. Swatches marked “variable only” exist as variables but are not shown on the Figma Colors page. The two input label grays are hard-coded in the Figma Input component."
         >
           <div className="flex flex-col gap-space-10">
             {colorGroups.map((group) => (
@@ -214,7 +219,7 @@ export default function StyleGuidePage() {
                             {alpha ? `, ${alpha}` : ""}
                           </span>
                           {color.onColorsPage ? null : (
-                            <span className="type-ui-2xs-regular mt-space-1 block text-black-alpha-70">Variable only</span>
+                            <span className="type-ui-2xs-regular mt-space-1 block text-black-alpha-70">{"note" in color ? color.note : "Variable only"}</span>
                           )}
                         </figcaption>
                       </figure>

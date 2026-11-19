@@ -2,6 +2,7 @@
 @import "../styles/tokens.css";
 @import "../styles/typography.css";
 @import "../styles/grid.css";
+@import "../styles/components.css";
 
 @layer base {
   html {
@@ -44,7 +45,8 @@
     @apply type-blockquote;
   }
 
-  :focus-visible {
+  :focus-visible,
+  [data-state="focus"] {
     outline: 2px solid var(--color-primary-leather);
     outline-offset: 2px;
   }

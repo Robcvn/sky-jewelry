@@ -1,0 +1,56 @@
+/*
+ * Shared interaction states for src/components/ui.
+ * data-state lets /styleguide/components show a state without real interaction.
+ */
+@custom-variant ui-hover {
+  &[data-state="hover"] {
+    @slot;
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled, [aria-disabled="true"], [data-state]) {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ui-pressed {
+  &[data-state="pressed"] {
+    @slot;
+  }
+
+  &:active:not(:disabled, [aria-disabled="true"], [data-state]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-active {
+  &[data-state="active"],
+  &[data-open="true"] {
+    @slot;
+  }
+
+  &:focus-within:not([data-state]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus {
+  &:focus-visible,
+  &[data-state="focus"] {
+    @slot;
+  }
+}
+
+/* Motion from the Figma prototype links: Smart Animate with Ease Out. */
+@utility ui-transition {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 300ms;
+  transition-timing-function: ease-out;
+}
+
+@utility ui-transition-fast {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: ease-out;
+}

@@ -379,7 +379,14 @@ export const colorGroups = [
         onColorsPage: true
       }
     ]
-  }
+  },
+  {
+    label: "Input labels (hard-coded in the Figma Input component)",
+    colors: [
+      { name: "input/label", token: "--color-input-label", utility: "input-label", hex: "#6b7280", onColorsPage: false, note: "Not a Figma variable" },
+      { name: "input/label-disabled", token: "--color-input-label-disabled", utility: "input-label-disabled", hex: "#9ca3b0", onColorsPage: false, note: "Not a Figma variable" },
+    ],
+  },
 ];
 
 export const typeStyles: TypeStyle[] = [
