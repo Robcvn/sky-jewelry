@@ -52,6 +52,8 @@ For the GitHub Pages build, add the same two values to the build environment (fo
 
 **Fallback.** If the variables are missing, Shopify can't be reached, or it returns no products, the build uses the mock products in `src/content/products.ts` and prints a `[catalog] WARNING` line. The build never fails because of the store.
 
+**Fresh data on every build.** Next saves build-time fetch responses in `.next/cache/fetch-cache` and would reuse them on later builds, so a change in Shopify would never show. The `prebuild` script clears that folder first, so always build with `npm run build` (not `npx next build`).
+
 **Re-importing the seed products.**
 
 1. Run `npm run shopify:seed` to regenerate `shopify/products-seed.csv` from `src/content/products.ts`.

@@ -11,7 +11,9 @@ type GraphQLResponse<T> = { data?: T; errors?: Array<{ message: string }> };
 
 /**
  * Sends one Storefront API GraphQL request. Works at build time and in the browser.
- * No fetch cache option is set, so every static build reads fresh data.
+ * At build time Next saves each response in .next/cache/fetch-cache and would reuse it on later builds.
+ * The prebuild script clears that folder, so every build reads the store fresh. (cache: "no-store"
+ * can't be used instead: it makes the page dynamic, which a static export doesn't allow.)
  */
 export async function shopifyFetch<T>(query: string, variables?: Record<string, unknown>, timeoutMs = 10_000): Promise<T> {
   const config = shopifyConfig();
