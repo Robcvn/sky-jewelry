@@ -33,6 +33,9 @@ function localImage(url: string, alt: string): ImageRef | null {
   return key in productImageManifest ? { desktop: key as keyof typeof productImageManifest, alt } : null;
 }
 
+/** 360° frames: images whose file name ends in "-spin-<number>", in number order. */
+const SPIN = /-spin-(\d+)$/;
+
 const tagValue = (tags: string[], prefix: string) => tags.find((tag) => tag.startsWith(`${prefix}:`))?.slice(prefix.length + 1) ?? null;
 
 function metalOf(options: Array<{ name: string; value: string }>, tags: string[]): MetalId {
@@ -64,6 +67,7 @@ export function mapShopifyProduct(product: ShopifyProduct): Product | null {
       carat: caratOf(variant.selectedOptions),
       price: Number(variant.price.amount),
       available: variant.availableForSale,
+      sku: variant.sku || null,
     }))
     .filter((variant) => Number.isFinite(variant.price));
   if (!variants.length) return null;
@@ -76,7 +80,7 @@ export function mapShopifyProduct(product: ShopifyProduct): Product | null {
     const main = imageStem(mainUrl);
     const views = product.images.nodes.filter((image) => {
       const stem = imageStem(image.url);
-      return stem === main || stem.startsWith(`${main}-`);
+      return !SPIN.test(stem) && (stem === main || stem.startsWith(`${main}-`));
     });
     const refs = (views.length ? views : [{ url: mainUrl, altText: null }])
       .map((image) => localImage(image.url, image.altText || product.title))
@@ -115,5 +119,16 @@ export function mapShopifyProduct(product: ShopifyProduct): Product | null {
     length: tagValue(product.tags, "length"),
     shipsInDays: Number.isFinite(shipsIn) && shipsIn > 0 ? shipsIn : null,
     rank,
+    spin: spinFrames(product),
   };
+}
+
+function spinFrames(product: ShopifyProduct): ImageRef[] | null {
+  const frames = product.images.nodes
+    .map((image) => ({ image, frame: Number(imageStem(image.url).match(SPIN)?.[1]) }))
+    .filter(({ frame }) => Number.isFinite(frame))
+    .sort((a, b) => a.frame - b.frame)
+    .map(({ image }) => localImage(image.url, image.altText || product.title))
+    .filter((image): image is ImageRef => image !== null);
+  return frames.length > 1 ? frames : null;
 }

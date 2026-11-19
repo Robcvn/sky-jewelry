@@ -10,6 +10,13 @@ import { FeatureCard } from "@/components/ui/FeatureCard";
 import { PostCard } from "@/components/ui/PostCard";
 import { ProductCardSummary } from "@/components/ui/ProductCardSummary";
 import { getMockProducts } from "@/lib/mockCatalog";
+import { ButtonCard } from "@/components/ui/ButtonCard";
+import { IconBlock } from "@/components/ui/IconBlock";
+import { ImageBlock } from "@/components/ui/ImageBlock";
+import { CompositionChart, DimensionsDiagram, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
+import { GradeScale, QualityCard } from "@/components/ui/QualityCard";
+import { Viewer360 } from "@/components/ui/Viewer360";
+import { gradeScales, metalComposition, productDetailContent } from "@/content/product-detail";
 import { ResourceCardLarge, ResourceCardSmall } from "@/components/ui/ResourceCard";
 import { ReviewCard } from "@/components/ui/ReviewCard";
 import { SearchPanel } from "@/components/site/SearchPanel";
@@ -27,6 +34,7 @@ import {
   OptionTileDemo,
   ProductCardDemo,
   RangeFieldDemo,
+  GalleryTabsDemo,
 } from "@/components/styleguide/ComponentDemos";
 import { Accordion, AccordionItem } from "@/components/ui/Accordion";
 import { ModalPanel } from "@/components/ui/Modal";
@@ -88,6 +96,7 @@ const SECTIONS = [
   ["radio", "Radio"],
   ["dropdown", "Dropdown"],
   ["filter-controls", "Range slider and filters"],
+  ["product-detail", "Product detail"],
   ["accordion", "Accordion"],
   ["modal", "Modal"],
   ["tabs", "Tabs"],
@@ -644,6 +653,84 @@ export default function ComponentsPage() {
           </Group>
         </Section>
 
+        <Section id="product-detail" title="Product detail">
+          <p className="type-body-sm-regular max-w-[48rem]">
+            Components from the Product Detail frames (desktop 3565:98309, mobile 3587:127126) and the Cards, Icon Block and Image Block
+            pages. Values shown here are the page&rsquo;s sample data.
+          </p>
+          <Group title="Icon Block, Type=Default (MD desktop, SM mobile)">
+            <div className="flex w-[31.625rem] max-w-full gap-space-2">
+              {productDetailContent.iconRow.map((item) => (
+                <IconBlock key={item._key} icon={item.icon} label={item.label} lines={item.lines} />
+              ))}
+            </div>
+          </Group>
+          <Group title="Product Info Card">
+            <div className="grid w-[31.625rem] max-w-full grid-cols-2 items-start gap-space-3">
+              <Item label="Chart (metal composition, from data)">
+                <ProductInfoCard label="Metal" value="14K Yellow Gold" note="Percentages by weight.">
+                  <CompositionChart parts={metalComposition["14k-yellow-gold"]} />
+                </ProductInfoCard>
+              </Item>
+              <Item label="Default (stat)"><ProductInfoCard label="Carat" value="0.80" note="The weight of the center stone." /></Item>
+              <Item label="Scale, Color">
+                <ProductInfoCard label="Color" value="I" note="Nearly colorless"><InfoScale kind="color" position={0.58} label="Color I" /></ProductInfoCard>
+              </Item>
+              <Item label="Scale, Clarity (noise recreated in SVG)">
+                <ProductInfoCard label="Clarity" value="VVS2" note="Inclusions are extremely difficult to see"><InfoScale kind="clarity" position={0.34} label="Clarity VVS2" /></ProductInfoCard>
+              </Item>
+              <Item label="Dimensions (diagram on mobile only)">
+                <ProductInfoCard label="Dimensions (mm)" value="6.03 × 6.03" note={<span className="flex items-end justify-between"><DimensionsDiagram /><span>Ratio: 1.00</span></span>} />
+              </Item>
+              <Item label="Certification"><ProductInfoCard label="Certification" value="GIA" note={<span className="underline">View Certificate</span>} /></Item>
+            </div>
+          </Group>
+          <Group title="Quality card and Grade Scale (read-only)">
+            <div className="flex flex-wrap items-start gap-space-6">
+              <Item label="Your Diamond’s Qualities card">
+                <div className="w-[25rem] max-w-full">
+                  <QualityCard title="Clarity" grade="VVS2" options={gradeScales.clarity.options} illustration={gradeScales.clarity.illustration} description={gradeScales.clarity.grades.VVS2.description} />
+                </div>
+              </Item>
+              <Item label="Grade Scale on its own">
+                <div className="w-[22rem] max-w-full"><GradeScale label="Cut grade scale" options={gradeScales.cut.options} selected="Excellent" /></div>
+              </Item>
+            </div>
+          </Group>
+          <Group title="Image Block and Button Card">
+            <div className="flex flex-wrap items-start gap-space-6">
+              <Item label="Image Block">
+                <div className="w-[18rem]">
+                  <ImageBlock image={productDetailContent.box.items[0].image} caption={productDetailContent.box.items[0].caption} sizes={{ desktop: "288px", mobile: "288px" }} imageClassName="aspect-square" />
+                </div>
+              </Item>
+              <Item label="Button Card (overlay 30% desktop, 50% mobile, as Figma)">
+                <div className="w-[21.875rem] max-w-full">
+                  <ButtonCard {...productDetailContent.buttonCards[1]} sizes={{ desktop: "350px", mobile: "350px" }} className="aspect-[350/438]" />
+                </div>
+              </Item>
+            </div>
+          </Group>
+          <Group title="Asset Tabs and 360° viewer">
+            <div className="flex flex-wrap items-start gap-space-6">
+              <Item label="Tabs - Line with the full-width rule (mobile gallery)"><GalleryTabsDemo /></Item>
+              <Item label="360° viewer: drag, or focus and use the arrow keys. DEMO frames only (three vine ring photos); no product has a 360° sequence yet">
+                <div className="aspect-square w-[21.875rem] max-w-full overflow-hidden rounded-4 bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]">
+                  <Viewer360
+                    label="Demo 360° viewer"
+                    sizes={{ desktop: "350px", mobile: "350px" }}
+                    frames={[
+                      { desktop: "product-ring-vine-white-gold", alt: "" },
+                      { desktop: "product-ring-vine-yellow-gold", alt: "" },
+                      { desktop: "product-ring-vine-rose-gold", alt: "" },
+                    ]}
+                  />
+                </div>
+              </Item>
+            </div>
+          </Group>
+        </Section>
+
         <Section id="accordion" title="Accordion">
           <Group title="Accordion Item">
             <div className="flex flex-col gap-space-8">
@@ -1180,6 +1267,19 @@ export default function ComponentsPage() {
               &ldquo;Added to bag&rdquo; confirmation: a temporary stand-in for the bag panel, not in Figma. A short message at the bottom of
               the screen, announced to screen readers.
             </li>
+            <li>
+              Asset gap, 360° view: no product has a 360° image sequence, so the 360° tile (desktop) and the &ldquo;360° View / Images&rdquo;
+              tabs (mobile) are hidden. The viewer is built and appears as soon as a product has images named &ldquo;&hellip;-spin-01&rdquo;,
+              &ldquo;-spin-02&rdquo;&hellip;
+            </li>
+            <li>
+              Product gallery stone photo: Figma&rsquo;s loose round diamond photo stands in for &ldquo;the stone&rdquo; on every piece with a
+              round diamond (desktop tile 2, mobile thumbnail). It is a sample photo, not the actual stone.
+            </li>
+            <li>Mobile Metal picker: Figma pairs it with a Stone picker; the catalogue has no stone option, so Metal shows alone at half width.</li>
+            <li>Flagged: the mobile product page hides the &ldquo;Pendant Details&rdquo; accordion, as Figma; desktop shows it. Kept hidden.</li>
+            <li>Mobile GIA logo row on the Certification card: left out (a third-party logo, and it reads &ldquo;Natural Diamond&rdquo; on lab-grown pieces).</li>
+            <li>Product page &ldquo;200 Reviews&rdquo; on desktop: Figma uses white-alpha-50, below AA on leather. Reuses the Home reviews section (skin, as Figma mobile).</li>
           </ul>
         </Section>
 
@@ -1257,6 +1357,26 @@ export default function ComponentsPage() {
               &ldquo;Pay in 12 interest-free installments of $145&rdquo; on a $1,200 product: placeholder. The amount is the price divided by
               12, rounded up to the cent.
             </li>
+            <li>
+              Product page filler text: the Pendant Info note, the Carat note, the Pendant Details, Shipping and Return Policy bodies,
+              the What&rsquo;s in the Box captions, the Button Card bodies and the reviews are Latin or &ldquo;Omar Little&rdquo; placeholders. Replaced
+              with short neutral copy (the reviews reuse the Home sample reviews); Shipping and Returns only restate the icon row.
+            </li>
+            <li>
+              Product page values disagree with each other: the title says 0.80ct, the selected carat tile 1.00 and the Stone Info card
+              0.50; colour J vs I; clarity SI1, VVS2 and VS1; &ldquo;14k White Gold&rdquo; on a yellow gold piece; $1,040 vs $1,200. Built
+              from one source: the selected variant, plus one set of sample grades.
+            </li>
+            <li>Metal composition chart: 37% gold is not 14K, and the donut colours don&rsquo;t match the legend. Built from sample alloy data, with the legend colours.</li>
+            <li>&ldquo;Pay in 12 interest free payments of $147.50&rdquo; matches no price on the page. The amount is the price divided by 12.</li>
+            <li>Carat label &ldquo;Carat Size&rdquo; (desktop) vs &ldquo;Carat Weight&rdquo; (mobile), and &ldquo;Material&rdquo; vs &ldquo;Metal&rdquo;: built as Carat Weight and Metal, the option names, on both.</li>
+            <li>Carat tiles: desktop 0.50 to 5.00 without the title&rsquo;s 0.80; mobile repeats 3.0 and mixes 1.0 / 0.80. Built from the product&rsquo;s own carat weights, two decimals.</li>
+            <li>Mobile gallery photo flipped left to right; desktop shows it the right way round. Built unflipped.</li>
+            <li>Desktop gallery: pagination dots on one tile of a static grid. Left out.</li>
+            <li>Clarity scale: 7 grades on desktop (SI2 hidden), 8 on mobile. Built with 8 on both.</li>
+            <li>Quality and info-scale markers placed by fixed pixel offsets, so they land differently on each breakpoint. Placed from the grade.</li>
+            <li>Button cards: card 2 is &ldquo;The Sky Guarantee&rdquo; on desktop and &ldquo;Lab-Grown Diamonds&rdquo; on mobile, and card 1&rsquo;s button reads &ldquo;Send us a text&rdquo; / &ldquo;Shop Now&rdquo;. Built with the desktop content on both; card 2&rsquo;s 40% overlay (the hover strength) built at 30%.</li>
+            <li>&ldquo;View Certificate&rdquo; is an underlined link on desktop and plain text on mobile. Built underlined on both (and inert, see Open questions).</li>
           </ul>
         </Section>
 
@@ -1289,6 +1409,10 @@ export default function ComponentsPage() {
             <li>
               Step Indicator, Unavailable=True: the item name in leather at 50% opacity, 2.82:1 on skin and 2.73:1 on error-light. This is
               text and does not meet AA. It is kept by decision because the unavailable item is meant to read as de-emphasised.
+            </li>
+            <li>
+              Product page Button Cards: skin text over the photos with Figma&rsquo;s gradient (30% desktop, 50% mobile). Measured 10th
+              percentile / median: desktop title 4.1 / 7.4:1, body 4.7 / 9.0:1; mobile title 4.2 / 6.6:1, body 4.1 / 5.2:1.
             </li>
           </ul>
         </Section>
@@ -1329,6 +1453,14 @@ export default function ComponentsPage() {
               Product photos of the other metals for necklaces, earrings and bracelets (white gold, rose gold and platinum). Figma has these
               designs in yellow gold only, so their cards show one metal swatch.
             </li>
+            <li>360° image sequences for the products (the viewer is ready; no sequences exist).</li>
+            <li>
+              Product page sample data with no source in the catalogue: metal composition, diamond grades and grading lab, stone
+              dimensions. All kept in src/content/product-detail.ts until real data exists (Shopify metafields could hold them).
+            </li>
+            <li>Ring size: Figma has a hidden &ldquo;Select Ring Size&rdquo; dropdown, and the catalogue has no ring size option. Not built.</li>
+            <li>Center Stone Shape picker (desktop) and the mobile Stone picker: each product has one fixed shape, so there is nothing to pick. Not shown.</li>
+            <li>Product page motion: the Animations page only has the ring builder&rsquo;s add-to-bag loaders. Gallery swipes are smooth (instant under reduced motion); the 360° hint fades after the first turn.</li>
           </ul>
         </Section>
 
@@ -1337,6 +1469,19 @@ export default function ComponentsPage() {
             <li>Shop All: a checkout bar with a price. Planned for the bag and checkout tasks.</li>
             <li>Quanity Select: variants are unnamed. Planned for the bag and checkout tasks.</li>
             <li>Modal - CCC Filters, Modal / Care Plan and Modal - Credit: content-specific modals, held for their page tasks.</li>
+            <li>
+              &ldquo;Drop a hint&rdquo;, the installments &ldquo;Learn more&rdquo; and &ldquo;View Certificate&rdquo; on the product page: shown as
+              designed but inert (plain text, not links or buttons) until their modals and certificate files exist.
+            </li>
+            <li>
+              Engagement ring product pages (/engagement-rings/&hellip;, linked from the Home best sellers): they belong to the ring builder
+              stage. The Home links stay as they are.
+            </li>
+            <li>
+              Ring builder pages (mobile 3587:125910 &ldquo;Builder 2 - Stone Info&rdquo; and 3587:125411 &ldquo;Builder 3 - Complete&rdquo;):
+              step bar, loose-diamond viewer, Diamond Specs, Carat Size Guide, setting and diamond summary cards, Total Price, Your Setting
+              Info, Ring Details, and the add-to-bag loaders. Held for the ring builder.
+            </li>
             <li>Quick Checkout (on the Accordion page): product-page content with unnamed variants (Open3, Open4), held for the product page.</li>
           </ul>
         </Section>

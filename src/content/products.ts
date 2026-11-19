@@ -17,6 +17,7 @@ export type ProductVariant = {
   carat: number | null;
   price: number;
   available: boolean;
+  sku: string | null;
 };
 
 export type Product = {
@@ -49,6 +50,11 @@ export type Product = {
   shipsInDays: number | null;
   /** "Best Match" order within the category. */
   rank: number;
+  /**
+   * 360° image sequence (Shopify images named "<photo>-spin-01", "-spin-02", ...), or null.
+   * No product has one yet: the 360° view is hidden until a sequence is added.
+   */
+  spin: ImageRef[] | null;
 };
 
 export const FINE_JEWELRY_CATEGORIES = ["rings", "necklaces", "earrings", "bracelets"] as const;

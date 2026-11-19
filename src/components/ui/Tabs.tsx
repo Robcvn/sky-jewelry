@@ -109,6 +109,8 @@ type TabsProps = {
   defaultValue?: string;
   value?: string;
   onChange?: (id: string) => void;
+  /** Line tabs only: centre the tabs over a full-width black-alpha-20 rule (Figma PDP Asset Tabs, mobile). */
+  divider?: boolean;
   className?: string;
 };
 
@@ -121,6 +123,7 @@ export function Tabs({
   defaultValue,
   value,
   onChange,
+  divider = false,
   className,
 }: TabsProps) {
   const id = useId();
@@ -166,9 +169,7 @@ export function Tabs({
                 "w-fit rounded-full border p-space-1",
                 overlay ? "border-white-alpha-20 bg-white-alpha-10 backdrop-blur-md" : "border-secondary-gold",
               )
-            : size === "md"
-              ? "gap-space-10"
-              : "gap-space-6",
+            : cx(size === "md" ? "gap-space-10" : "gap-space-6", divider && "w-full justify-center border-b border-black-alpha-20"),
         )}
       >
         {items.map((item, index) => {

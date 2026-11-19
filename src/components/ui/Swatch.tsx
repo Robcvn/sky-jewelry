@@ -7,17 +7,20 @@ const GLOW =
 type SwatchProps = {
   /** Metal or stone colour. This is product data, not a design token. */
   color: string;
+  /** "md" 16px (Product Card Swatch), "sm" 12px (the Product Info Card legend). */
+  size?: "md" | "sm";
   className?: string;
 };
 
 /** Figma "Product Card Swatch": a 16px colour dot with a shine and a glow. Decorative; the label sits next to it. */
-export function Swatch({ color, className }: SwatchProps) {
+export function Swatch({ color, size = "md", className }: SwatchProps) {
   return (
     <span
       aria-hidden="true"
       style={{ backgroundColor: color }}
       className={cx(
-        "relative block size-space-4 shrink-0 overflow-hidden rounded-full border-[0.75px] border-black-alpha-5 shadow-[inset_0_0_0_1px_var(--color-black-alpha-2)]",
+        size === "md" ? "size-space-4" : "size-space-3",
+        "relative block shrink-0 overflow-hidden rounded-full border-[0.75px] border-black-alpha-5 shadow-[inset_0_0_0_1px_var(--color-black-alpha-2)]",
         className,
       )}
     >

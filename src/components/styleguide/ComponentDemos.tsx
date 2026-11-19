@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Modal } from "@/components/ui/Modal";
 import { Pagination, PaginationDots } from "@/components/ui/Pagination";
+import { Tabs } from "@/components/ui/Tabs";
 import { Tag } from "@/components/ui/Tag";
 import { TextButton } from "@/components/ui/TextButton";
 import { DiamondTypeTiles, MetalTiles } from "@/components/plp/FilterControls";
@@ -132,6 +133,26 @@ export function ProductCardDemo({ product }: { product: Product }) {
         labels={productListContent.card}
         onAddToBag={() => {}}
         onQuickView={() => {}}
+      />
+    </div>
+  );
+}
+
+export function GalleryTabsDemo() {
+  const [tab, setTab] = useState("images");
+  return (
+    <div className="w-[24.375rem] max-w-full">
+      <Tabs
+        label="Views of the product"
+        variant="line"
+        size="sm"
+        divider
+        value={tab}
+        onChange={setTab}
+        items={[
+          { id: "spin", label: "360° View" },
+          { id: "images", label: "Images" },
+        ]}
       />
     </div>
   );
