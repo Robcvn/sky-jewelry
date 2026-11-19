@@ -54,3 +54,19 @@
   transition-duration: 200ms;
   transition-timing-function: ease-out;
 }
+
+/*
+ * Desktop layout from 1024px. data-breakpoint="desktop" or "mobile" on an ancestor
+ * forces one layout, so the style guide can show both Figma breakpoints side by side.
+ */
+@custom-variant ui-desktop {
+  &:where([data-breakpoint="desktop"], [data-breakpoint="desktop"] *) {
+    @slot;
+  }
+
+  @media (width >= 64rem) {
+    &:not([data-breakpoint="mobile"], [data-breakpoint="mobile"] *) {
+      @slot;
+    }
+  }
+}

@@ -36,7 +36,7 @@ yarn-error.log*
 # vercel
 .vercel
 
-# BD Megalona font files: kept out of git pending license confirmation
+# BD Megalona font files: supplied at deploy time from a private source
 /src/fonts/bd-megalona/
 
 # typescript

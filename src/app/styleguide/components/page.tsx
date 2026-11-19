@@ -2,7 +2,19 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GridOverlay } from "@/components/styleguide/GridOverlay";
-import { RemovableTagDemo } from "@/components/styleguide/ComponentDemos";
+import {
+  ModalDemo,
+  PaginationDemo,
+  PaginationDotsDemo,
+  RemovableTagDemo,
+} from "@/components/styleguide/ComponentDemos";
+import { Accordion, AccordionItem } from "@/components/ui/Accordion";
+import { ModalPanel } from "@/components/ui/Modal";
+import { PaginationNumber } from "@/components/ui/Pagination";
+import { ScrollArea, Scrollbar } from "@/components/ui/Scrollbar";
+import { StatusMarker } from "@/components/ui/StatusMarker";
+import { StepActionLink, StepIndicator, StepList } from "@/components/ui/StepIndicator";
+import { TabItemPreview, Tabs } from "@/components/ui/Tabs";
 import { Badge } from "@/components/ui/Badge";
 import { Button, HeroButton } from "@/components/ui/Button";
 import { Dropdown } from "@/components/ui/Dropdown";
@@ -55,8 +67,16 @@ const SECTIONS = [
   ["input", "Input"],
   ["radio", "Radio"],
   ["dropdown", "Dropdown"],
+  ["accordion", "Accordion"],
+  ["modal", "Modal"],
+  ["tabs", "Tabs"],
+  ["pagination", "Pagination"],
+  ["step-indicator", "Step Indicator"],
+  ["status", "Status"],
+  ["scrollbar", "Scrollbar"],
   ["icons", "Icons"],
   ["deviations", "Deviations from Figma"],
+  ["kept-as-figma", "Kept as Figma"],
   ["held", "Held for review"],
 ] as const;
 
@@ -81,16 +101,27 @@ function Section({ id, title, children }: { id: string; title: string; children:
 function Group({
   title,
   overlay = false,
+  surface = "navy",
   children,
 }: {
   title: string;
   overlay?: boolean;
+  /** Figma's frame color behind the overlay set: base/black (navy) for most, primary/leather for a few. */
+  surface?: "navy" | "leather";
   children: ReactNode;
 }) {
   return (
     <div>
       <h3 className="type-overline-sm-medium mb-space-4">{title}</h3>
-      <div className={overlay ? "rounded-4 bg-primary-leather p-space-5 text-base-white" : undefined}>{children}</div>
+      <div
+        className={
+          overlay
+            ? `rounded-4 p-space-5 text-base-white ${surface === "leather" ? "bg-primary-leather" : "bg-base-black"}`
+            : undefined
+        }
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -553,6 +584,299 @@ export default function ComponentsPage() {
           </Group>
         </Section>
 
+        <Section id="accordion" title="Accordion">
+          <Group title="Accordion Item">
+            <div className="flex flex-col gap-space-8">
+              {(["desktop", "mobile"] as const).map((breakpoint) => (
+                <Row wide key={breakpoint}>
+                  {[
+                    { name: "Active=False, State=Default", open: false },
+                    ...(breakpoint === "desktop" ? [{ name: "Active=False, State=Hover", open: false, preview: "hover" as const }] : []),
+                    { name: "Active=True, State=Default", open: true },
+                    ...(breakpoint === "desktop" ? [{ name: "Active=True, State=Hover", open: true, preview: "hover" as const }] : []),
+                  ].map((state) => (
+                    <Item key={state.name} label={`${state.name}, Breakpoint=${breakpoint === "desktop" ? "Desktop" : "Mobile"}`}>
+                      <AccordionItem
+                        question={
+                          <>
+                            Vitae at egestas integer
+                            <span className="sr-only">
+                              {" "}
+                              ({state.name}, {breakpoint})
+                            </span>
+                          </>
+                        }
+                        breakpoint={breakpoint}
+                        defaultOpen={state.open}
+                        previewState={state.preview}
+                      >
+                        Dignissim vivamus pharetra tellus sit in pharetra. Ac sed mauris quam nunc.
+                      </AccordionItem>
+                    </Item>
+                  ))}
+                </Row>
+              ))}
+              <Row wide>
+                <Item label="Show Icon=True">
+                  <AccordionItem question="Shipping and returns" icon="truck">
+                    Free insured shipping on every order.
+                  </AccordionItem>
+                </Item>
+              </Row>
+            </div>
+          </Group>
+          <Group title="Working demo: click or use Enter and Space">
+            <Accordion className="max-w-[49rem]">
+              <AccordionItem question="How long does shipping take?" icon="truck">
+                Most rings ship in 2 to 3 weeks. You will get tracking details by email.
+              </AccordionItem>
+              <AccordionItem question="Can I resize my ring later?">
+                Resizing is free for 60 days after purchase.
+              </AccordionItem>
+              <AccordionItem question="Do you offer care plans?">
+                Care plans cover cleaning, polishing and stone tightening.
+              </AccordionItem>
+            </Accordion>
+          </Group>
+        </Section>
+
+        <Section id="modal" title="Modal">
+          <Group title="Modal - Default (static previews)">
+            <div className="flex flex-col gap-space-8">
+              {(["desktop", "mobile"] as const).flatMap((breakpoint) =>
+                (["row", "stack"] as const).map((layout) => (
+                  <Item
+                    key={`${breakpoint}-${layout}`}
+                    label={`Breakpoint=${breakpoint === "desktop" ? "Desktop" : "Mobile"}, ${layout === "row" ? "Button Group=True" : "Button Stack=True, Show Icon=True"}, Show Close=True`}
+                  >
+                    <div className={breakpoint === "desktop" ? "max-w-[30rem]" : "max-w-[24.375rem]"}>
+                      <ModalPanel
+                        breakpoint={breakpoint}
+                        heading="Are you sure you want to remove this item?"
+                        body="This removes the ring from your bag. You can add it again at any time."
+                        icon={layout === "stack" ? <Icon name="alert" size={breakpoint === "desktop" ? 64 : 48} className="text-state-error" /> : undefined}
+                        actionsLayout={layout}
+                        secondaryAction={{ label: "Cancel" }}
+                        primaryAction={{ label: "Remove" }}
+                      />
+                    </div>
+                  </Item>
+                )),
+              )}
+            </div>
+          </Group>
+          <Group title="Working demo: Tab stays inside, Escape or the backdrop closes, focus returns here">
+            <Row>
+              <ModalDemo />
+              <ModalDemo layout="stack" />
+            </Row>
+          </Group>
+        </Section>
+
+        <Section id="tabs" title="Tabs">
+          {[false, true].map((overlay) => (
+            <Group key={String(overlay)} title={overlay ? "Tab Item - Overlay" : "Tab Item"} overlay={overlay} surface="leather">
+              <div className="flex flex-col gap-space-6">
+                {[
+                  ...(["md", "sm", "xs"] as const).map((size) => ({ size, type: "pill" as const })),
+                  { size: "sm" as const, type: "line" as const },
+                ].map(({ size, type }) => (
+                  <Row key={`${type}-${size}`}>
+                    {[
+                      { name: "Default" },
+                      { name: "Hover", state: "hover" as const },
+                      { name: "Active", state: "active" as const },
+                      { name: "Disabled", state: "disabled" as const },
+                    ].map((state) => (
+                      <Item
+                        key={state.name}
+                        overlay={overlay}
+                        label={`Size=${size.toUpperCase()}, State=${state.name}, Type=${type === "pill" ? "Pill" : "Line"}`}
+                      >
+                        <TabItemPreview label="Tab Item" size={size} variant={type} overlay={overlay} state={state.state} />
+                      </Item>
+                    ))}
+                  </Row>
+                ))}
+              </div>
+            </Group>
+          ))}
+          <Group title="Tabs and Tabs - Line: arrow keys move between tabs">
+            <div className="flex flex-col gap-space-6">
+              {(["md", "sm", "xs"] as const).map((size) => (
+                <Item key={size} label={`Tabs, Size=${size.toUpperCase()}`}>
+                  <Tabs
+                    label={`Ring styles, ${size}`}
+                    size={size}
+                    items={["Solitaire", "Halo", "Pave", "Three Stone", "Vintage"].map((label) => ({ id: label, label }))}
+                  />
+                </Item>
+              ))}
+              {(["md", "sm"] as const).map((size) => (
+                <Item key={`line-${size}`} label={`Tabs - Line, Size=${size.toUpperCase()}`}>
+                  <Tabs
+                    label={`Details, ${size}`}
+                    variant="line"
+                    size={size}
+                    items={[
+                      { id: "details", label: "Details", panel: <p>Setting details panel.</p> },
+                      { id: "diamond", label: "Diamond", panel: <p>Diamond details panel.</p> },
+                      { id: "care", label: "Care", panel: <p>Care panel.</p> },
+                      { id: "reviews", label: "Reviews", disabled: true },
+                    ]}
+                  />
+                </Item>
+              ))}
+            </div>
+          </Group>
+          <Group title="Tabs - Overlay" overlay surface="leather">
+            <div className="flex flex-col gap-space-6">
+              {(["md", "sm", "xs"] as const).map((size) => (
+                <Item overlay key={size} label={`Tabs - Overlay, Size=${size.toUpperCase()}`}>
+                  <Tabs
+                    label={`Collections, ${size}`}
+                    size={size}
+                    overlay
+                    items={["Rings", "Bands", "Earrings", "Necklaces"].map((label) => ({ id: label, label }))}
+                  />
+                </Item>
+              ))}
+            </div>
+          </Group>
+        </Section>
+
+        <Section id="pagination" title="Pagination">
+          <Group title="Pagination Number">
+            <Row>
+              {(["md", "sm"] as const).flatMap((size) =>
+                [
+                  { name: "Default" },
+                  { name: "Hover", preview: "hover" as const },
+                  { name: "Active", active: true },
+                ].map((state) => (
+                  <Item key={`${size}-${state.name}`} label={`Size=${size.toUpperCase()}, State=${state.name}`}>
+                    <nav aria-label={`Pagination preview ${size} ${state.name}`}>
+                      <PaginationNumber page={1} size={size} active={state.active} previewState={state.preview} />
+                    </nav>
+                  </Item>
+                )),
+              )}
+            </Row>
+          </Group>
+          <Group title="Working pagination (gap between numbers added)">
+            <Row>
+              <Item label="Size=MD"><PaginationDemo /></Item>
+              <Item label="Size=SM"><PaginationDemo size="sm" /></Item>
+            </Row>
+          </Group>
+          <Group title="Pagination Dots">
+            <p className="type-body-sm-regular mb-space-4 max-w-[40rem]">
+              Rule: any carousel using dots must also offer previous and next buttons or swipe. The dots alone are too small and close
+              together to meet the WCAG 2.2 target size.
+            </p>
+            <Item label="Type=Dots, Color=Default"><PaginationDotsDemo /></Item>
+          </Group>
+          <Group title="Pagination Dots - Overlay" overlay>
+            <Item overlay label="Type=Dots, Color=Default"><PaginationDotsDemo overlay /></Item>
+          </Group>
+        </Section>
+
+        <Section id="step-indicator" title="Step Indicator">
+          {(["desktop", "mobile"] as const).map((breakpoint) => (
+            <Group key={breakpoint} title={`Step Indicator, Breakpoint=${breakpoint === "desktop" ? "Desktop" : "Mobile"}`}>
+              <div className={breakpoint === "desktop" ? "grid grid-cols-1 gap-space-5 desktop:grid-cols-2" : "flex flex-wrap gap-space-5"}>
+                {[
+                  { state: "Inactive", complete: false, unavailable: false },
+                  { state: "Active", complete: false, unavailable: false },
+                  { state: "Inactive", complete: true, unavailable: false },
+                  { state: "Active", complete: true, unavailable: false },
+                  { state: "Inactive", complete: true, unavailable: true },
+                  { state: "Active", complete: true, unavailable: true },
+                ].map((variant) => (
+                  <Item
+                    key={`${variant.state}-${variant.complete}-${variant.unavailable}`}
+                    label={`State=${variant.state}, Complete=${variant.complete ? "True" : "False"}, Unavailable=${variant.unavailable ? "True" : "False"}`}
+                  >
+                    <div className={breakpoint === "desktop" ? "max-w-[30rem]" : "w-[14.25rem]"}>
+                      <StepIndicator
+                        breakpoint={breakpoint}
+                        step={1}
+                        verb="Select"
+                        noun="Setting"
+                        active={variant.state === "Active"}
+                        complete={variant.complete}
+                        unavailable={variant.unavailable}
+                        selectedName="Freesia 2mm Solitaire"
+                        price="$720"
+                        image={<span className="block size-full bg-secondary-peach" />}
+                        actions={
+                          variant.unavailable
+                            ? [<StepActionLink key="new" href="#step-indicator">Select New Stone</StepActionLink>]
+                            : [
+                                <StepActionLink key="edit" href="#step-indicator">Edit</StepActionLink>,
+                                <StepActionLink key="remove" href="#step-indicator">Remove</StepActionLink>,
+                              ]
+                        }
+                      />
+                    </div>
+                  </Item>
+                ))}
+              </div>
+            </Group>
+          ))}
+          <Group title="Step list (responsive)">
+            <StepList label="Ring builder steps" className="flex-col gap-space-2 desktop:flex-row desktop:gap-0">
+              <StepIndicator step={1} verb="Select" noun="Setting" complete selectedName="Freesia 2mm Solitaire" price="$720" actions={[<StepActionLink key="e" href="#step-indicator">Edit</StepActionLink>]} />
+              <StepIndicator step={2} verb="Select" noun="Diamond" active />
+              <StepIndicator step={3} verb="Review" noun="Ring" />
+            </StepList>
+          </Group>
+        </Section>
+
+        <Section id="status" title="Status">
+          <Group title="Status Marker">
+            <Row>
+              {(["md", "sm"] as const).flatMap((size) =>
+                [
+                  { name: "Completed=False, Delivered=Default" },
+                  { name: "Completed=True, Delivered=Default", completed: true },
+                  { name: "Completed=True, Delivered=True", completed: true, delivered: true },
+                ].map((state) => (
+                  <Item key={`${size}-${state.name}`} label={`${state.name}, Size=${size.toUpperCase()}`}>
+                    <StatusMarker size={size} completed={state.completed} delivered={state.delivered}>Preparation</StatusMarker>
+                  </Item>
+                )),
+              )}
+            </Row>
+          </Group>
+        </Section>
+
+        <Section id="scrollbar" title="Scrollbar">
+          <Group title="Scrollbar">
+            <Row wide>
+              <Item label="Theme=Light (start)"><Scrollbar progress={0} /></Item>
+              <Item label="Theme=Light (middle)"><Scrollbar progress={0.5} /></Item>
+            </Row>
+          </Group>
+          <Group title="Scrollbar - Overlay" overlay surface="leather">
+            <Row wide>
+              <Item overlay label="Theme=Light (start)"><Scrollbar progress={0} overlay /></Item>
+              <Item overlay label="Theme=Light (end)"><Scrollbar progress={1} overlay /></Item>
+            </Row>
+          </Group>
+          <Group title="Working demo: scroll sideways, or focus and use the arrow keys">
+            <ScrollArea label="Ring styles" className="max-w-[24.375rem]">
+              <div className="flex gap-space-2">
+                {["Solitaire", "Halo", "Pave", "Three Stone", "Vintage", "Bezel", "Cathedral"].map((name) => (
+                  <span key={name} className="type-ui-sm-medium flex h-space-18 w-space-19 shrink-0 items-center justify-center bg-secondary-ivory">
+                    {name}
+                  </span>
+                ))}
+              </div>
+            </ScrollArea>
+          </Group>
+        </Section>
+
         <Section id="icons" title="Icons">
           <ul className="flex flex-wrap gap-space-5">
             {(Object.keys(iconData) as IconName[]).map((name) => (
@@ -579,6 +903,29 @@ export default function ComponentsPage() {
               images. Built with the SM and MD pattern: a 1px white-alpha-20 divider, 12px tall at XS.
             </li>
             <li>Focus rings: Figma defines no focus state. A 2px ring is added, leather on light surfaces and white on overlays.</li>
+            <li>Tab Item hover: Figma uses black-alpha-50, 3.42:1 on secondary/skin, which fails AA. Built with black-alpha-60, 4.70:1.</li>
+            <li>Pagination Number hover text: Figma hard-codes #1f2937, which is not a token. Built with base/black #141829, 14.29:1 on peach.</li>
+            <li>
+              Modal backdrop: black-alpha-50, not defined in Figma. Confirm against the first approved page frame that shows a modal.
+            </li>
+          </ul>
+        </Section>
+
+        <Section id="kept-as-figma" title="Kept as Figma despite low contrast">
+          <ul className="type-body-sm-regular flex max-w-[48rem] list-disc flex-col gap-space-2 pl-space-5">
+            <li>
+              Pagination Dots, inactive: black-alpha-20, 1.53:1. Not text, and the current dot is high contrast. Any carousel using dots
+              must also offer previous and next buttons or swipe.
+            </li>
+            <li>
+              Pagination Dots - Overlay, inactive: white-alpha-30, 2.56:1 on white-alpha-10 over base/black. Same reason and same carousel
+              rule.
+            </li>
+            <li>Status Marker, Completed=False: secondary/gold dot border, 2.24:1. Not text, and the label beside it names the step.</li>
+            <li>
+              Step Indicator, Unavailable=True: the item name in leather at 50% opacity, 2.82:1 on skin and 2.73:1 on error-light. This is
+              text and does not meet AA. It is kept by decision because the unavailable item is meant to read as de-emphasised.
+            </li>
           </ul>
         </Section>
 
@@ -587,6 +934,8 @@ export default function ComponentsPage() {
             <li>Shop All: a checkout bar with a price. Planned for the bag and checkout tasks.</li>
             <li>Quanity Select: variants are unnamed. Planned for the bag and checkout tasks.</li>
             <li>Dropdown Example - Price: needs a Slider. Planned for the product-list filter task.</li>
+            <li>Modal - CCC Filters, Modal / Care Plan and Modal - Credit: content-specific modals, held for their page tasks.</li>
+            <li>Quick Checkout (on the Accordion page): product-page content with unnamed variants (Open3, Open4), held for the product page.</li>
           </ul>
         </Section>
       </main>
