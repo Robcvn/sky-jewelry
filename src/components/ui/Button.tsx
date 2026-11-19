@@ -129,6 +129,21 @@ export function ButtonLink({
   );
 }
 
+/**
+ * An inert button: drawn exactly as a Button but rendered as plain text, for actions that have nothing to
+ * connect to yet (start a live chat, send a text). Screen readers read the label as text, not as a control,
+ * and it takes no focus. Hover states don't apply.
+ */
+export function ButtonText({ size, variant, overlay, shape, leftIcon, rightIcon, className, children }: ButtonStyleProps & { className?: string; children: ReactNode }) {
+  return (
+    <span className={cx(buttonClasses({ size, variant, overlay, shape }), "cursor-default", className)}>
+      <ButtonContent size={size} overlay={overlay} leftIcon={leftIcon} rightIcon={rightIcon}>
+        {children}
+      </ButtonContent>
+    </span>
+  );
+}
+
 type HeroButtonProps = ComponentProps<typeof Link> & {
   icon?: IconName;
   /** Figma "Hero Button - Overlay". */

@@ -146,8 +146,11 @@ export function applyFilters(products: Product[], state: FilterState, bounds: Bo
 }
 
 /** The filters shown for a category: its Figma set, minus any no product on the page can use. */
-export function visibleFilters(category: FineJewelryCategory, products: Product[]): FilterKey[] {
-  return CATEGORY_FILTERS[category].filter((key) => {
+/** All filters, for the all-categories list (/fine-jewelry/shop/). */
+export const ALL_FILTERS: FilterKey[] = ["metal", "diamond", "carat", "length", "price"];
+
+export function visibleFilters(category: FineJewelryCategory | null, products: Product[]): FilterKey[] {
+  return (category ? CATEGORY_FILTERS[category] : ALL_FILTERS).filter((key) => {
     if (key === "diamond") return products.some((product) => product.diamondType);
     if (key === "carat") return products.some((product) => product.variants.some((variant) => variant.carat !== null));
     if (key === "length") return products.some((product) => product.length);

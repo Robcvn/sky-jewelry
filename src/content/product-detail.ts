@@ -130,7 +130,14 @@ export type IconBlockItem = { _key: string; icon: IconName; label: string; /** D
 
 export type BoxItem = { _key: string; image: ImageRef; caption: string; width: "narrow" | "wide" };
 
-export type ButtonCardContent = { _key: string; title: string; body: string; cta: { label: string; href: string }; image: ImageRef };
+export type ButtonCardContent = {
+  _key: string;
+  title: string;
+  body: string;
+  /** inert: shown as designed but not a link, when there is nothing to connect to yet (send a text). */
+  cta: { label: string; href: string; inert?: boolean };
+  image: ImageRef;
+};
 
 export const productDetailContent = {
   _type: "productDetailPage" as const,
@@ -213,7 +220,8 @@ export const productDetailContent = {
       _key: "questions",
       title: "Have Questions?",
       body: "Ask us about sizing, metals or stones before you order.",
-      cta: { label: "Send us a text", href: "/contact/" },
+      // Nothing to connect a text message to yet: shown as designed, inert.
+      cta: { label: "Send us a text", href: "/contact/", inert: true },
       image: { desktop: "card-questions-d", mobile: "card-questions-m", alt: "Two hands held together, one wearing an engagement ring" },
     },
     {

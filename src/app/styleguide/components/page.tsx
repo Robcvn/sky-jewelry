@@ -16,6 +16,8 @@ import { ImageBlock } from "@/components/ui/ImageBlock";
 import { CompositionChart, DimensionsDiagram, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
 import { GradeScale, QualityCard } from "@/components/ui/QualityCard";
 import { Viewer360 } from "@/components/ui/Viewer360";
+import { CtaCalloutSection } from "@/components/sections/LandingSections";
+import { ButtonText } from "@/components/ui/Button";
 import { gradeScales, metalComposition, productDetailContent } from "@/content/product-detail";
 import { ResourceCardLarge, ResourceCardSmall } from "@/components/ui/ResourceCard";
 import { ReviewCard } from "@/components/ui/ReviewCard";
@@ -97,6 +99,7 @@ const SECTIONS = [
   ["dropdown", "Dropdown"],
   ["filter-controls", "Range slider and filters"],
   ["product-detail", "Product detail"],
+  ["landing", "Landing page blocks"],
   ["accordion", "Accordion"],
   ["modal", "Modal"],
   ["tabs", "Tabs"],
@@ -731,6 +734,56 @@ export default function ComponentsPage() {
           </Group>
         </Section>
 
+        <Section id="landing" title="Landing page blocks">
+          <p className="type-body-sm-regular max-w-[48rem]">
+            New pieces from the five category landing pages (Figma 3565:97085 to 3565:97781). The sections themselves (tile carousels,
+            guarantee icons, feature card rows, best sellers, button card pairs, Diamond Inspection) are assembled from these on the
+            landing pages.
+          </p>
+          <Group title="CTA Callout (CTA Banner page): mobile is the Design System variant, desktop the landing frames' larger copy">
+            <div className="-mx-(--grid-margin)">
+              <CtaCalloutSection content={{ _type: "ctaCallout", _key: "demo", eyebrow: "Sale", title: "Up to 20% Off Natural Diamonds", cta: { label: "Shop Now", href: "#landing" } }} />
+            </div>
+          </Group>
+          <Group title="Icon Block with body: Type=Default MD (desktop) and Type=Row XS (mobile)">
+            <div className="flex max-w-[48rem] flex-col gap-space-6 ui-desktop:flex-row">
+              <IconBlock icon="warranty" label="Lifetime Warranty" body="Every piece is covered for life." layout="row-on-mobile" />
+              <IconBlock icon="money-back-guarantee" label="Money Back Guarantee" body="Returns are free within 30 days." layout="row-on-mobile" />
+              <IconBlock icon="diamond-experts" label="Diamond Experts" body="Ask our specialists before you choose." layout="row-on-mobile" />
+            </div>
+          </Group>
+          <Group title="Product Card - Summary without price, and name only">
+            <div className="flex flex-wrap items-start gap-space-6">
+              <Item label="Shape tile (name and body)">
+                <div className="w-[18.375rem]">
+                  <ProductCardSummary name="Round" body="A circular brilliant cut." href="#landing" image={{ desktop: "shape-round-sq", alt: "" }} sizes={{ desktop: "294px", mobile: "290px" }} />
+                </div>
+              </Item>
+              <Item label="Metal tile (name only)">
+                <div className="w-[18.375rem]">
+                  <ProductCardSummary name="Rose Gold" href="#landing" image={{ desktop: "product-ring-vine-rose-gold", alt: "" }} sizes={{ desktop: "294px", mobile: "290px" }} />
+                </div>
+              </Item>
+            </div>
+          </Group>
+          <Group title="Feature Card: title only on mobile (CTA from 1024px), and compact caption with body">
+            <div className="flex flex-wrap items-start gap-space-6">
+              <Item label="ctaOnMobile false">
+                <FeatureCard title="Rings" ctaLabel="Shop Now" href="#landing" ctaOnMobile={false} image={{ desktop: "fc-rings-fc", alt: "" }} sizes={{ desktop: "294px", mobile: "171px" }} className="aspect-[294/367] w-[18.375rem]" />
+              </Item>
+              <Item label="compact (16px caption padding)">
+                <FeatureCard title="Birthday" body="Mark the moment with personalized pieces, birthstones, or classic everyday luxury." ctaLabel="Shop Now" href="#landing" compact image={{ desktop: "fc-birthday-fc", alt: "" }} sizes={{ desktop: "294px", mobile: "288px" }} className="aspect-[294/367] w-[18.375rem]" />
+              </Item>
+            </div>
+          </Group>
+          <Group title="Inert button (plain text styled as a Button): actions with nothing to connect to yet">
+            <div className="flex flex-wrap items-center gap-space-4">
+              <ButtonText variant="secondary" size="responsive">Start a live chat</ButtonText>
+              <span className="type-body-xs-regular text-black-alpha-70">Read as text by screen readers; takes no focus.</span>
+            </div>
+          </Group>
+        </Section>
+
         <Section id="accordion" title="Accordion">
           <Group title="Accordion Item">
             <div className="flex flex-col gap-space-8">
@@ -1280,6 +1333,18 @@ export default function ComponentsPage() {
             <li>Flagged: the mobile product page hides the &ldquo;Pendant Details&rdquo; accordion, as Figma; desktop shows it. Kept hidden.</li>
             <li>Mobile GIA logo row on the Certification card: left out (a third-party logo, and it reads &ldquo;Natural Diamond&rdquo; on lab-grown pieces).</li>
             <li>Product page &ldquo;200 Reviews&rdquo; on desktop: Figma uses white-alpha-50, below AA on leather. Reuses the Home reviews section (skin, as Figma mobile).</li>
+            <li>
+              Landing &ldquo;Start a live chat&rdquo; (Consult module) and the Fine Jewelry &ldquo;Send us a text&rdquo; card: nothing to connect to,
+              so they are inert (plain text styled as the button), as on the product page. The product page&rsquo;s own &ldquo;Send us a text&rdquo;
+              still links to /contact/.
+            </li>
+            <li>Landing best-seller cards keep the product card&rsquo;s Add to Bag; Figma&rsquo;s hover demo says &ldquo;Complete your ring&rdquo; and shows a &ldquo;with stone&rdquo; price, which belong to the ring builder.</li>
+            <li>Gemstones promo band: mobile only, as Figma (the desktop copy is hidden). Wedding Bands Customer Stories: desktop only. Fine Jewelry Reviews: mobile only.</li>
+            <li>
+              All Fine Jewelry (/fine-jewelry/shop/): the product list with every Fine Jewelry product, no category tab selected and
+              all filters. The unselected-tab state is not drawn in Figma.
+            </li>
+            <li>Filters sheet category tiles share their row (80px at 390, as Figma; narrower on smaller phones instead of overflowing).</li>
           </ul>
         </Section>
 
@@ -1377,6 +1442,22 @@ export default function ComponentsPage() {
             <li>Quality and info-scale markers placed by fixed pixel offsets, so they land differently on each breakpoint. Placed from the grade.</li>
             <li>Button cards: card 2 is &ldquo;The Sky Guarantee&rdquo; on desktop and &ldquo;Lab-Grown Diamonds&rdquo; on mobile, and card 1&rsquo;s button reads &ldquo;Send us a text&rdquo; / &ldquo;Shop Now&rdquo;. Built with the desktop content on both; card 2&rsquo;s 40% overlay (the hover strength) built at 30%.</li>
             <li>&ldquo;View Certificate&rdquo; is an underlined link on desktop and plain text on mobile. Built underlined on both (and inert, see Open questions).</li>
+            <li>
+              Landing pages, filler replaced with short neutral copy: hero bodies (Wedding Bands, Diamonds, Fine Jewelry, Gemstones),
+              the promo eyebrow &ldquo;Promo Eyebrow&rdquo; (now &ldquo;Sale&rdquo;), the Gemstones hero overline, every tile body
+              (&ldquo;Cursus placerat&hellip;&rdquo;), the Consult and Moissanite module bodies, the Button Card bodies, the guarantee icon
+              bodies (now restating each title), the Diamond Inspection body and steps, and the section bodies of Shop by Occasion, Shop
+              by Price and Gemstone Jewelry. Reviews, Customer Stories and FAQs reuse Home&rsquo;s copy.
+            </li>
+            <li>Landing placeholder titles: Gemstones shapes (&ldquo;Shape Name&rdquo; &times; 10) named after the shapes in the photos; Diamonds feature cards (&ldquo;Diamonds Subcategory&rdquo; &times; 5) use the menu&rsquo;s Diamond Jewelry links.</li>
+            <li>Landing carousels padded by repeating cards (Engagement Ring styles and shapes, Diamonds shapes and colours, Gemstones colours, the second &ldquo;Pav&eacute;&rdquo; on the band rows): built with each card once.</li>
+            <li>Spelling: &ldquo;Shop Engagment Rings&rdquo; on the desktop Engagement Rings hero (mobile is correct). Built as &ldquo;Shop Engagement Rings&rdquo;.</li>
+            <li>Wedding Bands mobile promo: &ldquo;20% Off&nbsp;&nbsp;Wedding Bands&rdquo; (double space, no &ldquo;Up to&rdquo;). Built as the desktop title.</li>
+            <li>Gemstones promo band says &ldquo;Fine Jewelry&rdquo;. Built as &ldquo;Up to 20% Off Gemstones&rdquo;.</li>
+            <li>Gemstone Jewelry cards say &ldquo;Read Story&rdquo; although they are category links; the identical Fine Jewelry cards say &ldquo;Shop Now&rdquo;. Built as Shop Now.</li>
+            <li>Mobile hero italic &ldquo;by&rdquo; set at 36/40 inside a 48px h1 (Wedding Bands, Diamonds, Fine Jewelry): built at the heading&rsquo;s own italic style, as Typography defines.</li>
+            <li>Diamond Inspection step numbers in #030711 (off the palette): built in leather like all other text.</li>
+            <li>Fine Jewelry: the mobile closing cards read &ldquo;Shop Now&rdquo; / &ldquo;Lab-Grown Diamonds&rdquo;; built with the desktop (product page) pair. The mobile men &amp; women heading &ldquo;Shop by Type&rdquo; (copied from a hidden heading, with Latin) is built with the desktop heading. The Milestones card&rsquo;s forced line break is dropped.</li>
           </ul>
         </Section>
 
@@ -1413,6 +1494,12 @@ export default function ComponentsPage() {
             <li>
               Product page Button Cards: skin text over the photos with Figma&rsquo;s gradient (30% desktop, 50% mobile). Measured 10th
               percentile / median: desktop title 4.1 / 7.4:1, body 4.7 / 9.0:1; mobile title 4.2 / 6.6:1, body 4.1 / 5.2:1.
+            </li>
+            <li>
+              Landing heroes and feature cards: white or skin text over Figma&rsquo;s photos and gradients. Measured 10th percentile / median
+              for the h1: Engagement Rings 2.2 / 4.5 desktop, Wedding Bands 2.7 / 4.0, Diamonds 3.6 / 5.7, Fine Jewelry 2.8 / 3.0 (the
+              pale flat-lay photo, the weakest), Gemstones 3.0 / 3.4. Feature card titles 2.5 to 3.8 at the 10th percentile. Full table
+              in the Task 11 report.
             </li>
           </ul>
         </Section>
@@ -1461,6 +1548,13 @@ export default function ComponentsPage() {
             <li>Ring size: Figma has a hidden &ldquo;Select Ring Size&rdquo; dropdown, and the catalogue has no ring size option. Not built.</li>
             <li>Center Stone Shape picker (desktop) and the mobile Stone picker: each product has one fixed shape, so there is nothing to pick. Not shown.</li>
             <li>Product page motion: the Animations page only has the ring builder&rsquo;s add-to-bag loaders. Gallery swipes are smooth (instant under reduced motion); the 360° hint fades after the first turn.</li>
+            <li>
+              Product list routes for the landing pages: the menus link /engagement-rings/, /diamonds/ and /gemstones/ with filters, but
+              those are now the landing pages. The landing tiles link to planned lists at /&lt;category&gt;/shop/?&hellip;; the menus
+              should move there when the lists are built.
+            </li>
+            <li>Fine Jewelry: the occasion, women&rsquo;s and men&rsquo;s tiles link to planned routes with no matching filter yet.</li>
+            <li>Landing photos: the band rows use engagement-ring photos; best sellers use the catalogue&rsquo;s bands (there are no wedding bands); Gemstones carousels use coloured-diamond photos; Platinum reuses the white gold photo; the Wedding Bands and Gemstones heroes, the guarantee photo and the men&rsquo;s card photo are below 2x for their slots.</li>
           </ul>
         </Section>
 
@@ -1483,6 +1577,7 @@ export default function ComponentsPage() {
               Info, Ring Details, and the add-to-bag loaders. Held for the ring builder.
             </li>
             <li>Quick Checkout (on the Accordion page): product-page content with unnamed variants (Open3, Open4), held for the product page.</li>
+            <li>Landing page live chat and text actions (no chat or messaging service to connect to).</li>
           </ul>
         </Section>
       </main>

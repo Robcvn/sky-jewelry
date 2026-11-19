@@ -1,9 +1,10 @@
 import { imageManifest as homeManifest } from "@/content/image-manifest";
+import { landingImageManifest } from "@/content/landing-image-manifest";
 import { pdpImageManifest } from "@/content/pdp-image-manifest";
 import { productImageManifest } from "@/content/product-image-manifest";
 import { withBasePath } from "./shared";
 
-const imageManifest = { ...homeManifest, ...productImageManifest, ...pdpImageManifest };
+const imageManifest = { ...homeManifest, ...productImageManifest, ...pdpImageManifest, ...landingImageManifest };
 export type ImageKey = keyof typeof imageManifest;
 
 /** A Sanity-style image reference: the crop for each breakpoint, and alt text. */

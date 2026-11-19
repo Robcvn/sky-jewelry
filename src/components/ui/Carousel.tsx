@@ -23,6 +23,12 @@ type CarouselProps = {
   arrowTop?: string;
   /** Mobile scrollbar on a dark surface (Figma "Scrollbar - Overlay"). */
   overlay?: boolean;
+  /**
+   * Desktop room above and below the items for content that grows out of a card (the product card's hover
+   * shell and its actions panel), which the scroller would otherwise clip. The extra space overlaps the
+   * neighbouring sections without blocking clicks on them.
+   */
+  hoverRoom?: boolean;
   className?: string;
 };
 
@@ -42,6 +48,7 @@ export function Carousel({
   gridClassName,
   arrowTop = "50%",
   overlay = false,
+  hoverRoom = false,
   className,
 }: CarouselProps) {
   const { ref, progress, scrollable, atStart, atEnd } = useScrollProgress<HTMLDivElement>();
@@ -77,6 +84,8 @@ export function Carousel({
         className={cx(
           "relative flex snap-x snap-mandatory scroll-px-(--grid-margin) gap-space-4 overflow-x-auto px-(--grid-margin) [scrollbar-width:none] focus-visible:-outline-offset-2 ui-desktop:gap-space-6 [&::-webkit-scrollbar]:hidden",
           desktop === "grid" && cx("ui-desktop:grid ui-desktop:overflow-visible", gridClassName),
+          hoverRoom &&
+            "ui-desktop:pointer-events-none ui-desktop:-mt-space-3 ui-desktop:-mb-36 ui-desktop:pt-space-3 ui-desktop:pb-36 ui-desktop:[&>*]:pointer-events-auto",
         )}
       >
         {items.map((item) => (

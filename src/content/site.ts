@@ -200,7 +200,7 @@ const fineJewelryMenu: MegaMenu = {
       ],
     },
   ],
-  shopAll: { _key: "shop-all", label: "Shop All Fine Jewelry", href: "/fine-jewelry/" },
+  shopAll: { _key: "shop-all", label: "Shop All Fine Jewelry", href: "/fine-jewelry/shop/" },
 };
 
 const engagementRingsMenu: MegaMenu = {

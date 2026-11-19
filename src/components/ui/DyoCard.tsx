@@ -15,7 +15,7 @@ export function DyoCard({ icon, title, body, cta }: DyoCardProps) {
       <div className="flex flex-col items-center gap-space-6">
         <Icon name={icon} size={64} />
         <div className="flex flex-col gap-space-4">
-          <h3 className="type-heading-caps-xl">{title}</h3>
+          <h3 className="type-heading-caps-xl whitespace-pre-line">{title}</h3>
           <p className="type-body-md-regular px-space-6">{body}</p>
         </div>
       </div>

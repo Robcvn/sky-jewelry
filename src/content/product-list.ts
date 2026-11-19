@@ -14,6 +14,9 @@ export type SortOption = { value: string; label: string; shortLabel: string };
 export const productListContent = {
   _type: "productListPage" as const,
   overline: "Fine Jewelry",
+  /** The all-categories list (/fine-jewelry/shop/). */
+  allTitle: "All Fine Jewelry",
+  allDescription: "Every ring, necklace, pair of earrings and bracelet in one list.",
   heading: [span("Select "), span("your", true), span(" Perfect Piece")] as RichSpan[],
   categories: [
     {

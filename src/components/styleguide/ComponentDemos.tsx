@@ -109,7 +109,7 @@ export function OptionTileDemo({ kind }: { kind: "metal" | "text" | "compact" })
     );
   if (kind === "text")
     return (
-      <div className="w-[21.875rem]">
+      <div className="w-[min(21.875rem,calc(100vw-2*var(--grid-margin)))]">
         <DiamondTypeTiles value={diamond} onChange={setDiamond} labelledBy="demo-diamond-tiles" />
       </div>
     );

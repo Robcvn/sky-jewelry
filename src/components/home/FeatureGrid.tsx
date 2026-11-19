@@ -4,7 +4,7 @@ import type { FeatureGrid as FeatureGridContent } from "@/content/home";
 /** Figma Home section 4: five Feature Cards, a wide one first. 3 columns on desktop, 2 on mobile. */
 export function FeatureGrid({ content }: { content: FeatureGridContent }) {
   return (
-    <section aria-labelledby="features-heading" className="site-container py-space-11 ui-desktop:pt-0 ui-desktop:pb-space-15">
+    <section aria-labelledby="features-heading" className={`site-container py-space-11 ui-desktop:pb-space-15 ${content.padTop ? "ui-desktop:pt-space-15" : "ui-desktop:pt-0"}`}>
       <h2 id="features-heading" className="sr-only">
         {content.heading}
       </h2>

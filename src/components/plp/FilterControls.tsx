@@ -104,14 +104,18 @@ export function LengthChecks({ options, value, onChange, labelledBy }: { options
 
 export const formatCaratValue = (value: number) => value.toFixed(2);
 
+/** A range from the URL can reach past the slider (e.g. "Under $1,000" is 0-1000 while prices start at $500): show it clamped. */
+const clampTo = (value: Range | null, bounds: Range): Range =>
+  value ? [Math.min(Math.max(value[0], bounds[0]), bounds[1]), Math.max(Math.min(value[1], bounds[1]), bounds[0])] : bounds;
+
 export function CaratRange({ bounds, value, onChange }: { bounds: Range; value: Range | null; onChange: (value: Range) => void }) {
   return (
-    <RangeField name="carat weight" min={bounds[0]} max={bounds[1]} step={0.05} value={value ?? bounds} onChange={onChange} format={formatCaratValue} stepper />
+    <RangeField name="carat weight" min={bounds[0]} max={bounds[1]} step={0.05} value={clampTo(value, bounds)} onChange={onChange} format={formatCaratValue} stepper />
   );
 }
 
 export function PriceRange({ bounds, value, onChange }: { bounds: Range; value: Range | null; onChange: (value: Range) => void }) {
-  return <RangeField name="price" min={bounds[0]} max={bounds[1]} step={100} value={value ?? bounds} onChange={onChange} format={formatPrice} />;
+  return <RangeField name="price" min={bounds[0]} max={bounds[1]} step={100} value={clampTo(value, bounds)} onChange={onChange} format={formatPrice} />;
 }
 
 /** The desktop dropdown panel body, styled as Figma's open Price panel: a label, then the control. */

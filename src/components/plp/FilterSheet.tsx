@@ -16,10 +16,11 @@ const { filters: copy, categories } = productListContent;
 type FilterSheetProps = {
   open: boolean;
   onClose: () => void;
-  category: FineJewelryCategory;
+  /** null on the all-categories list: no category tile is selected until one is chosen. */
+  category: FineJewelryCategory | null;
   state: FilterState;
   /** Called with the new state and category when the shopper presses Apply. */
-  onApply: (next: FilterState, category: FineJewelryCategory) => void;
+  onApply: (next: FilterState, category: FineJewelryCategory | null) => void;
   filters: FilterKey[];
   bounds: Bounds;
   lengths: string[];
@@ -35,7 +36,7 @@ type FilterSheetProps = {
 export function FilterSheet({ open, onClose, category, state, onApply, filters, bounds, lengths, lengthLabel }: FilterSheetProps) {
   const id = useId();
   const [draft, setDraft] = useState(state);
-  const [draftCategory, setDraftCategory] = useState(category);
+  const [draftCategory, setDraftCategory] = useState<FineJewelryCategory | null>(category);
   const [openedWith, setOpenedWith] = useState<FilterState | null>(null);
 
   // Start each opening from the applied state.
@@ -66,12 +67,14 @@ export function FilterSheet({ open, onClose, category, state, onApply, filters, 
             </h2>
 
             <section className="flex flex-col gap-space-3">
-              <FilterLabel id={`${id}-category`} label={copy.category} value={categories.find((item) => item._key === draftCategory)?.label} />
-              <div role="radiogroup" aria-labelledby={`${id}-category`} className="flex gap-space-2">
+              <FilterLabel id={`${id}-category`} label={copy.category} value={categories.find((item) => item._key === draftCategory)?.label ?? copy.all} />
+              {/* Four tiles that share the row: 80px at 390 as Figma, narrower on smaller phones instead of overflowing. */}
+              <div role="radiogroup" aria-labelledby={`${id}-category`} className="grid grid-cols-4 gap-space-2">
                 {categories.map((item) => (
                   <OptionTile
                     key={item._key}
                     type="radio"
+                    shape="fill"
                     name={`${id}-category`}
                     icon={item.icon}
                     checked={draftCategory === item._key}

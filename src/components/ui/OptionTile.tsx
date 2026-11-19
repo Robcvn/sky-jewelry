@@ -28,10 +28,11 @@ export function OptionTile({ type = "checkbox", shape = "square", labelSize, ico
   return (
     <label
       className={cx(
-        "ui-transition relative flex shrink-0 cursor-pointer flex-col items-center justify-center gap-space-1 rounded-4 border border-black-alpha-20 bg-secondary-skin p-space-2 text-center text-primary-leather",
+        "ui-transition relative flex cursor-pointer flex-col items-center justify-center gap-space-1 rounded-4 border border-black-alpha-20 bg-secondary-skin p-space-2 text-center text-primary-leather",
         "has-checked:border-primary-leather active:not-has-checked:bg-secondary-ivory hover:not-has-checked:border-black-alpha-50",
         "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary-leather",
-        { square: "size-space-15", compact: "size-space-12", fill: "h-space-15 w-full", text: "min-h-space-12 flex-1" }[shape],
+        // Fixed-size tiles keep their size in a scrolling row; text tiles share (and shrink with) their row.
+        { square: "size-space-15 shrink-0", compact: "size-space-12 shrink-0", fill: "h-space-15 w-full", text: "min-h-space-12 min-w-0 flex-1" }[shape],
         className,
       )}
     >

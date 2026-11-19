@@ -88,6 +88,8 @@ type ProductCardProps = {
   /** Mobile: tapping the card opens the quick-view sheet. */
   onQuickView: (product: Product, variant: ProductVariant) => void;
   busy?: boolean;
+  /** "grid": the product list (smaller text below 1024px). "carousel": landing page rows (desktop text sizes throughout). */
+  size?: "grid" | "carousel";
 };
 
 /**
@@ -98,7 +100,8 @@ type ProductCardProps = {
  * the installments line show below. The swatches switch the photo, title and price to that metal's variant.
  * Mobile: no hover; tapping the photo or title opens the quick view.
  */
-export function ProductCard({ product, initialVariant, labels, onAddToBag, onQuickView, busy = false }: ProductCardProps) {
+export function ProductCard({ product, initialVariant, labels, onAddToBag, onQuickView, busy = false, size = "grid" }: ProductCardProps) {
+  const carousel = size === "carousel";
   const [variant, setVariant] = useState(initialVariant);
   const [view, setView] = useState(0);
   const images = imagesFor(product, variant.metal);
@@ -123,7 +126,7 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
         <div className="relative aspect-square overflow-hidden rounded-4 bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]">
           <Picture
             image={image}
-            sizes={{ desktop: "(width >= 90rem) 20rem, 23vw", mobile: "45vw" }}
+            sizes={{ desktop: "(width >= 90rem) 20rem, 23vw", mobile: carousel ? "18.125rem" : "45vw" }}
             className="size-full object-cover mix-blend-multiply transition-transform duration-300 ease-out motion-reduce:transition-none ui-desktop:group-hover/card:scale-[1.067] ui-desktop:group-focus-within/card:scale-[1.067] motion-reduce:scale-100!"
           />
           {images.length > 1 ? (
@@ -139,9 +142,9 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-space-1 px-space-2 pt-space-2 text-center ui-desktop:pt-space-3">
-          <h3 className="type-heading-xs ui-desktop:type-heading-sm">{name}</h3>
-          <p className="type-ui-2xs-medium ui-desktop:type-ui-xs-medium">{formatPrice(variant.price)}</p>
+        <div className={cx("flex flex-col gap-space-1 px-space-2 text-center", carousel ? "pt-space-3" : "pt-space-2 ui-desktop:pt-space-3")}>
+          <h3 className={carousel ? "type-heading-sm" : "type-heading-xs ui-desktop:type-heading-sm"}>{name}</h3>
+          <p className={carousel ? "type-ui-xs-medium" : "type-ui-2xs-medium ui-desktop:type-ui-xs-medium"}>{formatPrice(variant.price)}</p>
         </div>
 
         {/* Desktop: the photo and title open the product page. Mobile: they open the quick view. */}
@@ -155,7 +158,7 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
         />
       </div>
 
-      <MetalSwatches product={product} variant={variant} onChange={chooseVariant} className="relative mt-space-2 pb-space-2 ui-desktop:mt-space-3 ui-desktop:pb-space-3" />
+      <MetalSwatches product={product} variant={variant} onChange={chooseVariant} className={cx("relative", carousel ? "mt-space-3 pb-space-3" : "mt-space-2 pb-space-2 ui-desktop:mt-space-3 ui-desktop:pb-space-3")} />
 
       <div className="absolute inset-x-0 top-full z-10 hidden ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block">
         <div className="-mx-space-2 flex flex-col gap-space-4 rounded-b-8 border-x border-b border-black-alpha-5 bg-base-white px-space-4 pt-space-1 pb-space-4 shadow-lg">

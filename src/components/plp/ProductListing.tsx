@@ -41,7 +41,8 @@ const noop = () => () => {};
 const useIsClient = () => useSyncExternalStore(noop, () => true, () => false);
 
 type ProductListingProps = {
-  category: FineJewelryCategory;
+  /** null: every Fine Jewelry product (/fine-jewelry/shop/), with no category tab selected. */
+  category: FineJewelryCategory | null;
   /** The category's products in "Best Match" order, fetched at build time. */
   products: Product[];
 };
@@ -69,7 +70,7 @@ export function ProductListing({ category, products }: ProductListingProps) {
   const bounds = useMemo(() => boundsOf(pool), [pool]);
   const matches = useMemo(() => applyFilters(products, state, bounds), [products, state, bounds]);
   const shown = matches.slice(0, content.pageSize * state.page);
-  const lengths = content.lengths[category] ?? [];
+  const lengths = category ? (content.lengths[category] ?? []) : [...(content.lengths.necklaces ?? []), ...(content.lengths.bracelets ?? [])];
   const lengthTitle = category === "necklaces" ? copy.chainLength : copy.length;
 
   const shipChoices = [
@@ -218,7 +219,7 @@ export function ProductListing({ category, products }: ProductListingProps) {
           </div>
         ) : null}
 
-        <h2 className="sr-only">{content.categories.find((item) => item._key === category)?.title}</h2>
+        <h2 className="sr-only">{category ? content.categories.find((item) => item._key === category)?.title : content.allTitle}</h2>
         <p role="status" className="sr-only">
           {isClient ? `Showing ${shown.length} of ${matches.length} ${matches.length === 1 ? "product" : "products"}.` : ""}
         </p>
@@ -275,7 +276,7 @@ export function ProductListing({ category, products }: ProductListingProps) {
         lengthLabel={lengthTitle}
         onApply={(next, nextCategory) => {
           setSheetOpen(false);
-          if (nextCategory === category) setState(next);
+          if (nextCategory === category || !nextCategory) setState(next);
           else {
             const query = serializeFilters(next);
             router.push(`/fine-jewelry/${nextCategory}/${query ? `?${query}` : ""}`);

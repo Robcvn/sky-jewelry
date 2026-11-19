@@ -45,13 +45,19 @@ export type FeatureGrid = {
   _key: string;
   /** Visually hidden: Figma has no visible heading here. */
   heading: string;
+  /** Desktop top padding: Home's grid has none (it follows the category strip); the Diamonds frame has 80px. */
+  padTop?: boolean;
   cards: Array<{ _key: string; title: string; href: string; image: ImageRef; wide?: boolean }>;
   ctaLabel: string;
 };
 
 export type HeroModule = {
   _type: "heroModule";
+  /** True when the button has nothing to connect to yet (start a live chat): shown as designed, not a link. */
+  inert?: boolean;
   _key: string;
+  /** No top padding on that breakpoint: Figma's landing pages butt the module against the Reviews band above. */
+  flushTop?: "desktop" | "mobile" | "both";
   overline?: string;
   heading: RichSpan[];
   body: string;
