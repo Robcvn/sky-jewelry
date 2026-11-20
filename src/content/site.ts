@@ -517,10 +517,11 @@ export const siteFooter: FooterContent = {
   },
   // Figma has Latin filler here; replaced with one neutral sentence.
   description: "Engagement rings, wedding bands and fine jewelry from Sky Jewelry in New York.",
+  // Mock contact details: this is a public demo, so the store's own address, phone and email (in Figma) are not shown.
   contact: {
-    address: "354 Lenox Ave, New York NY 10027",
-    phone: "+1 (212) 601-2750",
-    email: "info@skyjewelry.net",
+    address: "123 Sample Ave, New York NY 10001",
+    phone: "+1 (212) 555-0142",
+    email: "info@example.com",
   },
   social: [
     { _key: "instagram", label: "Sky Jewelry on Instagram", href: "https://www.instagram.com/", icon: "instagram" },
@@ -554,7 +555,7 @@ export const siteFooter: FooterContent = {
     },
   ],
   copyright: "© All Rights Reserved to Sky Jewelry",
-  demoNotice: "Portfolio build by Rob Coven. Not the live Sky Jewelry store; products, prices and reviews are sample content.",
+  demoNotice: "Portfolio build by Rob Coven. Not the live Sky Jewelry store; products, prices, reviews and contact details are sample content.",
   payments: [
     { _key: "visa", label: "Visa", icon: "visa" },
     { _key: "mastercard", label: "Mastercard", icon: "mastercard" },
