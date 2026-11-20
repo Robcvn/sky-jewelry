@@ -671,7 +671,7 @@ export default function ComponentsPage() {
           <Group title="Product Info Card">
             <div className="grid w-[31.625rem] max-w-full grid-cols-2 items-start gap-space-3">
               <Item label="Chart (metal composition, from data)">
-                <ProductInfoCard label="Metal" value="14K Yellow Gold" note="Percentages by weight.">
+                <ProductInfoCard label="Metal" value="14K Yellow Gold" note="Percentages by weight." gap="md">
                   <CompositionChart parts={metalComposition["14k-yellow-gold"]} />
                 </ProductInfoCard>
               </Item>
@@ -683,7 +683,7 @@ export default function ComponentsPage() {
                 <ProductInfoCard label="Clarity" value="VVS2" note="Inclusions are extremely difficult to see"><InfoScale kind="clarity" position={0.34} label="Clarity VVS2" /></ProductInfoCard>
               </Item>
               <Item label="Dimensions (diagram on mobile only)">
-                <ProductInfoCard label="Dimensions (mm)" value="6.03 × 6.03" note={<span className="flex items-end justify-between"><DimensionsDiagram /><span>Ratio: 1.00</span></span>} />
+                <ProductInfoCard label="Dimensions (mm)" value="6.03 × 6.03" note={<span className="block text-right">Ratio: 1.00</span>}><DimensionsDiagram /></ProductInfoCard>
               </Item>
               <Item label="Certification"><ProductInfoCard label="Certification" value="GIA" note={<span className="underline">View Certificate</span>} /></Item>
             </div>
@@ -1489,6 +1489,19 @@ export default function ComponentsPage() {
               its width to fill the narrower mobile card. Built undistorted with the same framing (same centre and height), so the hands keep
               their shape and a little of the scene at the sides is cropped.
             </li>
+            <li>
+              Home best sellers: the desktop frame shows 6 cards that repeat two products (Channel Set Ring and Halo Ring); the mobile
+              frame shows 8 cards with four products. Built with one product list on both breakpoints: the mobile frame&rsquo;s 8 cards
+              and four products.
+            </li>
+            <li>
+              Fine Jewelry &ldquo;Shop our Best Sellers&rdquo;: Figma shows a placeholder overline (&ldquo;Optional Subheader&rdquo;)
+              above the heading. Not shown; the same section on Wedding Bands hides its overline.
+            </li>
+            <li>
+              Desktop footer: Figma leaves 41px under the bottom bar, which is leftover space in a fixed-height frame (all three desktop
+              footer frames are 857px tall whatever their content). Built with 32px.
+            </li>
           </ul>
         </Section>
 
@@ -1594,6 +1607,9 @@ export default function ComponentsPage() {
               intended, and should it change on selection?
             </li>
             <li>Title-to-body gap is 12px on the Sky Guarantee card and 20px on the Consult module on the same page. Which is intended?</li>
+            <li>Gemstones: the heading says &lsquo;Birthstone&rsquo; on desktop and &lsquo;Gemstones&rsquo; on mobile. Which is intended?</li>
+            <li>Product page mobile: the Carat and Dimensions cards are fixed 4px taller than the cards beside them. Is that intended?</li>
+            <li>Filters sheet: frame 5746:89744 shows it expanded to 950px. How does the sheet reach that state?</li>
           </ul>
         </Section>
 
@@ -1617,10 +1633,6 @@ export default function ComponentsPage() {
             </li>
             <li>Quick Checkout (on the Accordion page): product-page content with unnamed variants (Open3, Open4), held for the product page.</li>
             <li>Landing page live chat and text actions (no chat or messaging service to connect to).</li>
-            <li>
-              Fine Jewelry Birthday card photo: the build uses a tighter export than Figma&rsquo;s original (card 3565:97698); waiting for Rob to
-              export the image layer.
-            </li>
           </ul>
         </Section>
       </main>

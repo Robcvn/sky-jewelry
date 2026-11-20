@@ -73,7 +73,8 @@ export function ScrollArea({ label, overlay = false, className, children }: Scro
       >
         {children}
       </div>
-      <Scrollbar progress={progress} overlay={overlay} className="mt-space-4" />
+      {/* Figma's Filters sheet (5746:89744): the indicator sits 12px under the row. */}
+      <Scrollbar progress={progress} overlay={overlay} className="mt-space-3" />
     </div>
   );
 }

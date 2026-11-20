@@ -15,6 +15,10 @@ export type RichSpan =
        * on the other breakpoint.
        */
       mobileOnly?: boolean;
+      /** Shown on desktop only: the desktop frame's wording where the mobile frame words it differently. */
+      desktopOnly?: boolean;
+      /** The mobile alternative to a desktopOnly span: left out of plainText so labels read the words once. */
+      alternative?: boolean;
     }
   | { _type: "break"; mobileOnly?: boolean };
 
@@ -22,9 +26,19 @@ export const span = (text: string, italic = false): RichSpan => ({ _type: "span"
 export const em = (text: string): RichSpan => span(text, true);
 export const mobileOnlySpan = (text: string): RichSpan => ({ _type: "span", text, mobileOnly: true });
 export const br = (mobileOnly = false): RichSpan => ({ _type: "break", mobileOnly });
+/** Words each breakpoint's frame has its own way (Gemstones: "Birthstone" on desktop, "Gemstones" on mobile). */
+export const perBreakpoint = (desktop: string, mobile: string): RichSpan[] => [
+  { _type: "span", text: desktop, desktopOnly: true },
+  { _type: "span", text: mobile, mobileOnly: true, alternative: true },
+];
 
 export const plainText = (value: RichSpan[]) =>
-  value.map((part) => (part._type === "span" ? part.text : " ")).join("").replace(/\s+/g, " ").trim();
+  value
+    .filter((part) => !(part._type === "span" && part.alternative))
+    .map((part) => (part._type === "span" ? part.text : " "))
+    .join("")
+    .replace(/\s+/g, " ")
+    .trim();
 
 /** emClassName is the matching Typography italic style, e.g. "type-heading-italic-lg ui-desktop:type-heading-italic-xl". */
 export function RichText({ value, emClassName }: { value: RichSpan[]; emClassName: string }) {
@@ -39,6 +53,10 @@ export function RichText({ value, emClassName }: { value: RichSpan[]; emClassNam
           </em>
         ) : part.mobileOnly ? (
           <span key={index} className="ui-desktop:hidden">
+            {part.text}
+          </span>
+        ) : part.desktopOnly ? (
+          <span key={index} className="hidden ui-desktop:inline">
             {part.text}
           </span>
         ) : (

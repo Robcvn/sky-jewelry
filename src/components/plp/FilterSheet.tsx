@@ -29,8 +29,10 @@ type FilterSheetProps = {
 
 /**
  * Figma mobile Filters sheet (5746:89744; as first opened 3587:126927; short 3587:127002): title, the groups
- * (Category, Metal, Diamond Type, Carat, Length, Price) in a body that scrolls up to 600px, and a footer with
- * Clear and Apply. Choices are a draft until Apply. Clear empties the draft (Apply then shows everything).
+ * (Category, Metal, Diamond Type, Carat, Length, Price) in a body that scrolls within 600px, and an 80px footer with
+ * Clear and Apply that stays put: 680px in all, as the first-open frame 3587:126927 draws it. A shorter body shrinks
+ * the sheet to fit (3587:127002); on screens too short for 680px the sheet is capped to the screen. (5746:89744
+ * draws the sheet expanded to 950px; how it gets there is an open question.) Choices are a draft until Apply. Clear empties the draft (Apply then shows everything).
  * Figma draws no close button: Escape and a tap on the backdrop close it without applying (flagged).
  */
 export function FilterSheet({ open, onClose, category, state, onApply, filters, bounds, lengths, lengthLabel }: FilterSheetProps) {
@@ -90,7 +92,8 @@ export function FilterSheet({ open, onClose, category, state, onApply, filters, 
             {filters.includes("metal") ? (
               <section className="flex flex-col gap-space-3">
                 <FilterLabel id={`${id}-metal`} label={copy.metal} value={metalValue} />
-                <ScrollArea label={copy.metal}>
+                {/* Figma leaves 32px from the indicator to the next group (24 between the other groups). */}
+                <ScrollArea label={copy.metal} className="mb-space-2">
                   <MetalTiles value={draft.metals} onChange={(metals) => set({ metals })} labelledBy={`${id}-metal`} />
                 </ScrollArea>
               </section>
@@ -113,7 +116,7 @@ export function FilterSheet({ open, onClose, category, state, onApply, filters, 
             {show("length") && lengths.length ? (
               <section className="flex flex-col gap-space-3">
                 <FilterLabel id={`${id}-length`} label={lengthLabel} />
-                <LengthChecks options={lengths} value={draft.length} onChange={(length) => set({ length })} labelledBy={`${id}-length`} />
+                <LengthChecks options={lengths} value={draft.length} onChange={(length) => set({ length })} labelledBy={`${id}-length`} fixed />
               </section>
             ) : null}
 
@@ -125,7 +128,8 @@ export function FilterSheet({ open, onClose, category, state, onApply, filters, 
             ) : null}
           </div>
 
-          <div className="flex shrink-0 gap-space-2 border-t border-primary-leather p-space-5">
+          {/* 80px as in Figma: its 1px top stroke sits inside the 20px padding. */}
+          <div className="flex shrink-0 gap-space-2 border-t border-primary-leather px-space-5 pt-[1.1875rem] pb-space-5">
             <Button size="sm" variant="secondary" onClick={() => setDraft({ ...EMPTY_FILTERS, sort: draft.sort, ships: draft.ships })}>
               {copy.clear}
             </Button>

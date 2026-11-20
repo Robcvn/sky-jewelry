@@ -6,6 +6,7 @@ import { Picture, type ImageRef } from "@/components/ui/Picture";
 import { Tabs } from "@/components/ui/Tabs";
 import { Viewer360 } from "@/components/ui/Viewer360";
 import { cx } from "@/components/ui/shared";
+import { pdpImageManifest, type PdpImageKey } from "@/content/pdp-image-manifest";
 import { productDetailContent } from "@/content/product-detail";
 import type { Product, ProductVariant } from "@/content/products";
 import { desktopGallery, galleryPhotos, stonePhoto } from "./productFacts";
@@ -46,6 +47,12 @@ export function DesktopGallery({ product, variant, name }: { product: Product; v
   );
 }
 
+/** A photo's full-width mobile gallery crop ("<key>-gallery-m" in the PDP manifest), where one exists. */
+function galleryCrop(image: ImageRef): ImageRef {
+  const key = `${image.desktop}-gallery-m`;
+  return key in pdpImageManifest ? { ...image, mobile: key as PdpImageKey } : image;
+}
+
 /**
  * Mobile gallery (Figma "PDP - Asset Tabs", 3587:127149): a full-width square that swipes between the photos,
  * with pagination dots; a 64px thumbnail in the corner switches between the piece and its stone (Type
@@ -55,7 +62,7 @@ export function MobileGallery({ product, variant, name }: { product: Product; va
   const stone = stonePhoto(product);
   const [showStone, setShowStone] = useState(false);
   const [tab, setTab] = useState<"images" | "spin">("images");
-  const photos = showStone && stone ? [stone] : galleryPhotos(product, variant.metal);
+  const photos = showStone && stone ? [stone] : galleryPhotos(product, variant.metal).map(galleryCrop);
   const scroller = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
 

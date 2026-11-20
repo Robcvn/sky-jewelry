@@ -97,7 +97,8 @@ export function ProductDetail({ product }: { product: Product }) {
   return (
     <div className="ui-desktop:site-container ui-desktop:grid ui-desktop:grid-cols-[minmax(0,718fr)_minmax(0,506fr)] ui-desktop:gap-space-6">
       <div className="hidden ui-desktop:block">
-        <div className="sticky top-0 py-space-15">
+        {/* Figma's images frame (3565:98419) pads its right side 24px: the tile grid is 694 of the 718 column. */}
+        <div className="sticky top-0 py-space-15 pr-space-6">
           <DesktopGallery product={product} variant={variant} name={name} />
         </div>
       </div>
@@ -134,23 +135,25 @@ export function ProductDetail({ product }: { product: Product }) {
           </div>
         </div>
 
-        {/* Buttons, installments, shipping, icon row */}
-        <div className="flex flex-col gap-space-6">
-          <div className="flex flex-col gap-space-3 ui-desktop:gap-space-4">
-            <ButtonLink href={content.checkoutHref} leftIcon="security" className="w-full">
-              {labels.secureCheckout}
-            </ButtonLink>
-            <Button variant="secondary" leftIcon="bag" className="w-full" disabled={busy || !variant.available} onClick={add}>
-              {labels.addToBag}
-            </Button>
+        {/* Buttons, installments, shipping, icon row: buttons to installments 16, then 24 (mobile) or 32 (desktop). */}
+        <div className="flex flex-col gap-space-6 ui-desktop:gap-space-8">
+          <div className="flex flex-col gap-space-4">
+            <div className="flex flex-col gap-space-3 ui-desktop:gap-space-4">
+              <ButtonLink href={content.checkoutHref} leftIcon="security" className="w-full">
+                {labels.secureCheckout}
+              </ButtonLink>
+              <Button variant="secondary" leftIcon="bag" className="w-full" disabled={busy || !variant.available} onClick={add}>
+                {labels.addToBag}
+              </Button>
+            </div>
+            <p className="type-body-xs-regular flex flex-wrap items-center justify-center gap-x-space-3 text-center text-primary-leather">
+              <span>
+                {labels.installments} <span className="font-medium">{formatInstallment(variant.price)}</span>
+              </span>
+              {/* Learn more opens the held Credit modal: shown as designed, not interactive yet. */}
+              <span className="type-overline-xs-link">{labels.learnMore}</span>
+            </p>
           </div>
-          <p className="type-body-xs-regular flex flex-wrap items-center justify-center gap-x-space-3 text-center text-primary-leather">
-            <span>
-              {labels.installments} <span className="font-medium">{formatInstallment(variant.price)}</span>
-            </span>
-            {/* Learn more opens the held Credit modal: shown as designed, not interactive yet. */}
-            <span className="type-overline-xs-link">{labels.learnMore}</span>
-          </p>
           {product.shipsInDays ? (
             <p className="type-ui-xs-regular flex items-center justify-center gap-space-2 text-primary-leather ui-desktop:type-body-sm-regular">
               <Icon name="truck" size={24} />
@@ -169,7 +172,7 @@ export function ProductDetail({ product }: { product: Product }) {
         {/* Metal info */}
         <section aria-labelledby="pdp-metal-info" className="flex flex-col gap-space-5 border-t border-secondary-gold pt-space-6 ui-desktop:gap-space-8 ui-desktop:pt-space-8">
           <div id="pdp-metal-info">{sectionHeading(`${noun} ${labels.info}`, icon)}</div>
-          <ProductInfoCard label={labels.metal} value={metalLabel(variant.metal)} note={content.metalNote}>
+          <ProductInfoCard label={labels.metal} value={metalLabel(variant.metal)} note={content.metalNote} gap="md">
             <CompositionChart parts={metalComposition[variant.metal]} />
           </ProductInfoCard>
         </section>
@@ -183,7 +186,8 @@ export function ProductDetail({ product }: { product: Product }) {
                 value={stone.carat.toFixed(2)}
                 note={stone.kind === "pair" ? content.caratNote.pair : stone.kind === "line" ? content.caratNote.line : content.caratNote.single}
                 spread
-                className="h-full"
+                // Figma: the desktop card fills its row; the mobile one is fixed at 136, 4px taller than Color beside it.
+                className="h-full min-h-[8.5rem] ui-desktop:min-h-0"
               />
               {stone.color ? (
                 <ProductInfoCard label="Color" value={stone.color.grade} note={stone.color.short || undefined}>
@@ -199,25 +203,31 @@ export function ProductDetail({ product }: { product: Product }) {
                 <ProductInfoCard
                   label="Dimensions (mm)"
                   value={`${mm(stone.dimensions.length)} × ${mm(stone.dimensions.width)}`}
-                  note={
-                    <span className="flex items-end justify-between gap-space-2">
-                      <span className="ui-desktop:hidden">{stone.shape === "round" ? <DimensionsDiagram /> : null}</span>
-                      <span>
-                        {labels.ratio}: {stone.dimensions.ratio.toFixed(2)}
-                      </span>
-                    </span>
-                  }
+                  // Mobile (Figma 3587:127126): the ruler sits 8px under the value and the ratio is right-aligned at the
+                  // bottom of a card fixed at 150. Desktop: no ruler, the ratio left-aligned at the bottom of the row.
+                  note={<span className="block text-right ui-desktop:text-left">{labels.ratio}: {stone.dimensions.ratio.toFixed(2)}</span>}
                   spread
-                  className="h-full"
-                />
+                  className="h-full min-h-[9.375rem] ui-desktop:min-h-0"
+                >
+                  {stone.shape === "round" ? (
+                    <span className="ui-desktop:hidden">
+                      <DimensionsDiagram />
+                    </span>
+                  ) : null}
+                </ProductInfoCard>
               ) : null}
               {stone.lab ? (
                 <ProductInfoCard
                   label="Certification"
                   value={stone.lab}
                   // View Certificate needs a certificate file per stone, which the catalogue doesn't have: shown, not linked.
-                  note={<span className="underline decoration-black-alpha-25 underline-offset-2">{labels.viewCertificate}</span>}
-                  spread
+                  // Desktop: 24px from the lab to View Certificate (Medium, ui-xs/link). Mobile keeps 12, as built
+                  // since its logo row was left out (Deviations).
+                  note={
+                    <span className="block pt-space-1 ui-desktop:pt-space-4">
+                      <span className="underline decoration-black-alpha-25 underline-offset-2 ui-desktop:font-medium">{labels.viewCertificate}</span>
+                    </span>
+                  }
                 />
               ) : null}
             </div>

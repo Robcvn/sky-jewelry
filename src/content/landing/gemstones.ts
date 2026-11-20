@@ -2,7 +2,7 @@
  * Gemstones landing page (Figma desktop 3565:97781, mobile 3587:124191), shaped for Sanity.
  * Figma's placeholders are replaced with short neutral copy (see the report's "Corrected design oversights").
  */
-import { em, span } from "@/components/ui/RichText";
+import { br, em, perBreakpoint, span } from "@/components/ui/RichText";
 import { colorTiles, ctaCallout, designYourOwn, faqs, guaranteeIcons, reviews } from "./shared";
 import type { LandingPage } from "./types";
 
@@ -49,7 +49,8 @@ export const gemstonesPage: LandingPage = {
       _key: "shapes",
       layout: "carousel",
       overline: "A Spectrum of Sparkle",
-      heading: [span("Shop Gemstones "), em("by"), span(" Shape")],
+      // Mobile frame (3587:124191) breaks the line before "by" (a hard line break in Figma's text).
+      heading: [span("Shop Gemstones "), br(true), em("by"), span(" Shape")],
       // Figma's titles are the placeholder "Shape Name": named after the shapes the photos show.
       items: (
         [
@@ -65,7 +66,7 @@ export const gemstonesPage: LandingPage = {
       _key: "colors",
       layout: "carousel",
       overline: "A Spectrum of Sparkle",
-      heading: [span("Shop Gemstones "), em("by"), span(" Color")],
+      heading: [span("Shop Gemstones "), br(true), em("by"), span(" Color")],
       items: colorTiles(SHOP, "gemstones"),
     },
     {
@@ -73,7 +74,8 @@ export const gemstonesPage: LandingPage = {
       _key: "birthstones",
       layout: "carousel",
       overline: "Born to Shine",
-      heading: [span("Shop "), em("by"), span(" Birthstone")],
+      // Desktop says "Birthstone", the mobile frame "Gemstones": each built as drawn (Open questions).
+      heading: [span("Shop "), em("by"), span(" "), ...perBreakpoint("Birthstone", "Gemstones")],
       items: BIRTHSTONES.map((title, index) => ({
         _key: title.slice(0, 3).toLowerCase(),
         title,

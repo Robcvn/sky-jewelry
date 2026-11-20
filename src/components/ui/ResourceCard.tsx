@@ -22,7 +22,8 @@ export function ResourceCardLarge({ topic, title, body, href, ctaLabel, image, s
         <div className="flex flex-col gap-space-2 ui-desktop:gap-space-4">
           <p className="type-overline-xs-medium">{topic}</p>
           <div className="flex flex-col gap-space-3 ui-desktop:gap-space-4">
-            <h3 className="type-heading-sm ui-desktop:type-heading-md">{title}</h3>
+            {/* heading-md at every size: the mobile Home frame (3587:124551) uses it here too. */}
+            <h3 className="type-heading-md">{title}</h3>
             <p className="type-body-xs-regular line-clamp-3 max-w-[35rem] ui-desktop:line-clamp-none">{body}</p>
           </div>
         </div>

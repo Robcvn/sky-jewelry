@@ -97,9 +97,26 @@ export function DiamondTypeTiles({ value, onChange, labelledBy }: { value: Diamo
   );
 }
 
-export function LengthChecks({ options, value, onChange, labelledBy }: { options: string[]; value: string[]; onChange: (value: string[]) => void; labelledBy: string }) {
+/**
+ * Chain length checkboxes in two columns. The mobile sheet (Figma 5746:89744) draws two 147px columns with a 16px
+ * gap, leaving the right of the row free; `fixed` builds that. Without it the columns share the width (the
+ * desktop dropdown, which Figma doesn't draw).
+ */
+export function LengthChecks({
+  options,
+  value,
+  onChange,
+  labelledBy,
+  fixed = false,
+}: {
+  options: string[];
+  value: string[];
+  onChange: (value: string[]) => void;
+  labelledBy: string;
+  fixed?: boolean;
+}) {
   return (
-    <div role="group" aria-labelledby={labelledBy} className="grid grid-cols-2 gap-space-4">
+    <div role="group" aria-labelledby={labelledBy} className={`grid gap-space-4 ${fixed ? "grid-cols-[repeat(2,minmax(0,9.1875rem))]" : "grid-cols-2"}`}>
       {options.map((length) => (
         <Checkbox key={length} label={lengthLabel(length)} checked={value.includes(length)} onChange={() => onChange(toggle(value, length))} />
       ))}

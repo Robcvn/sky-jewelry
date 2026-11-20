@@ -48,7 +48,8 @@ export const diamondsPage: LandingPage = {
       _key: "colors",
       layout: "carousel",
       overline: "A Spectrum of Sparkle",
-      heading: [span("Shop Diamonds "), em("by"), span(" Color")],
+      // Mobile frame (3587:123850) breaks the line before "by" (a hard line break in Figma's text).
+      heading: [span("Shop Diamonds "), br(true), em("by"), span(" Color")],
       items: colorTiles(`${SHOP}`, "diamonds"),
     },
     {

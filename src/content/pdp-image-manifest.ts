@@ -163,6 +163,20 @@ export const pdpImageManifest = {
       "w": 602,
       "h": 753
     }
+  ],
+  // Mobile gallery crop of the pendant's main photo, from Figma's original (600px, the Asset Tabs image in 3587:127126,
+  // shown unflipped as Corrected design oversights says). The shared product file is only 342px wide.
+  "product-necklace-solitaire-pendant-yellow-gold-gallery-m": [
+    {
+      "src": "/images/pdp/pendant-solitaire-gallery-m-390.webp",
+      "w": 390,
+      "h": 390
+    },
+    {
+      "src": "/images/pdp/pendant-solitaire-gallery-m-600.webp",
+      "w": 600,
+      "h": 600
+    }
   ]
 } as const;
 

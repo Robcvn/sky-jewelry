@@ -53,8 +53,9 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
   return (
     <DialogShell open={open} onClose={onClose} labelledBy={`${id}-title`}>
       {({ visible }) => (
+        // Figma 3587:127035: 8px padding and no gap, so the text block starts right under the photo.
         <div
-          className={`relative flex max-h-[calc(100dvh-var(--spacing-space-4))] w-full max-w-[24.375rem] flex-col gap-space-2 overflow-y-auto overscroll-contain rounded-8 border border-black-alpha-5 bg-base-white p-space-2 text-primary-leather shadow-lg ${dialogPanelMotion(visible)}`}
+          className={`relative flex max-h-[calc(100dvh-var(--spacing-space-4))] w-full max-w-[24.375rem] flex-col overflow-y-auto overscroll-contain rounded-8 border border-black-alpha-5 bg-base-white p-space-2 text-primary-leather shadow-lg ${dialogPanelMotion(visible)}`}
         >
           <IconButton icon="close" label={labels.close} variant="ghost" size="md" onClick={onClose} className="absolute top-space-4 right-space-4 z-10" />
 

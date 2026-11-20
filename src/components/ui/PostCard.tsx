@@ -37,8 +37,9 @@ export function PostCard({ title, excerpt, topic, date, readTime, href, image, s
             <span>{readTime}</span>
           </span>
           <h3 className="type-heading-sm ui-desktop:type-heading-md">{title}</h3>
-          <span className="type-body-xs-regular ui-desktop:type-body-sm-regular">{excerpt}</span>
         </span>
+        {/* Figma (Home 3587:124551 / 3565:101343): meta to title 8, then title to excerpt to Read more 12 / 16. */}
+        <span className="type-body-xs-regular ui-desktop:type-body-sm-regular">{excerpt}</span>
         <span className="type-overline-xs-medium ui-transition-fast inline-flex items-center gap-space-1 group-hover:text-black-alpha-50">
           Read more
           <Icon name="chevron-right" size={16} />

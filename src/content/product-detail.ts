@@ -89,11 +89,14 @@ export const shapeDimensions: Record<string, { widthAt1ct: number; ratio: number
 
 export type Grade = { value: string; label: string; description: string };
 
-/** Grade scales from Figma's "Your Diamond's Qualities" (Clarity uses the mobile scale, SI2 to FL). */
+/**
+ * Grade scales from Figma's "Your Diamond's Qualities" (Clarity uses the mobile scale, SI2 to FL). Each drawing's
+ * height is a percentage of its panel (198px desktop, 144px mobile) as each frame draws it, centred.
+ */
 export const gradeScales = {
   color: {
     title: "Color",
-    illustration: "/images/pdp/quality-color-diamond.svg",
+    illustration: { src: "/images/pdp/quality-color-diamond.svg", height: { mobile: 89.2, desktop: 100 } },
     options: ["J", "I", "H", "G", "F", "E", "D"],
     /** Short descriptor for the Stone Info card, and the full description for the Qualities card. */
     grades: {
@@ -106,7 +109,7 @@ export const gradeScales = {
   },
   clarity: {
     title: "Clarity",
-    illustration: "/images/pdp/quality-clarity-diamond.svg",
+    illustration: { src: "/images/pdp/quality-clarity-diamond.svg", height: { mobile: 86.1, desktop: 76.8 } },
     options: ["SI2", "SI1", "VS2", "VS1", "VVS2", "VVS1", "IF", "FL"],
     grades: {
       VVS2: {
@@ -118,7 +121,7 @@ export const gradeScales = {
   },
   cut: {
     title: "Cut",
-    illustration: "/images/pdp/quality-cut-diamond.svg",
+    illustration: { src: "/images/pdp/quality-cut-diamond.svg", height: { mobile: 93.1, desktop: 100 } },
     options: ["Good", "Very Good", "Excellent"],
     grades: {
       Excellent: { short: "Exceptional fire and brilliance", description: "Exceptional fire, brilliance, and precise diamond craftsmanship." },

@@ -377,9 +377,9 @@ export const landingImageManifest = {
       "h": 368
     },
     {
-      "src": "/images/landing/fc-birthday-fc-466.webp",
-      "w": 466,
-      "h": 583
+      "src": "/images/landing/fc-birthday-fc-588.webp",
+      "w": 588,
+      "h": 736
     }
   ],
   "fc-new-beginnings-fc": [

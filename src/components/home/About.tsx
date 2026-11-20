@@ -16,7 +16,7 @@ export function About({ content }: { content: AboutContent }) {
       <div className="relative aspect-square w-full overflow-hidden rounded-4 bg-secondary-ivory ui-desktop:order-2 ui-desktop:w-[49.04%] ui-desktop:shrink-0">
         <Picture image={content.image} sizes={{ desktop: "calc(49vw - 94px)", mobile: "calc(100vw - 40px)" }} className="absolute inset-0 size-full object-cover" />
       </div>
-      <div className="flex flex-1 flex-col items-start gap-space-4 ui-desktop:gap-space-6 ui-desktop:py-space-10">
+      <div className="flex flex-1 flex-col items-start gap-space-6 ui-desktop:py-space-10">
         <div className="flex flex-col gap-space-4">
           <h2 id={headingId} className={SECTION_HEADING}>
             <RichText value={content.heading} emClassName={SECTION_HEADING_EM} />
