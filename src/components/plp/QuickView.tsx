@@ -7,7 +7,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { DialogShell, dialogPanelMotion } from "@/components/ui/Modal";
 import { OptionTile } from "@/components/ui/OptionTile";
 import { PaginationDots } from "@/components/ui/Pagination";
-import { Picture } from "@/components/ui/Picture";
+import { Picture, slotImage } from "@/components/ui/Picture";
 import { Installments, MetalSwatches, type ProductCardLabels } from "@/components/ui/ProductCard";
 import { metalById } from "@/content/metals";
 import { formatCarat, formatPrice, imagesFor, productHref, variantName, type Product, type ProductVariant } from "@/content/products";
@@ -60,7 +60,7 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
           <IconButton icon="close" label={labels.close} variant="ghost" size="md" onClick={onClose} className="absolute top-space-4 right-space-4 z-10" />
 
           <div className="relative aspect-square shrink-0 overflow-hidden rounded-4 bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]">
-            <Picture image={image} sizes={{ desktop: "23rem", mobile: "min(23.375rem, 96vw)" }} className="size-full object-cover mix-blend-multiply" />
+            <Picture image={slotImage(image, "quickview")} sizes={{ desktop: "23rem", mobile: "min(23.375rem, 96vw)" }} className="size-full object-cover mix-blend-multiply" />
             {images.length > 1 ? (
               <div className="absolute inset-x-0 bottom-space-4 flex justify-center">
                 <PaginationDots

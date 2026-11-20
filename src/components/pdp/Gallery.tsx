@@ -2,11 +2,10 @@
 
 import { useRef, useState } from "react";
 import { PaginationDots } from "@/components/ui/Pagination";
-import { Picture, type ImageRef } from "@/components/ui/Picture";
+import { Picture, slotImage, type ImageRef } from "@/components/ui/Picture";
 import { Tabs } from "@/components/ui/Tabs";
 import { Viewer360 } from "@/components/ui/Viewer360";
 import { cx } from "@/components/ui/shared";
-import { pdpImageManifest, type PdpImageKey } from "@/content/pdp-image-manifest";
 import { productDetailContent } from "@/content/product-detail";
 import type { Product, ProductVariant } from "@/content/products";
 import { desktopGallery, galleryPhotos, stonePhoto } from "./productFacts";
@@ -23,21 +22,23 @@ export function DesktopGallery({ product, variant, name }: { product: Product; v
   const photos = desktopGallery(product, variant.metal);
   const tiles: Array<{ key: string; image?: ImageRef; spin?: ImageRef[] }> = photos.map((image, index) => ({ key: `${variant.metal}-${index}`, image }));
   if (product.spin) tiles.splice(1, 0, { key: "spin", spin: product.spin });
+  const wide = (index: number) => tiles.length % 2 === 1 && index === 0;
 
   return (
     <div className="grid grid-cols-2 gap-space-3">
       {tiles.map((tile, index) => (
         <div
           key={tile.key}
-          className={cx("relative aspect-square overflow-hidden rounded-4", TILE_BG, tiles.length % 2 === 1 && index === 0 && "col-span-2")}
+          className={cx("relative aspect-square overflow-hidden rounded-4", TILE_BG, wide(index) && "col-span-2")}
         >
           {tile.spin ? (
             <Viewer360 frames={tile.spin} label={`${name}, 360° view`} sizes={{ desktop: "27vw", mobile: "100vw" }} />
           ) : (
             <Picture
-              image={tile.image!}
+              // The first tile spans the row when the count is odd: 694px at 1440 (the 718 column less its 24px padding).
+              image={wide(index) ? slotImage(tile.image!, "gallery-d-wide") : tile.image!}
               priority={index === 0}
-              sizes={{ desktop: tiles.length % 2 === 1 && index === 0 ? "50vw" : "25vw", mobile: "100vw" }}
+              sizes={{ desktop: wide(index) ? "min(43.375rem, 48.2vw)" : "25vw", mobile: "100vw" }}
               className="size-full object-cover mix-blend-multiply"
             />
           )}
@@ -45,12 +46,6 @@ export function DesktopGallery({ product, variant, name }: { product: Product; v
       ))}
     </div>
   );
-}
-
-/** A photo's full-width mobile gallery crop ("<key>-gallery-m" in the PDP manifest), where one exists. */
-function galleryCrop(image: ImageRef): ImageRef {
-  const key = `${image.desktop}-gallery-m`;
-  return key in pdpImageManifest ? { ...image, mobile: key as PdpImageKey } : image;
 }
 
 /**
@@ -62,7 +57,7 @@ export function MobileGallery({ product, variant, name }: { product: Product; va
   const stone = stonePhoto(product);
   const [showStone, setShowStone] = useState(false);
   const [tab, setTab] = useState<"images" | "spin">("images");
-  const photos = showStone && stone ? [stone] : galleryPhotos(product, variant.metal).map(galleryCrop);
+  const photos = showStone && stone ? [stone] : galleryPhotos(product, variant.metal).map((image) => slotImage(image, "gallery-m"));
   const scroller = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
 

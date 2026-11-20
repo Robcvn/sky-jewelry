@@ -1,11 +1,23 @@
 import { imageManifest as homeManifest } from "@/content/image-manifest";
 import { landingImageManifest } from "@/content/landing-image-manifest";
 import { pdpImageManifest } from "@/content/pdp-image-manifest";
+import { productGalleryManifest } from "@/content/product-gallery-manifest";
 import { productImageManifest } from "@/content/product-image-manifest";
 import { withBasePath } from "./shared";
 
-const imageManifest = { ...homeManifest, ...productImageManifest, ...pdpImageManifest, ...landingImageManifest };
+// The PDP manifest comes after the product gallery one, so a crop made from Figma's original (the pendant's mobile
+// gallery photo) wins over the one generated from the Shopify source.
+const imageManifest = { ...homeManifest, ...productImageManifest, ...productGalleryManifest, ...pdpImageManifest, ...landingImageManifest };
 export type ImageKey = keyof typeof imageManifest;
+
+/**
+ * The same photo in a full-size slot ("gallery-m", "quickview", "gallery-d-wide"; see scripts/build-product-images.mjs
+ * --gallery): every breakpoint uses the slot's files. Falls back to the photo as it is when there is no such crop.
+ */
+export function slotImage(image: ImageRef, slot: "gallery-m" | "quickview" | "gallery-d-wide"): ImageRef {
+  const key = `${image.desktop}-${slot}`;
+  return key in imageManifest ? { desktop: key as ImageKey, alt: image.alt } : image;
+}
 
 /** A Sanity-style image reference: the crop for each breakpoint, and alt text. */
 export type ImageRef = { desktop: ImageKey; mobile?: ImageKey; alt: string };
