@@ -1355,6 +1355,12 @@ export default function ComponentsPage() {
               &ldquo;06 D : 08 H : 23 M : 48 S&rdquo;). If the site is not rebuilt before then, the sale restarts every 7 days, so the timer
               never shows zero.
             </li>
+            <li>
+              Icon line width: Figma draws some icon lines at its default 1px and keeps them 1px at every size (Lifetime
+              Warranty, 30 Days Free Return and Certificate on the product page, parts of Earrings and Diamond Experts). Built
+              at 0.99px, also at every size: Chrome draws an exactly-1px curved line as a dotted line on standard-density
+              screens; 0.99px renders solid and looks the same.
+            </li>
           </ul>
         </Section>
 
@@ -1477,6 +1483,12 @@ export default function ComponentsPage() {
             <li>
               Search panel: Figma&rsquo;s search frame shows &ldquo;Education&rdquo; in hazel with no underline, a leftover from the Education menu
               frame it was copied from. Built with all nav items in their default colour while search is open.
+            </li>
+            <li>
+              Metal tile badge position: in the Filters sheet frames, the unselected metal tiles pin the badge 8px from the tile top
+              (11px above the label), while the selected tile and every metal tile on the product page and in the quick view centre it
+              15px from the top (4px above the label). Built at 15px on every metal tile; the label (51px from the top) and the 80px
+              tile are the same either way.
             </li>
           </ul>
         </Section>

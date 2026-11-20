@@ -11,7 +11,7 @@ import { Picture } from "@/components/ui/Picture";
 import { Installments, MetalSwatches, type ProductCardLabels } from "@/components/ui/ProductCard";
 import { metalById } from "@/content/metals";
 import { formatCarat, formatPrice, imagesFor, productHref, variantName, type Product, type ProductVariant } from "@/content/products";
-import { withBasePath } from "@/components/ui/shared";
+import { MetalBadge } from "@/components/ui/MetalBadge";
 
 export type QuickViewLabels = ProductCardLabels & { caratWeight: string; metal: string; stone: string; close: string };
 
@@ -114,8 +114,7 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
                   <Icon name="chevron-right" size={12} />
                 </p>
                 <div className="flex h-space-15 flex-col items-center justify-center gap-space-1 rounded-4 border border-black-alpha-20 p-space-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- static SVG badge */}
-                  <img src={withBasePath(`/images/metals/${metal.id}.svg`)} alt="" width={32} height={32} />
+                  <MetalBadge metal={metal.id} />
                   <span className="type-ui-2xs-medium">{metal.shortLabel}</span>
                 </div>
               </div>

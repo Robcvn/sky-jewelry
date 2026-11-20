@@ -58,7 +58,7 @@ export function NumberField({ label, value, onChange, min, max, step, format = S
   return (
     <div
       className={cx(
-        "ui-transition flex h-space-12 w-24 overflow-hidden rounded-4 border border-secondary-gold bg-base-white text-primary-leather has-[input:focus-visible]:border-primary-leather has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-primary-leather",
+        "ui-transition flex h-space-11 w-24 overflow-hidden rounded-4 border border-secondary-gold bg-base-white text-primary-leather has-[input:focus-visible]:border-primary-leather has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-primary-leather",
         className,
       )}
     >

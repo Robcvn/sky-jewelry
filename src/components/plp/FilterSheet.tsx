@@ -105,7 +105,7 @@ export function FilterSheet({ open, onClose, category, state, onApply, filters, 
 
             {show("carat") && bounds.carat ? (
               <section className="flex flex-col gap-space-1">
-                <FilterLabel label={copy.caratShort} help={copy.caratHelp} />
+                <FilterLabel label={copy.caratShort} help={copy.caratHelp} tall />
                 <CaratRange bounds={bounds.carat} value={draft.carat} onChange={(carat) => set({ carat })} />
               </section>
             ) : null}
@@ -119,7 +119,7 @@ export function FilterSheet({ open, onClose, category, state, onApply, filters, 
 
             {show("price") ? (
               <section className="flex flex-col gap-space-1">
-                <FilterLabel label={copy.price} />
+                <FilterLabel label={copy.price} tall />
                 <PriceRange bounds={bounds.price} value={draft.price} onChange={(price) => set({ price })} />
               </section>
             ) : null}

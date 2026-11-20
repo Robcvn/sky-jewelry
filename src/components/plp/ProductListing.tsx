@@ -241,7 +241,8 @@ export function ProductListing({ category, products }: ProductListingProps) {
           </ul>
         ) : (
           <div className="flex flex-col items-center gap-space-5 rounded-4 border border-secondary-gold px-space-8 py-space-10 text-center text-primary-leather ui-desktop:gap-space-8 ui-desktop:px-space-15 ui-desktop:py-space-13">
-            <p className="type-heading-sm max-w-[38.75rem] ui-desktop:type-heading-md">{content.empty}</p>
+            {/* Figma 4045:50390 sets the message in a 398px text box; on mobile it fills the 286px inside the padding. */}
+            <p className="type-heading-sm max-w-[24.875rem] ui-desktop:type-heading-md">{content.empty}</p>
             <Button size="sm" variant="secondary" leftIcon="arrow-counter-clockwise" onClick={clearAll}>
               {copy.clearFilters}
             </Button>

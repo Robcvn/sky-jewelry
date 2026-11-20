@@ -46,9 +46,11 @@ export function WhatsInTheBox() {
       <h2 id="pdp-box" className={`site-container text-center ${SECTION_HEADING}`}>
         <RichText value={heading} emClassName={SECTION_HEADING_EM} />
       </h2>
+      {/* Figma at 1440: 400 x 400 and 612 x 400 photos in the 1248px content width. The carousel is a full-bleed size
+          container, so sizes are fractions of (100cqw - 2 * grid margin), as the other carousels do. */}
       <Carousel
         label={plainText(heading)}
-        arrowTop="16.03cqw"
+        arrowTop="calc((100cqw - 2 * var(--grid-margin)) * 200 / 1248)"
         itemClassName="w-[18rem] ui-desktop:w-auto"
         items={items.map((item) => ({
           key: item._key,
@@ -59,8 +61,8 @@ export function WhatsInTheBox() {
               sizes={{ desktop: item.width === "wide" ? "42.5vw" : "27.8vw", mobile: "288px" }}
               imageClassName={
                 item.width === "wide"
-                  ? "aspect-square ui-desktop:aspect-auto ui-desktop:h-[32.05cqw] ui-desktop:w-[49.04cqw]"
-                  : "aspect-square ui-desktop:aspect-auto ui-desktop:h-[32.05cqw] ui-desktop:w-[32.05cqw]"
+                  ? "aspect-square ui-desktop:aspect-[612/400] ui-desktop:w-[calc((100cqw-2*var(--grid-margin))*612/1248)]"
+                  : "aspect-square ui-desktop:w-[calc((100cqw-2*var(--grid-margin))*400/1248)]"
               }
             />
           ),

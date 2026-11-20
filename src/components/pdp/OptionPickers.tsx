@@ -34,11 +34,10 @@ export function CaratPicker({ carats, value, onChange }: { carats: number[]; val
             key={carat}
             type="radio"
             shape="compact"
-            labelSize="2xs"
             name={`${id}-carat`}
             checked={value === carat}
             onChange={() => onChange(carat)}
-            className="ui-desktop:h-space-12 ui-desktop:w-auto ui-desktop:min-w-space-11 ui-desktop:flex-1"
+            className="ui-desktop:h-space-11 ui-desktop:w-auto ui-desktop:min-w-space-11 ui-desktop:flex-1"
           >
             {formatCarat(carat)}
           </OptionTile>

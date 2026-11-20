@@ -3,9 +3,9 @@
 import { useId, useState, type ReactNode } from "react";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Icon } from "@/components/ui/Icon";
+import { MetalBadge } from "@/components/ui/MetalBadge";
 import { OptionTile } from "@/components/ui/OptionTile";
 import { RangeField } from "@/components/ui/RangeField";
-import { withBasePath } from "@/components/ui/shared";
 import type { DiamondType } from "@/content/catalog-seed";
 import { METALS, type MetalId } from "@/content/metals";
 import { productListContent } from "@/content/product-list";
@@ -16,13 +16,16 @@ const { filters: copy } = productListContent;
 
 const toggle = <T,>(list: T[], value: T) => (list.includes(value) ? list.filter((item) => item !== value) : [...list, value]);
 
-/** The Filters sheet's group label: "METAL:  14K YELLOW GOLD", with an optional help toggletip. */
-export function FilterLabel({ label, value, help, id }: { label: string; value?: string; help?: string; id?: string }) {
+/**
+ * The Filters sheet's group label: "METAL:  14K YELLOW GOLD", with an optional help toggletip. `tall`: the 20px
+ * label row Figma gives the Carat and Price groups (10/20), 4px above their slider; the other labels are 14px.
+ */
+export function FilterLabel({ label, value, help, id, tall = false }: { label: string; value?: string; help?: string; id?: string; tall?: boolean }) {
   const [open, setOpen] = useState(false);
   const helpId = useId();
   return (
     <div className="flex flex-col gap-space-2">
-      <p id={id} className="type-overline-xs-medium flex flex-wrap items-center gap-x-space-2 text-primary-leather">
+      <p id={id} className={`type-overline-xs-medium flex flex-wrap items-center gap-x-space-2 text-primary-leather ${tall ? "min-h-space-5" : ""}`}>
         <span>
           {label}
           {value !== undefined ? ":" : ""}
@@ -50,10 +53,7 @@ export function FilterLabel({ label, value, help, id }: { label: string; value?:
   );
 }
 
-export const metalBadge = (id: MetalId) => (
-  // eslint-disable-next-line @next/next/no-img-element -- a static SVG badge exported from Figma
-  <img src={withBasePath(`/images/metals/${id}.svg`)} alt="" width={32} height={32} className="size-space-8" />
-);
+export const metalBadge = (id: MetalId) => <MetalBadge metal={id} />;
 
 /** The seven metal tiles (Figma "Metal - 14k White Gold" ...), multi-select. */
 export function MetalTiles({ value, onChange, labelledBy, wrap = false }: { value: MetalId[]; onChange: (value: MetalId[]) => void; labelledBy: string; wrap?: boolean }) {

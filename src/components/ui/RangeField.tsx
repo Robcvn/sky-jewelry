@@ -21,12 +21,15 @@ type RangeFieldProps = {
 /**
  * The slider with its two number inputs below, as in Figma's Price dropdown and the Filters sheet's
  * Carat and Price groups. Slider and inputs stay in sync, and the minimum never passes the maximum.
+ * Figma: the slider frame is 18px (8px above and below the 2px track; the 20px handles overhang it by 1px),
+ * then 8px, then the 48px inputs. The label above sits 4px over the slider frame (set by the caller).
  */
 export function RangeField({ name, min, max, step, value, onChange, format = String, stepper = false, className }: RangeFieldProps) {
   const labels: [string, string] = [`Minimum ${name}`, `Maximum ${name}`];
   return (
     <div className={cx("flex flex-col gap-space-2", className)}>
-      <div className="py-space-2">
+      {/* The 20px slider in an 18px slot: Figma's handles overhang the slider frame by 1px above and below. */}
+      <div className="-my-px">
         <RangeSlider min={min} max={max} step={step} value={value} onChange={onChange} labels={labels} formatValue={format} />
       </div>
       <div className="flex items-center justify-between gap-space-4">
