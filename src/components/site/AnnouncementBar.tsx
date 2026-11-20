@@ -21,10 +21,17 @@ function useNowInSeconds() {
   );
 }
 
-function Countdown({ label, endsAt }: AnnouncementBarContent["countdown"]) {
+/** Seconds until the sale ends; once the mock end date has passed, the sale restarts every `restartDays`. */
+function secondsLeft(now: number, end: number, restartDays: number) {
+  const period = restartDays * 86400;
+  if (now < end || period <= 0) return Math.max(0, end - now);
+  return period - ((now - end) % period);
+}
+
+function Countdown({ label, endsAt, restartDays }: AnnouncementBarContent["countdown"]) {
   const now = useNowInSeconds();
   const end = Math.floor(new Date(endsAt).getTime() / 1000);
-  const left = now === null ? null : Math.max(0, end - now);
+  const left = now === null ? null : secondsLeft(now, end, restartDays);
   const parts =
     left === null
       ? null

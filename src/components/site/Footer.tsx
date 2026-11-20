@@ -18,19 +18,25 @@ export function Footer({ content = siteFooter, breakpoint, newsletterPreview, la
   return (
     <footer aria-label={label} data-breakpoint={breakpoint} className="bg-primary-blue text-secondary-ivory">
       <div className="site-container flex flex-col items-center gap-space-8 pt-space-11 pb-space-6 ui-desktop:gap-space-15 ui-desktop:pt-space-15 ui-desktop:pb-space-8">
-        <div className="flex w-full max-w-[38rem] flex-col gap-space-6">
-          <Newsletter content={content.newsletter} previewState={newsletterPreview} />
-          <p className="type-body-xs-regular text-center text-secondary-gold">
-            {privacyLine.before}
-            <Link href={privacyLine.privacy.href} className={`${LINK} text-secondary-ivory underline`}>
-              {privacyLine.privacy.label}
-            </Link>
-            {privacyLine.middle}
-            <Link href={privacyLine.contact.href} className={`${LINK} text-secondary-ivory underline`}>
-              {privacyLine.contact.label}
-            </Link>
-            {privacyLine.after}
-          </p>
+        <div className="w-full max-w-[38rem]">
+          <Newsletter
+            content={content.newsletter}
+            previewState={newsletterPreview}
+            footnote={
+              // Figma's desktop frame: gold text, ivory links; the mobile frame swaps them. Links underlined (D9).
+              <p className="type-body-xs-regular text-center text-secondary-ivory ui-desktop:text-secondary-gold">
+                {privacyLine.before}
+                <Link href={privacyLine.privacy.href} className={`${LINK} text-secondary-gold underline ui-desktop:text-secondary-ivory`}>
+                  {privacyLine.privacy.label}
+                </Link>
+                {privacyLine.middle}
+                <Link href={privacyLine.contact.href} className={`${LINK} text-secondary-gold underline ui-desktop:text-secondary-ivory`}>
+                  {privacyLine.contact.label}
+                </Link>
+                {privacyLine.after}
+              </p>
+            }
+          />
         </div>
 
         <hr className="w-full border-0 border-t border-secondary-gold" />

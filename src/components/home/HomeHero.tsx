@@ -30,7 +30,7 @@ export function HomeHero({ content }: { content: HomeHeroContent }) {
           <div key={link._key} className="relative flex flex-1">
             {index > 0 ? <span aria-hidden="true" className="absolute inset-y-0 left-0 w-px bg-white-alpha-20" /> : null}
             <div className="flex flex-1 ui-desktop:hidden">
-              <HeroButton href={link.href} icon={link.icon} overlay size="sm">
+              <HeroButton href={link.href} icon={link.mobileIcon ?? link.icon} overlay size="sm">
                 {link.mobileLabel}
               </HeroButton>
             </div>

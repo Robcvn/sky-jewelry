@@ -16,11 +16,13 @@ type IconBlockProps = {
   layout?: "stacked" | "row-on-mobile";
   /** Render the label as a heading (h3) when the block sits under a section heading. */
   asHeading?: boolean;
+  /** Icon colour when it differs from the text, e.g. text-primary-hazel on the landing guarantee row. */
+  iconClassName?: string;
   className?: string;
 };
 
 /** Figma "Icon Block" (Design System 2760:23823). */
-export function IconBlock({ icon, label, lines, body, layout = "stacked", asHeading = false, className }: IconBlockProps) {
+export function IconBlock({ icon, label, lines, body, layout = "stacked", asHeading = false, iconClassName, className }: IconBlockProps) {
   const Label = asHeading ? "h3" : "p";
   const row = layout === "row-on-mobile";
   return (
@@ -33,11 +35,11 @@ export function IconBlock({ icon, label, lines, body, layout = "stacked", asHead
     >
       {row ? (
         <>
-          <Icon name={icon} size={32} className="ui-desktop:hidden" />
-          <Icon name={icon} size={48} className="hidden ui-desktop:block" />
+          <Icon name={icon} size={32} className={cx("ui-desktop:hidden", iconClassName)} />
+          <Icon name={icon} size={48} className={cx("hidden ui-desktop:block", iconClassName)} />
         </>
       ) : (
-        <Icon name={icon} size={48} />
+        <Icon name={icon} size={48} className={iconClassName} />
       )}
       <div className={cx("flex flex-col", row ? "flex-1 gap-space-1 px-space-2 ui-desktop:gap-space-2" : "gap-space-2", body && !row && "px-space-2")}>
         <Label className={row ? "type-ui-sm-medium ui-desktop:type-ui-xs-medium" : "type-ui-2xs-medium ui-desktop:type-ui-xs-medium"}>

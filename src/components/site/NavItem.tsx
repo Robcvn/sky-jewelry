@@ -26,11 +26,12 @@ const NAV_ITEM_DEFAULT =
 
 /**
  * Figma "Nav Item" as a disclosure button for the mega menus. Open shows the Active style
- * (Figma's open-menu frames), and so does being inside that section of the site.
+ * (Figma's open-menu frames: hazel text and underline), also while the pointer still rests on the item,
+ * and so does being inside that section of the site.
  */
 export const navItemButtonClasses = cx(
   NAV_ITEM,
-  "cursor-pointer py-space-1 text-primary-leather ui-hover:text-black-alpha-60 aria-expanded:text-primary-hazel aria-expanded:shadow-[inset_0_-1px_0_var(--color-primary-hazel)] data-current:text-primary-hazel data-current:shadow-[inset_0_-1px_0_var(--color-primary-hazel)]",
+  "cursor-pointer py-space-1 text-primary-leather ui-hover:text-black-alpha-60 aria-expanded:text-primary-hazel aria-expanded:ui-hover:text-primary-hazel aria-expanded:shadow-[inset_0_-1px_0_var(--color-primary-hazel)] data-current:text-primary-hazel data-current:shadow-[inset_0_-1px_0_var(--color-primary-hazel)]",
 );
 
 /** Figma "Nav Item": a top-level link with Default, Hover and Active states. */

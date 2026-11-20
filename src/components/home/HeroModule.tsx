@@ -2,7 +2,7 @@ import { ButtonLink, ButtonText } from "@/components/ui/Button";
 import { Picture } from "@/components/ui/Picture";
 import { RichText } from "@/components/ui/RichText";
 import type { HeroModule as HeroModuleContent } from "@/content/home";
-import { SECTION_HEADING, SECTION_HEADING_EM, SECTION_Y } from "./styles";
+import { LANDING_BUTTON, SECTION_HEADING, SECTION_HEADING_EM, SECTION_Y } from "./styles";
 
 /** Figma "Hero Module": a full-bleed photo with a skin caption card sitting on its bottom edge. Used twice. */
 export function HeroModule({ content }: { content: HeroModuleContent }) {
@@ -32,11 +32,11 @@ export function HeroModule({ content }: { content: HeroModuleContent }) {
           </div>
           <p className="type-body-xs-regular max-w-[28.75rem] ui-desktop:type-body-sm-regular">{content.body}</p>
           {content.inert ? (
-            <ButtonText variant="secondary" size="responsive">
+            <ButtonText variant="secondary" size="responsive" className={content.landing ? LANDING_BUTTON : undefined}>
               {content.cta.label}
             </ButtonText>
           ) : (
-            <ButtonLink href={content.cta.href} variant="secondary" size="responsive">
+            <ButtonLink href={content.cta.href} variant="secondary" size="responsive" className={content.landing ? LANDING_BUTTON : undefined}>
               {content.cta.label}
               <span className="sr-only">: {content.cta.context}</span>
             </ButtonLink>

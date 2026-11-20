@@ -10,10 +10,11 @@ export type NavLink = { _key: string; label: string; href: string };
 
 export type AnnouncementBarContent = {
   _type: "announcementBar";
-  /** "messages" is the default. "countdown" shows the sale timer. */
+  /** "countdown" (the sale timer) is the default: every Figma page frame shows it. "messages" is the other Top Bar variant. */
   mode: "messages" | "countdown";
   messages: string[];
-  countdown: { label: string; endsAt: string };
+  /** endsAt: ISO date. A mock sale whose end has passed restarts every `restartDays`, so the timer never sits at zero. */
+  countdown: { label: string; endsAt: string; restartDays: number };
   contact: NavLink;
 };
 
@@ -102,12 +103,15 @@ export type FooterContent = {
   payments: Array<{ _key: string; label: string; icon: IconName }>;
 };
 
+/** The mock sale ends 6 days 8 hours 23 minutes 48 seconds after the build: Figma's "06 D : 08 H : 23 M : 48 S". */
+const SALE_AFTER_BUILD_MS = (((6 * 24 + 8) * 60 + 23) * 60 + 48) * 1000;
+const BUILD_TIME = Number(process.env.NEXT_PUBLIC_BUILD_TIME) || Date.parse("2026-11-19T00:00:00.000Z");
+
 export const announcementBar: AnnouncementBarContent = {
   _type: "announcementBar",
-  mode: "messages",
+  mode: "countdown",
   messages: ["30 days free returns", "Free Shipping Worldwide", "Lifetime Warranty"],
-  // Mock sale end date for the countdown variant.
-  countdown: { label: "Up to 20% Off", endsAt: "2026-12-01T05:00:00.000Z" },
+  countdown: { label: "Up to 20% Off", endsAt: new Date(BUILD_TIME + SALE_AFTER_BUILD_MS).toISOString(), restartDays: 7 },
   contact: { _key: "contact", label: "Contact", href: "/contact/" },
 };
 

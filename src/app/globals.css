@@ -37,9 +37,10 @@
     @apply type-h6;
   }
 
-  p {
-    @apply type-paragraph;
-  }
+  /*
+   * No base rule for <p>: a paragraph inherits the type class of its wrapper (FAQ answers, accordion bodies,
+   * the Top Bar countdown). Paragraphs that need the paragraph style carry type-paragraph or a type-p-* class.
+   */
 
   blockquote {
     @apply type-blockquote;

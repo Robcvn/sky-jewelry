@@ -185,16 +185,28 @@ export function HeroButton({
         />
       ) : null}
       <Icon name={icon} size={overlay ? (compact ? 40 : 48) : 24} className="ui-transition text-(--hero-icon)" />
-      <span className="flex items-center">
-        <span className={cx("type-heading-sm", !compact && "px-space-2")}>{children}</span>
-        {compact ? null : (
+      {overlay ? (
+        // The label alone is centred under the icon; the hover chevron hangs 4px after it, outside the centring (Figma).
+        <span className="relative flex items-center">
+          <span className="type-heading-sm">{children}</span>
+          {compact ? null : (
+            <Icon
+              name="chevron-right"
+              size={16}
+              className="ui-transition absolute top-1/2 left-full ml-space-1 -translate-y-1/2 opacity-0 group-hover/hero:opacity-100 group-focus-visible/hero:opacity-100 group-data-[state=hover]/hero:opacity-100"
+            />
+          )}
+        </span>
+      ) : (
+        <span className="flex items-center">
+          <span className="type-heading-sm px-space-2">{children}</span>
           <Icon
             name="chevron-right"
             size={16}
             className="ui-transition opacity-0 group-hover/hero:opacity-100 group-focus-visible/hero:opacity-100 group-data-[state=hover]/hero:opacity-100"
           />
-        )}
-      </span>
+        </span>
+      )}
     </Link>
   );
 }

@@ -6,7 +6,7 @@ import { IconBlock } from "@/components/ui/IconBlock";
 import { Picture } from "@/components/ui/Picture";
 import { ProductCardSummary } from "@/components/ui/ProductCardSummary";
 import { RichText, plainText } from "@/components/ui/RichText";
-import { SECTION_HEADING, SECTION_HEADING_EM } from "@/components/home/styles";
+import { LANDING_BUTTON, SECTION_HEADING, SECTION_HEADING_EM } from "@/components/home/styles";
 import type { ButtonCardPair, CtaCallout, DiamondInspection, FeatureCardRow, GuaranteeIcons, TileCarousel } from "@/content/landing/types";
 import { CARD_ITEM, CARD_W, LANDING_SECTION, SectionHeading } from "./SectionHeading";
 
@@ -84,7 +84,8 @@ export function GuaranteeIconsSection({ content }: { content: GuaranteeIcons }) 
       <ul className="site-container flex flex-col items-center gap-space-6 ui-desktop:flex-row ui-desktop:items-start">
         {content.items.map((item) => (
           <li key={item._key} className="flex w-full max-w-[21.875rem] flex-1 ui-desktop:max-w-none">
-            <IconBlock icon={item.icon} label={item.title} body={item.body} layout="row-on-mobile" asHeading />
+            {/* Figma strokes these icons in primary/hazel (#746345), lighter than the text. */}
+            <IconBlock icon={item.icon} label={item.title} body={item.body} layout="row-on-mobile" asHeading iconClassName="text-primary-hazel" />
           </li>
         ))}
       </ul>
@@ -201,7 +202,7 @@ export function DiamondInspectionSection({ content }: { content: DiamondInspecti
           ))}
         </ol>
         <div className="pt-space-2">
-          <ButtonLink href={content.cta.href} variant="secondary" size="responsive">
+          <ButtonLink href={content.cta.href} variant="secondary" size="responsive" className={LANDING_BUTTON}>
             {content.cta.label}
             <span className="sr-only">: {content.cta.context}</span>
           </ButtonLink>

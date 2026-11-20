@@ -919,9 +919,9 @@ export default function ComponentsPage() {
                     variant="line"
                     size={size}
                     items={[
-                      { id: "details", label: "Details", panel: <p>Setting details panel.</p> },
-                      { id: "diamond", label: "Diamond", panel: <p>Diamond details panel.</p> },
-                      { id: "care", label: "Care", panel: <p>Care panel.</p> },
+                      { id: "details", label: "Details", panel: <p className="type-paragraph">Setting details panel.</p> },
+                      { id: "diamond", label: "Diamond", panel: <p className="type-paragraph">Diamond details panel.</p> },
+                      { id: "care", label: "Care", panel: <p className="type-paragraph">Care panel.</p> },
                       { id: "reviews", label: "Reviews", disabled: true },
                     ]}
                   />
@@ -1335,8 +1335,8 @@ export default function ComponentsPage() {
             <li>Product page &ldquo;200 Reviews&rdquo; on desktop: Figma uses white-alpha-50, below AA on leather. Reuses the Home reviews section (skin, as Figma mobile).</li>
             <li>
               Landing &ldquo;Start a live chat&rdquo; (Consult module) and the Fine Jewelry &ldquo;Send us a text&rdquo; card: nothing to connect to,
-              so they are inert (plain text styled as the button), as on the product page. The product page&rsquo;s own &ldquo;Send us a text&rdquo;
-              still links to /contact/.
+              so they are inert (plain text styled as the button). The product page&rsquo;s own &ldquo;Send us a text&rdquo; is inert in the
+              same way.
             </li>
             <li>Landing best-seller cards keep the product card&rsquo;s Add to Bag; Figma&rsquo;s hover demo says &ldquo;Complete your ring&rdquo; and shows a &ldquo;with stone&rdquo; price, which belong to the ring builder.</li>
             <li>Gemstones promo band: mobile only, as Figma (the desktop copy is hidden). Wedding Bands Customer Stories: desktop only. Fine Jewelry Reviews: mobile only.</li>
@@ -1345,6 +1345,16 @@ export default function ComponentsPage() {
               all filters. The unselected-tab state is not drawn in Figma.
             </li>
             <li>Filters sheet category tiles share their row (80px at 390, as Figma; narrower on smaller phones instead of overflowing).</li>
+            <li>
+              Top Bar countdown width: the label and timer group is about 9px wider than Figma (259 vs 250px on desktop, 243 vs 234px on
+              mobile, still centred). The digits use fixed-width (tabular) figures so the group does not shift as the seconds tick, and the
+              browser adds the 10% letter-spacing after the last letter of each part. The gaps match Figma.
+            </li>
+            <li>
+              Top Bar countdown date: a mock sale that ends 6 days 8 hours 23 minutes 48 seconds after the build (Figma&rsquo;s
+              &ldquo;06 D : 08 H : 23 M : 48 S&rdquo;). If the site is not rebuilt before then, the sale restarts every 7 days, so the timer
+              never shows zero.
+            </li>
           </ul>
         </Section>
 
@@ -1458,6 +1468,16 @@ export default function ComponentsPage() {
             <li>Mobile hero italic &ldquo;by&rdquo; set at 36/40 inside a 48px h1 (Wedding Bands, Diamonds, Fine Jewelry): built at the heading&rsquo;s own italic style, as Typography defines.</li>
             <li>Diamond Inspection step numbers in #030711 (off the palette): built in leather like all other text.</li>
             <li>Fine Jewelry: the mobile closing cards read &ldquo;Shop Now&rdquo; / &ldquo;Lab-Grown Diamonds&rdquo;; built with the desktop (product page) pair. The mobile men &amp; women heading &ldquo;Shop by Type&rdquo; (copied from a hidden heading, with Latin) is built with the desktop heading. The Milestones card&rsquo;s forced line break is dropped.</li>
+            <li>
+              Menu link icons: Figma strokes most mega menu and mobile menu link icons in primary/hazel (#746345) but 8 in leather (#432f2b):
+              Pearl Rings in Fine Jewelry, and the Engagement Rings style icons Solitaire, Halo, Channel-Set, Hidden Halo, Side-Stone,
+              Three-Stone and Vintage. Built with every link icon in hazel. The Shop All chevrons stay leather, as Figma draws them.
+            </li>
+            <li>Footer &ldquo;View our Privacy Policy or Contact Us.&rdquo;: the mobile frame drops the full stop that the desktop frame has. Built with it on both.</li>
+            <li>
+              Search panel: Figma&rsquo;s search frame shows &ldquo;Education&rdquo; in hazel with no underline, a leftover from the Education menu
+              frame it was copied from. Built with all nav items in their default colour while search is open.
+            </li>
           </ul>
         </Section>
 
@@ -1510,7 +1530,10 @@ export default function ComponentsPage() {
               When is the one-row header used, and is the header sticky? For now the header is two-row and scrolls with the page, and the
               one-row bar is an unused option.
             </li>
-            <li>Should the mobile announcement messages auto-scroll as a ticker? For now they scroll sideways by swipe or keyboard.</li>
+            <li>
+              Should the mobile announcement messages auto-scroll as a ticker? The site now shows the countdown Top Bar, as every Figma page
+              frame does, so this applies only if the messages variant is used again. In that variant they scroll sideways by swipe or keyboard.
+            </li>
             <li>
               Home hero photo needs a larger original from the designer: Figma&rsquo;s source is 1098px wide; the desktop slot is 1440px,
               so 1440px (2880px for 2x screens) is needed.

@@ -5,12 +5,18 @@ import { StarRating } from "@/components/ui/StarRating";
 import type { Reviews as ReviewsContent } from "@/content/home";
 import { SECTION_HEADING_EM, SECTION_Y } from "./styles";
 
-/** Figma Home section 9: client reviews on leather. Three cards in a row on desktop, swipeable on mobile. */
+/**
+ * Figma Home section 9: client reviews on leather. Three cards in a row on desktop, swipeable on mobile.
+ * Mobile gap from the rating to the cards: 32px on Home and the product page, 24px on the landing pages.
+ */
 export function Reviews({ content }: { content: ReviewsContent }) {
   const headingId = `${content._key}-heading`;
 
   return (
-    <section aria-labelledby={headingId} className={`flex flex-col gap-space-8 bg-primary-leather ui-desktop:gap-space-11 ${SECTION_Y}`}>
+    <section
+      aria-labelledby={headingId}
+      className={`flex flex-col bg-primary-leather ui-desktop:gap-space-11 ${content.landing ? "gap-space-6" : "gap-space-8"} ${SECTION_Y}`}
+    >
       <div className="site-container flex flex-col items-center gap-space-4 text-center ui-desktop:flex-row ui-desktop:justify-between ui-desktop:text-left">
         <h2 id={headingId} className="type-heading-caps-lg text-base-white ui-desktop:type-heading-caps-xl">
           <RichText value={content.heading} emClassName={SECTION_HEADING_EM} />
@@ -19,7 +25,8 @@ export function Reviews({ content }: { content: ReviewsContent }) {
           <p aria-hidden="true" className="type-body-2xl-medium text-base-white">
             {content.rating}
           </p>
-          <div className="flex flex-col gap-space-1">
+          {/* Left-aligned under the stars at every width (Figma), although the mobile header is centred. */}
+          <div className="flex flex-col gap-space-1 text-left">
             <StarRating rating={content.rating} />
             <p className="type-body-xs-medium text-secondary-skin">{content.reviewCount}</p>
           </div>

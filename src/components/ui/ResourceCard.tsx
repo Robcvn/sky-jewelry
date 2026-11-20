@@ -50,7 +50,8 @@ export function ResourceCardSmall({ topic, title, href, image, sizes }: Resource
           <h3 className="type-heading-sm ui-transition-fast group-hover:text-black-alpha-60">{title}</h3>
         </span>
         <span className="hidden items-center border-l border-secondary-gold px-space-4 ui-desktop:flex">
-          <Icon name="chevron-right" size={16} className="ui-transition-fast group-hover:translate-x-0.5" />
+          {/* Gold, as the Home Education Center rows (Figma 3565:101343). */}
+          <Icon name="chevron-right" size={16} className="ui-transition-fast text-secondary-gold group-hover:translate-x-0.5" />
         </span>
       </span>
     </Link>

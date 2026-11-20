@@ -21,7 +21,7 @@ export const engagementRingsPage: LandingPage = {
       ...hero,
       overline: "Engagement Rings",
       // Figma's desktop label is misspelt ("Engagment"); the mobile frame spells it correctly.
-      links: [{ _key: "shop", icon: "setting", label: "Shop Engagement Rings", mobileLabel: "Shop Engagement Rings", href: SHOP }],
+      links: [{ _key: "shop", icon: "setting", mobileIcon: "setting-empty", label: "Shop Engagement Rings", mobileLabel: "Shop Engagement Rings", href: SHOP }],
     },
     ctaCallout("promo", "Up to 20% Off Natural Diamonds", "/diamonds/shop/?type=natural"),
     designYourOwn(),

@@ -40,7 +40,7 @@ export const gemstonesPage: LandingPage = {
       heading: [span("Gemstones "), em("by"), span(" Sky Jewelry")],
       body: "Gemstones by shape, by color and by birthstone.",
       image: { desktop: "hero-gemstones-d", mobile: "hero-gemstones-m", alt: "Gold rings set with pink, red, blue and green gemstones on a pale stone" },
-      links: [{ _key: "shop", icon: "emerald", label: "Shop All Gemstones", mobileLabel: "Shop All Gemstones", href: SHOP }],
+      links: [{ _key: "shop", icon: "emerald", mobileIcon: "gemstone", label: "Shop All Gemstones", mobileLabel: "Shop All Gemstones", href: SHOP }],
     },
     // Mobile only in Figma (the desktop copy is hidden). Figma's title reads "Fine Jewelry": built for gemstones.
     { ...ctaCallout("promo", "Up to 20% Off Gemstones", `${SHOP}?sale=true`), only: "mobile" },
@@ -103,6 +103,7 @@ export const gemstonesPage: LandingPage = {
       _type: "heroModule",
       _key: "moissanite",
       flushTop: "both",
+      landing: true,
       heading: [span("Explore Moissanite Stones")],
       body: "Moissanite center stones for your ring.",
       cta: { label: "Shop Now", href: `${SHOP}?stone=moissanite`, context: "moissanite stones" },

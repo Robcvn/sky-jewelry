@@ -21,11 +21,12 @@ export function homeSection<T extends HomeSection["_type"]>(type: T, key: string
 
 export const designYourOwn = () => homeSection("designYourOwn", "design-your-own");
 export const customerStories = () => homeSection("customerStories", "stories");
-export const reviews = () => homeSection("reviews", "reviews");
-export const faqs = () => homeSection("faqs", "faqs");
+/** Reviews, FAQs and the guarantee module as the landing frames space them on mobile (see `landing` on each type). */
+export const reviews = () => ({ ...homeSection("reviews", "reviews"), landing: true });
+export const faqs = () => ({ ...homeSection("faqs", "faqs"), landing: true });
 
 /** Home's "the Sky Guarantee" module; flushTop where Figma butts it against the Reviews band. */
-export const guaranteeModule = (flushTop?: HeroModule["flushTop"]): HeroModule => ({ ...homeSection("heroModule", "guarantee"), flushTop });
+export const guaranteeModule = (flushTop?: HeroModule["flushTop"]): HeroModule => ({ ...homeSection("heroModule", "guarantee"), flushTop, landing: true });
 
 /**
  * "Consult with our Experts". Figma's button starts a live chat, which has nothing to connect to: shown as
@@ -35,6 +36,7 @@ export const consultModule = (key: string, flushTop?: HeroModule["flushTop"]): H
   _type: "heroModule",
   _key: key,
   flushTop,
+  landing: true,
   inert: true,
   heading: [span("Consult "), em("with"), span(" our Experts")],
   body: "Questions about settings, stones or sizing? Talk to us before you choose.",

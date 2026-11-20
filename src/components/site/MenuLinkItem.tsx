@@ -11,7 +11,10 @@ type MenuLinkItemProps = {
   className?: string;
 };
 
-/** Figma "Nav Item - Child": a menu link with an optional 24px icon or swatch. Default and Hover states. */
+/**
+ * Figma "Nav Item - Child": a menu link with an optional 24px icon or swatch. Default and Hover states.
+ * Icons are primary/hazel (#746345) against the leather label, as the mega menu and mobile menu frames draw them.
+ */
 export function MenuLinkItem({ link, compact = false, className }: MenuLinkItemProps) {
   const short = compact || !link.media;
 
@@ -26,7 +29,7 @@ export function MenuLinkItem({ link, compact = false, className }: MenuLinkItemP
     >
       {link.media ? (
         <span className="flex size-space-6 shrink-0 items-center justify-center">
-          {link.media._type === "menuIcon" ? <Icon name={link.media.icon} size={24} /> : <Swatch color={link.media.color} />}
+          {link.media._type === "menuIcon" ? <Icon name={link.media.icon} size={24} className="text-primary-hazel" /> : <Swatch color={link.media.color} />}
         </span>
       ) : null}
       <span className="min-w-0 flex-1">{link.label}</span>

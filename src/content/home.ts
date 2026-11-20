@@ -18,8 +18,8 @@ export type HomeHero = {
   heading: RichSpan[];
   body: string;
   image: ImageRef;
-  /** The two large links at the bottom. Figma shortens the labels on mobile. */
-  links: Array<{ _key: string; icon: IconName; label: string; mobileLabel: string; href: string }>;
+  /** The two large links at the bottom. Figma shortens the labels on mobile, and some mobile frames use another icon. */
+  links: Array<{ _key: string; icon: IconName; mobileIcon?: IconName; label: string; mobileLabel: string; href: string }>;
 };
 
 export type CategoryStrip = {
@@ -58,6 +58,10 @@ export type HeroModule = {
   _key: string;
   /** No top padding on that breakpoint: Figma's landing pages butt the module against the Reviews band above. */
   flushTop?: "desktop" | "mobile" | "both";
+  /**
+   * Built from Figma's landing page frames: on mobile their outline button is a fixed 160px (Home's hugs its label).
+   */
+  landing?: boolean;
   overline?: string;
   heading: RichSpan[];
   body: string;
@@ -100,6 +104,8 @@ export type Reviews = {
   rating: number;
   reviewCount: string;
   reviews: Array<{ _key: string; name: string; rating: number; date: string; body: string }>;
+  /** Built from Figma's landing page frames: on mobile the review cards start 24px under the rating (Home and the product page: 32px). */
+  landing?: boolean;
 };
 
 export type BlogRow = {
@@ -128,6 +134,10 @@ export type Faqs = {
   cta: Cta;
   /** Figma shows this question open on desktop and all closed on mobile. */
   openOnDesktop: number;
+  /**
+   * Built from Figma's landing page frames: on mobile their outline button is a fixed 160px (Home's hugs its label); the intro gaps are 12px and 20px and the questions start 24px under the button (Home: 16, 32 and 40).
+   */
+  landing?: boolean;
   items: Array<{ _key: string; question: string; answer: string[] }>;
 };
 

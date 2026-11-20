@@ -117,7 +117,8 @@ export function ProductDetail({ product }: { product: Product }) {
                 <span className="type-overline-xs-link">{labels.dropHint}</span>
               </span>
             </div>
-            <p className="text-primary-leather">
+            {/* type-paragraph keeps the line box this price was built with (it used to come from the base <p> rule). */}
+            <p className="type-paragraph text-primary-leather">
               <span className="type-heading-caps-xs">{dollar}</span>
               <span className="type-heading-caps-sm">{amount}</span>
             </p>
