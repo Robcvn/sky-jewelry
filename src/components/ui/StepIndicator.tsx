@@ -88,7 +88,8 @@ export function StepIndicator({
               className={cx(
                 "hidden truncate ui-desktop:block",
                 active ? "type-body-xs-regular" : "type-ui-xs-regular",
-                error && "opacity-50",
+                // Figma's Unavailable variant strikes the chosen item through at 50%.
+                error && "line-through opacity-50",
               )}
             >
               {selectedName}

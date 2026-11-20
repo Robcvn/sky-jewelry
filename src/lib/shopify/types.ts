@@ -33,9 +33,13 @@ export type ShopifyCollection = { id: string; handle: string; title: string; des
 
 type DiscountAllocation = { discountedAmount: Money };
 
+export type CartAttribute = { key: string; value: string };
+
 export type ShopifyCartLine = {
   id: string;
   quantity: number;
+  /** Line attributes: a built ring's two lines share a ring id and its size (src/lib/bag.ts). */
+  attributes?: CartAttribute[];
   /** subtotalAmount is before line discounts; totalAmount after them. */
   cost: { amountPerQuantity: Money; subtotalAmount: Money; totalAmount: Money };
   discountAllocations: DiscountAllocation[];
@@ -59,5 +63,5 @@ export type ShopifyCart = {
   lines: { nodes: ShopifyCartLine[] };
 };
 
-export type CartLineInput = { merchandiseId: string; quantity: number };
+export type CartLineInput = { merchandiseId: string; quantity: number; attributes?: CartAttribute[] };
 export type CartLineUpdateInput = { id: string; quantity: number };

@@ -16,6 +16,7 @@ const pendant: BagLine = {
   category: "necklaces",
   href: "/fine-jewelry/necklaces/four-prong-solitaire-lab-grown-pendant/",
   name: "Four Prong Solitaire Lab-Grown Pendant",
+  title: "14K Yellow Gold Four Prong Solitaire 0.80ct Lab-Grown Pendant",
   metal: "14k-yellow-gold",
   carat: 0.8,
   length: "16-18",
@@ -26,6 +27,8 @@ const pendant: BagLine = {
   subtotal: 1040,
   total: 1040,
   available: true,
+  ring: null,
+  stone: null,
 };
 const bracelet: BagLine = {
   ...pendant,

@@ -23,6 +23,8 @@ type ModalPanelProps = {
   secondaryAction?: ModalAction;
   /** Figma "Button Group" (row) or "Button Stack" (stack). */
   actionsLayout?: "row" | "stack";
+  /** "center": the icon, heading and body centred, as Figma's Stone Unavailable modal (7412:103358). */
+  align?: "start" | "center";
   showClose?: boolean;
   closeLabel?: string;
   onClose?: () => void;
@@ -41,6 +43,7 @@ export function ModalPanel({
   primaryAction,
   secondaryAction,
   actionsLayout = "row",
+  align = "start",
   showClose = true,
   closeLabel = "Close",
   onClose,
@@ -72,9 +75,9 @@ export function ModalPanel({
           className="absolute top-space-6 right-space-6 z-10"
         />
       ) : null}
-      <div className="flex min-h-0 flex-col gap-space-4 overflow-y-auto px-space-5 py-space-3 ui-desktop:px-space-8 ui-desktop:py-space-4">
-        {icon ? <div className="flex">{icon}</div> : null}
-        <h2 id={headingId} className={cx("type-heading-sm ui-desktop:type-heading-md", showClose && "pr-space-10")}>
+      <div className={cx("flex min-h-0 flex-col gap-space-4 overflow-y-auto px-space-5 py-space-3 ui-desktop:px-space-8 ui-desktop:py-space-4", align === "center" && "text-center")}>
+        {icon ? <div className={cx("flex", align === "center" && "justify-center")}>{icon}</div> : null}
+        <h2 id={headingId} className={cx("type-heading-sm ui-desktop:type-heading-md", showClose && (align === "center" ? "px-space-10" : "pr-space-10"))}>
           {heading}
         </h2>
         {body ? (

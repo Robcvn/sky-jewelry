@@ -6,6 +6,7 @@ import { Accordion, AccordionItem } from "@/components/ui/Accordion";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { IconBlock } from "@/components/ui/IconBlock";
+import { cx } from "@/components/ui/shared";
 import { DimensionsDiagram, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
 import { builderContent, DIAMOND_SCALES, GEM_COLORS, GEM_TYPES, gradeLabel, shapeIcon } from "@/content/builder";
 import { CLARITY_GRADES, COLOR_GRADES, CUT_GRADES } from "@/content/builder-grades";
@@ -43,19 +44,11 @@ export function StoneDetail({ stone }: { stone: Stone }) {
   const ring = parseRing(new URLSearchParams(search));
   const [creditOpen, setCreditOpen] = useState(false);
   const diamond = stone.kind === "diamond";
-  const icon = shapeIcon(stone.shape);
   const [dollar, amount] = [formatPrice(stone.price).slice(0, 1), formatPrice(stone.price).slice(1)];
   const complete = completeHref({ ...ring, shape: parseShape(stone.shape) ?? ring.shape, stone: stone.handle });
-  const kindLabel = stoneKindLabel(stone);
   const photoBg = stone.image ? STONE_TILE_BG : STONE_DRAWING_BG;
 
-  const sectionHeading = (title: string) => (
-    <h2 className="type-heading-sm flex items-center gap-space-2 text-primary-leather ui-desktop:type-heading-md ui-desktop:gap-space-3">
-      <Icon name={icon} size={24} className="ui-desktop:hidden" />
-      <Icon name={icon} size={32} className="hidden ui-desktop:block" />
-      {title}
-    </h2>
-  );
+  const sectionHeading = (title: string) => stoneSectionHeading(stone.shape, title);
 
   return (
     <div className="ui-desktop:site-container ui-desktop:grid ui-desktop:grid-cols-[minmax(0,718fr)_minmax(0,506fr)] ui-desktop:gap-space-6">
@@ -139,71 +132,7 @@ export function StoneDetail({ stone }: { stone: Stone }) {
             </section>
           ) : null}
 
-          <section aria-labelledby="stone-info" className="flex flex-col gap-space-5 border-t border-secondary-gold pt-[calc(var(--spacing-space-5)-1px)] ui-desktop:gap-space-8 ui-desktop:pt-[calc(var(--spacing-space-8)-1px)]">
-            <div id="stone-info">{sectionHeading(diamond ? copy.diamondInfo : copy.stoneInfo)}</div>
-            {/* Figma: 171px cards 8 apart on mobile, 245px cards 16 apart on desktop, each with its own height. */}
-            <div data-stone-info-grid className="grid grid-cols-2 items-start gap-space-2 ui-desktop:gap-space-4">
-              <ProductInfoCard label="Carat" value={stone.carat.toFixed(2)} note={pdp.caratNote.single} spread className="h-[8.5rem] ui-desktop:h-[9.375rem]" />
-              {diamond ? (
-                <ProductInfoCard label="Color" value={stone.color} note={COLOR_GRADES[stone.color]?.short} className="min-h-[8.5rem] ui-desktop:min-h-0">
-                  <InfoScale kind="color" position={colorPosition(stone.color)} label={`Color ${stone.color} on a scale from colorless to tinted`} />
-                </ProductInfoCard>
-              ) : (
-                <ProductInfoCard
-                  label="Color"
-                  value={GEM_COLORS.find((item) => item.value === stone.color)?.label ?? stone.color}
-                  note={GEM_TYPES.find((item) => item.value === stone.gem)?.label}
-                  spread
-                  className="h-[8.5rem] ui-desktop:h-[9.375rem]"
-                />
-              )}
-              {diamond ? (
-                <ProductInfoCard label="Clarity" value={stone.clarity} note={CLARITY_GRADES[stone.clarity]?.short} className="min-h-[10.25rem] ui-desktop:min-h-0">
-                  <InfoScale kind="clarity" position={clarityPosition(stone.clarity)} label={`Clarity ${stone.clarity} on a scale from flawless to included`} />
-                </ProductInfoCard>
-              ) : (
-                <ProductInfoCard label="Clarity" value={stone.clarity} className="h-[10.25rem] ui-desktop:h-[10.375rem]" />
-              )}
-              <ProductInfoCard
-                label="Dimensions (mm)"
-                value={`${stone.length.toFixed(2)} × ${stone.width.toFixed(2)}`}
-                note={
-                  <span className="block text-right">
-                    {copy.ratio}: {stone.ratio.toFixed(2)}
-                  </span>
-                }
-                spread
-                className="h-[10.25rem] ui-desktop:h-[10.375rem]"
-              >
-                {/* Figma's ruler drawing is of a round stone: shown for round stones, between the value and the ratio. */}
-                {stone.shape === "round" ? (
-                  <span className="block pt-space-3 ui-desktop:pt-1.5">
-                    <DimensionsDiagram />
-                  </span>
-                ) : null}
-              </ProductInfoCard>
-              <ProductInfoCard
-                label="Cut"
-                value={diamond ? gradeLabel(DIAMOND_SCALES.cut, stone.cut) : stone.cut}
-                note={diamond ? CUT_GRADES[stone.cut]?.short : undefined}
-                spread
-                className="h-[9.75rem] ui-desktop:h-[10.625rem]"
-              />
-              <ProductInfoCard
-                label="Certification"
-                value={stone.certificate}
-                // View Certificate needs a certificate file per stone, which the catalogue doesn't have: shown, not linked.
-                note={<span className="underline decoration-black-alpha-25 underline-offset-2 ui-desktop:font-medium">{copy.viewCertificate}</span>}
-                className="min-h-36"
-              >
-                {/* Figma draws the GIA seal here; labs are shown by icon and name (see StoneCertificateTile). */}
-                <span className="type-ui-sm-medium flex items-center gap-space-2">
-                  <Icon name="certificate" size={32} className="shrink-0" />
-                  <span>{kindLabel}</span>
-                </span>
-              </ProductInfoCard>
-            </div>
-          </section>
+          <StoneInfoSection stone={stone} />
         </div>
 
         <Accordion>
@@ -222,5 +151,93 @@ export function StoneDetail({ stone }: { stone: Stone }) {
 
       <CreditModal open={creditOpen} onClose={() => setCreditOpen(false)} />
     </div>
+  );
+}
+
+/** A section heading of the stone page: the stone's shape icon (24px mobile, 32px desktop) and the title. */
+export function stoneSectionHeading(shape: string, title: string) {
+  const icon = shapeIcon(shape);
+  return (
+    <h2 className="type-heading-sm flex items-center gap-space-2 text-primary-leather ui-desktop:type-heading-md ui-desktop:gap-space-3">
+      <Icon name={icon} size={24} className="ui-desktop:hidden" />
+      <Icon name={icon} size={32} className="hidden ui-desktop:block" />
+      {title}
+    </h2>
+  );
+}
+
+/**
+ * "Your Diamond Info" ("Your Stone Info" for gemstones): Carat, Color, Clarity, Dimensions, Cut and Certification
+ * (desktop 3565:100773, mobile 3587:125991). Step 3 reuses it (6579:194459, mobile 6579:208244).
+ */
+export function StoneInfoSection({ stone, heading, headingId = "stone-info", className }: { stone: Stone; heading?: string; headingId?: string; className?: string }) {
+  const diamond = stone.kind === "diamond";
+  const kindLabel = stoneKindLabel(stone);
+  return (
+    <section aria-labelledby={headingId} className={cx("flex flex-col gap-space-5 border-t border-secondary-gold ui-desktop:gap-space-8", className ?? "pt-[calc(var(--spacing-space-5)-1px)] ui-desktop:pt-[calc(var(--spacing-space-8)-1px)]")}>
+      <div id={headingId}>{stoneSectionHeading(stone.shape, heading ?? (diamond ? copy.diamondInfo : copy.stoneInfo))}</div>
+      {/* Figma: 171px cards 8 apart on mobile, 245px cards 16 apart on desktop, each with its own height. */}
+      <div data-stone-info-grid className="grid grid-cols-2 items-start gap-space-2 ui-desktop:gap-space-4">
+        <ProductInfoCard label="Carat" value={stone.carat.toFixed(2)} note={pdp.caratNote.single} spread className="h-[8.5rem] ui-desktop:h-[9.375rem]" />
+        {diamond ? (
+          <ProductInfoCard label="Color" value={stone.color} note={COLOR_GRADES[stone.color]?.short} className="min-h-[8.5rem] ui-desktop:min-h-0">
+            <InfoScale kind="color" position={colorPosition(stone.color)} label={`Color ${stone.color} on a scale from colorless to tinted`} />
+          </ProductInfoCard>
+        ) : (
+          <ProductInfoCard
+            label="Color"
+            value={GEM_COLORS.find((item) => item.value === stone.color)?.label ?? stone.color}
+            note={GEM_TYPES.find((item) => item.value === stone.gem)?.label}
+            spread
+            className="h-[8.5rem] ui-desktop:h-[9.375rem]"
+          />
+        )}
+        {diamond ? (
+          <ProductInfoCard label="Clarity" value={stone.clarity} note={CLARITY_GRADES[stone.clarity]?.short} className="min-h-[10.25rem] ui-desktop:min-h-0">
+            <InfoScale kind="clarity" position={clarityPosition(stone.clarity)} label={`Clarity ${stone.clarity} on a scale from flawless to included`} />
+          </ProductInfoCard>
+        ) : (
+          <ProductInfoCard label="Clarity" value={stone.clarity} className="h-[10.25rem] ui-desktop:h-[10.375rem]" />
+        )}
+        <ProductInfoCard
+          label="Dimensions (mm)"
+          value={`${stone.length.toFixed(2)} × ${stone.width.toFixed(2)}`}
+          note={
+            <span className="block text-right">
+              {copy.ratio}: {stone.ratio.toFixed(2)}
+            </span>
+          }
+          spread
+          className="h-[10.25rem] ui-desktop:h-[10.375rem]"
+        >
+          {/* Figma's ruler drawing is of a round stone: shown for round stones, between the value and the ratio. */}
+          {stone.shape === "round" ? (
+            <span className="block pt-space-3 ui-desktop:pt-1.5">
+              <DimensionsDiagram />
+            </span>
+          ) : null}
+        </ProductInfoCard>
+        <ProductInfoCard
+          label="Cut"
+          value={diamond ? gradeLabel(DIAMOND_SCALES.cut, stone.cut) : stone.cut}
+          note={diamond ? CUT_GRADES[stone.cut]?.short : undefined}
+          spread
+          className="h-[9.75rem] ui-desktop:h-[10.625rem]"
+        />
+        <ProductInfoCard
+          label="Certification"
+          value={stone.certificate}
+          // View Certificate needs a certificate file per stone, which the catalogue doesn't have: shown, not linked.
+          note={<span className="underline decoration-black-alpha-25 underline-offset-2 ui-desktop:font-medium">{copy.viewCertificate}</span>}
+          className="min-h-36"
+        >
+          {/* Figma draws the GIA seal here; labs are shown by icon and name (see StoneCertificateTile). */}
+          <span className="type-ui-sm-medium flex items-center gap-space-2">
+            <Icon name="certificate" size={32} className="shrink-0" />
+            <span>{kindLabel}</span>
+          </span>
+        </ProductInfoCard>
+      </div>
+    </section>
   );
 }

@@ -130,8 +130,16 @@ export type Certificate = (typeof CERTIFICATES)[number];
 
 export const gradeLabel = (scale: Option[], value: string) => scale.find((item) => item.value === value)?.label ?? value;
 
-/** Planned route of Step 3 (Builder 3 - Complete), which belongs to part 2. */
+/** Step 3 (Figma "Add Care Plan - Select Ring Size" and its three sister frames). */
 export const COMPLETE_ROUTE = "/design-your-own/complete/";
+
+/** Ring sizes, as "Dropdown Menu - Ring Size" (6579:196469, mobile 6579:208179) draws them: 4 to 7 in half sizes. */
+export const RING_SIZES = ["4", "4.5", "5", "5.5", "6", "6.5", "7"] as const;
+export type RingSize = (typeof RING_SIZES)[number];
+export const ringSizeLabel = (size: string) => `Size ${size}`;
+
+/** "Perfectly Paired Wedding Bands" on the setting page and Step 3: the catalogue's bands (Figma's cards are placeholders showing the twig band). */
+export const PAIRED_BAND_HANDLES = ["twig-diamond-stackable-band", "classic-2mm-band", "flush-set-lab-grown-diamond-band", "classic-4mm-band", "flush-set-natural-diamond-band"];
 
 export type PromoCard = {
   _key: string;
@@ -280,6 +288,117 @@ export const builderContent = {
     sizeGuide: "Diamond Carat Size Guide",
     viewCertificate: "View Certificate",
     ratio: "Ratio",
+  },
+  /**
+   * Step 3 (desktop 6579:194412 / 194864 / 195316 / 195764, mobile 6579:208180 / 208584 / 208993 / 209398). Figma's
+   * Lorem ipsum (the Ring Details text, the ring size steps, the Drop a Hint subheading) is replaced with neutral copy.
+   */
+  complete: {
+    seo: { title: "Design Your Own Ring: Complete Your Ring", description: "Review your ring, choose a ring size and add it to your bag." },
+    dropHint: "Drop a hint",
+    edit: "Edit",
+    view: "View",
+    remove: "Remove",
+    ringSize: "Ring size",
+    selectRingSize: "Select Ring Size",
+    findRingSize: "Find my ring size",
+    sizeHelp: "Not sure of your size? We can help you find a perfect fit, even after your order is placed. 60 days free resizing after purchase.",
+    totalPrice: "Total Price",
+    secureCheckout: "Secure Checkout",
+    addToBag: "Add to bag",
+    /** Shown beside the disabled buttons until a size is chosen (screen readers only; Figma draws the buttons at 60% / 50%). */
+    sizeFirst: "Choose a ring size to continue.",
+    diamondInfo: "Your Diamond Info",
+    stoneInfo: "Your Stone Info",
+    settingInfo: "Your Setting Info",
+    ringDetails: "Ring Details",
+    /** Figma's Ring Details body is Latin filler: built from the ring's own parts. */
+    ringDetailsBody: (stone: string, setting: string, metal: string) => [`Your ring sets the ${stone} in the ${setting} setting, in ${metal}. The specifications of each part are listed below.`],
+    /** Desktop tables (6579:194486): Center Stone Details and Setting Details. Mobile (6579:208267): Details and Side Stones. */
+    tables: {
+      centerStone: "Center Stone Details",
+      setting: "Setting Details",
+      details: "Details",
+      sideStones: "Side Stones",
+      size: "Size",
+      type: "Type",
+      color: "Color",
+      clarity: "Clarity",
+      shape: "Shape",
+      stoneShape: "Stone Shape",
+      lw: "L/W (mm)",
+      ratio: "Ratio",
+      sku: "SKU",
+      width: "Width",
+      material: "Material",
+      style: "Style",
+      profile: "Profile",
+      averageColor: "Average Color",
+      averageClarity: "Average Clarity",
+      approxTotalCarat: "Approx. Total Carat",
+    },
+    /** Builder - Stone Unavailable (desktop 7412:100078 and 7412:101478, mobile section 7415:137591). */
+    unavailable: {
+      row: "This stone is no longer available.",
+      selectNewStone: "Select New Stone",
+      button: "Select a New Stone",
+      modal: {
+        heading: "The Stone You Selected is No Longer Available",
+        body: "It’s been purchased or removed from inventory since you added it. The rest of your build is saved. Choose a new stone to complete your build.",
+        primary: "Select a New Stone",
+        secondary: "Keep Browsing",
+      },
+    },
+  },
+  /** "Modal - Ring Size 1" (3565:101570) and "2" (3565:101612); mobile 3587:126687 and 3587:126704. */
+  ringSizeModal: {
+    heading: [span("Find "), em("your"), span(" Ring Size")] as RichSpan[],
+    intro: "Measure your finger with 3 simple steps using string and a ruler",
+    /** Figma's step text is Latin filler: plain instructions that match the three photos. */
+    steps: [
+      { _key: "wrap", title: "Step 1", body: "Wrap a piece of string snugly around the base of your finger.", image: { desktop: "ring-size-step-1", alt: "A string wrapped around the base of a finger" } as ImageRef },
+      { _key: "mark", title: "Step 2", body: "Mark the string with a pen where it meets the loose end.", image: { desktop: "ring-size-step-2", alt: "A pen marking a string held around a finger" } as ImageRef },
+      { _key: "measure", title: "Step 3", body: "Lay the string flat along a ruler and measure up to the mark.", image: { desktop: "ring-size-step-3", alt: "A marked string laid along a ruler" } as ImageRef },
+    ],
+    stepsLabel: "How to measure your finger",
+    converter: "Measurement Converter",
+    measurement: "Finger measurement",
+    units: [
+      { value: "in", label: "Inches" },
+      { value: "cm", label: "Centimetres" },
+    ] as Option<"in" | "cm">[],
+    unitsLabel: "Unit",
+    calculate: "Calculate",
+    result: "Your Ring Size:",
+    reset: "Reset",
+    errors: {
+      required: "Enter the length you measured.",
+      range: (min: string, max: string, unit: string) => `Enter a length between ${min} and ${max} ${unit}.`,
+    },
+  },
+  /** "Modal - Drop a Hint" (desktop 3565:101590; mobile v2 6683:201301, the current mobile frame). */
+  dropHint: {
+    heading: "Drop a Hint",
+    /** Figma: Latin filler. */
+    intro: "Let someone know about the ring you’ve designed.",
+    fields: {
+      recipientName: "Recipient Name *",
+      recipientEmail: "Recipient Email *",
+      yourName: "Your Name *",
+      yourEmail: "Your Email *",
+      ringSize: "Ring Size",
+      message: "Message",
+      optional: "(Optional)",
+    },
+    preview: "Preview",
+    letter: { dear: "Dear", body: "is thinking about your special day and wanted to drop you a hint.", signoff: ["Sincerely,", "The Sky Jewelry Team"] },
+    blank: "blank",
+    send: "Send Hint",
+    errors: {
+      /** The Add Address errors' wording ("City is required", "Please provide a valid email address."). */
+      required: (field: string) => `${field} is required`,
+      email: "Please provide a valid email address.",
+    },
   },
   installments: "Pay in 12 interest free payments of",
   learnMore: "Learn more",

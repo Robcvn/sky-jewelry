@@ -11,8 +11,9 @@ import { cx } from "@/components/ui/shared";
 import { useIsDesktop } from "@/components/ui/useIsDesktop";
 import { bagContent } from "@/content/bag";
 import type { HeaderContent } from "@/content/site";
-import { closeBagPanel, removeLine, setLineQuantity, useBag, type BagLine } from "@/lib/bag";
-import { carePlansTotal, useCarePlans } from "@/lib/carePlans";
+import { bagItems, closeBagPanel, removeLine, removeLines, setLineQuantity, useBag, type BagLine } from "@/lib/bag";
+import { carePlansTotal, setCarePlan, useCarePlans } from "@/lib/carePlans";
+import { BagPanelRing } from "./BagRing";
 import { BagCount, CheckoutBar, lineSummary, PillButton, QuantitySelect, unitPriceLabel } from "./BagParts";
 
 export const TILE_BG = "bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]";
@@ -64,9 +65,23 @@ function PanelBody({ headingId, onNavigate }: { headingId: string; onNavigate: (
       ) : null}
       {loaded && bag.lines.length === 0 ? <p className="type-body-sm-regular">{bagContent.empty.message}</p> : null}
       <ul className="flex flex-col gap-space-5">
-        {bag.lines.map((line) => (
-          <BagPanelItem key={line.id} line={line} busy={busyLine === line.id} onNavigate={onNavigate} />
-        ))}
+        {bagItems(bag.lines).map((item) =>
+          item.kind === "ring" ? (
+            <BagPanelRing
+              key={item.key}
+              ring={item}
+              busy={item.lines.some((line) => line.id === busyLine)}
+              onNavigate={onNavigate}
+              onRemove={() =>
+                void removeLines(item.lines.map((line) => line.id)).then((removed) => {
+                  if (removed) item.lines.forEach((line) => setCarePlan(line.id, null));
+                })
+              }
+            />
+          ) : (
+            <BagPanelItem key={item.key} line={item.line} busy={busyLine === item.line.id} onNavigate={onNavigate} />
+          ),
+        )}
       </ul>
     </>
   );

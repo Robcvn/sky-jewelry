@@ -92,5 +92,86 @@ export const builderImageManifest = {
       "w": 432,
       "h": 576
     }
+  ],
+  "ring-size-step-1": [
+    {
+      "src": "/images/builder/ring-size-step-1-224.webp",
+      "w": 224,
+      "h": 168
+    },
+    {
+      "src": "/images/builder/ring-size-step-1-288.webp",
+      "w": 288,
+      "h": 216
+    },
+    {
+      "src": "/images/builder/ring-size-step-1-448.webp",
+      "w": 448,
+      "h": 336
+    },
+    {
+      "src": "/images/builder/ring-size-step-1-576.webp",
+      "w": 576,
+      "h": 432
+    },
+    {
+      "src": "/images/builder/ring-size-step-1-800.webp",
+      "w": 800,
+      "h": 600
+    }
+  ],
+  "ring-size-step-2": [
+    {
+      "src": "/images/builder/ring-size-step-2-224.webp",
+      "w": 224,
+      "h": 168
+    },
+    {
+      "src": "/images/builder/ring-size-step-2-288.webp",
+      "w": 288,
+      "h": 216
+    },
+    {
+      "src": "/images/builder/ring-size-step-2-448.webp",
+      "w": 448,
+      "h": 336
+    },
+    {
+      "src": "/images/builder/ring-size-step-2-576.webp",
+      "w": 576,
+      "h": 432
+    },
+    {
+      "src": "/images/builder/ring-size-step-2-800.webp",
+      "w": 800,
+      "h": 600
+    }
+  ],
+  "ring-size-step-3": [
+    {
+      "src": "/images/builder/ring-size-step-3-224.webp",
+      "w": 224,
+      "h": 168
+    },
+    {
+      "src": "/images/builder/ring-size-step-3-288.webp",
+      "w": 288,
+      "h": 216
+    },
+    {
+      "src": "/images/builder/ring-size-step-3-448.webp",
+      "w": 448,
+      "h": 336
+    },
+    {
+      "src": "/images/builder/ring-size-step-3-576.webp",
+      "w": 576,
+      "h": 432
+    },
+    {
+      "src": "/images/builder/ring-size-step-3-800.webp",
+      "w": 800,
+      "h": 600
+    }
   ]
 } as const;

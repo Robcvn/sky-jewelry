@@ -6,6 +6,7 @@ import { Header } from "@/components/site/Header";
 import { AccountDemos } from "@/components/styleguide/AccountDemos";
 import { BagDemos } from "@/components/styleguide/BagDemos";
 import { BuilderDemos } from "@/components/styleguide/BuilderDemos";
+import { CompleteDemos } from "@/components/styleguide/CompleteDemos";
 import { getBuilderCatalog } from "@/lib/builder";
 import { MegaMenuPanel } from "@/components/site/MegaMenu";
 import { CategoryCard } from "@/components/ui/CategoryCard";
@@ -1275,6 +1276,8 @@ export default async function ComponentsPage() {
 
         <Section id="ring-builder" title="Ring builder">
           <BuilderDemos setting={builderSetting} round={roundStone} drawn={drawnStone} otherLab={otherLabStone} />
+          <h3 className="type-heading-sm mt-space-15 mb-space-6 text-primary-leather">Step 3: Complete (/design-your-own/complete/)</h3>
+          <CompleteDemos setting={builderSetting} stone={roundStone} />
         </Section>
 
         <Section id="icons" title="Icons">
@@ -1490,7 +1493,7 @@ export default async function ComponentsPage() {
             <li>Stone page specs tile: Figma&rsquo;s numbers are placeholders. Built with the stone&rsquo;s own length and width in mm on the top view, and its table and depth percentages on the side view. Figma draws a round stone only: the other shapes show their line drawing with length and width.</li>
             <li>Stone page tiles without a photo sit on the certificate tile&rsquo;s fill (#f2f0ec), since the product gradient only shows behind a photo.</li>
             <li>Stone page info cards: the Cut card&rsquo;s note is the grade&rsquo;s short description (Figma: &ldquo;Ratio: 1.46&rdquo;); the Carat note is Product Detail&rsquo;s (Figma: Latin filler); Color I reads &ldquo;Nearly colorless&rdquo; (Figma: &ldquo;Slightly tinted&rdquo;). The Clarity card is as tall as its note needs (142px against 158).</li>
-            <li>Stone page labs: Figma draws the GIA seal. Every lab (GIA, AGS, IGI) shows the certificate icon and the lab&rsquo;s name instead, as third-party logos are shown as names elsewhere on the site.</li>
+            <li>Stone page and Step 3 labs: Figma draws the GIA seal on the certificate tile and the Certification card. Every lab (GIA, AGS, IGI) shows the certificate icon and the lab&rsquo;s name instead (&ldquo;GIA Natural Diamond&rdquo;), as third-party logos are shown as names elsewhere on the site (Rob&rsquo;s decision, Nov 20).</li>
             <li>Gemstone stone pages (not drawn): &ldquo;Your Stone Info&rdquo; and &ldquo;Stone Specs&rdquo;, the colour and gem type on the Color card, no grade scales, no Qualities section and no hand photo.</li>
             <li>Grade descriptions: Figma writes one grade per scale (Color G, Clarity VVS2, Cut Excellent). The other grades use replacement copy that states the grade&rsquo;s standard definition.</li>
             <li>Stone list slider bounds come from the stones in the tab, as on the product list (Figma: 0.50 to 6.00 carats and $200 to $5,000,000).</li>
@@ -1501,6 +1504,20 @@ export default async function ComponentsPage() {
             <li>Ring builder Step 1 lists only settings tagged &ldquo;setting&rdquo;: the six new ones. The store&rsquo;s four engagement rings (Channel Set, Halo, Side-Stone, Eternity) are left out of the list and its filters, because their photos are the vine ring&rsquo;s. They keep their setting pages, which Home&rsquo;s best sellers link to.</li>
             <li>Ring builder style tiles: a style with no settings is left out, on desktop and in the mobile sheet. The Design System&rsquo;s Radio Button (Radio 588:1170) draws Inactive, Hover, Pressed and Active, and no disabled state. Desktop shows Solitaire, Pave, Side Stone, Halo and Natural of Figma&rsquo;s nine; the sheet shows Solitaire, Pave, Side Stone and Halo of its eight (it draws no Natural).</li>
             <li>Gemstone Type: a type with no stones in the tab is not offered (Moissanite is lab-grown only, so the Natural tab doesn&rsquo;t list it).</li>
+            <li>Ring builder Step 3, ring size converter: Inches (drawn) and Centimetres. The US formula (inside diameter 11.63 + 0.8128 &times; size mm) gives 2 inches as size 5.5; Figma&rsquo;s example says 6. Built with the formula. Lengths outside sizes 3 to 13.5, or an empty field, show the Design System&rsquo;s input error message under the row (not drawn).</li>
+            <li>Mobile galleries of the setting page (3587:125842), the stone page (3587:125937) and Step 3 (6579:208207): Figma&rsquo;s &ldquo;PDP - Asset Tabs&rdquo; is 430px tall, the photo plus an 8px gap and the 32px &ldquo;360&deg; View | Images&rdquo; tab row. The tab row is left out (no 360&deg; sequences), so the block is 390px and everything below sits 40px higher than the frames. The 360&deg; marker on the photo is left out too. The thumbnail switches between the ring and its worn photos (setting page) or the ring and its stone (Step 3).</li>
+            <li>Step 3 desktop gallery, stone tile: Figma&rsquo;s Pagination Dots (6579:194568) are left out. Each stone has one photo, so there is nothing to page through; they come back with more stone photos. (The product page&rsquo;s dots on one tile of its static grid are a corrected oversight; here they would page the stone&rsquo;s own photos.)</li>
+            <li>Step 3 desktop gallery, fourth tile (6579:194577): Figma draws a second photo of the ring, with its Badge hidden. Built with the setting&rsquo;s second photo and no badge. Only Classic Solitaire in yellow gold has one; every other setting and metal has one photo, so its tile keeps the setting page&rsquo;s worn photo with &ldquo;Shown with 2.50 ct&rdquo; (see Open questions). The 360&deg; marker on the first tile is left out.</li>
+            <li>Step 3 names, each place in its own frame&rsquo;s wording, from the setting&rsquo;s short name and the stone&rsquo;s title: desktop &ldquo;Vine 1.01 Carat H VVS2 Round Natural Diamond Engagement Ring&rdquo;, mobile &ldquo;The Vine with a &hellip;&rdquo;, the bag page &ldquo;Vine Ring with a &hellip;&rdquo; (without Figma&rsquo;s cut abbreviation &ldquo;VG&rdquo;: the stone&rsquo;s title has none) and the bag panel &ldquo;Vine Ring&rdquo;. The step bar&rsquo;s stone reads &ldquo;Round 1.01 Carat&rdquo; with its price once (Figma: &ldquo;Round 0.50 Carat - $1,040&rdquo; beside the price).</li>
+            <li>Step 3 Total Price is the setting plus the stone; the ships line is the longer of the two lead times (&ldquo;Ships in 7 days&rdquo;; Figma: &ldquo;Ships in 2-3 weeks&rdquo;).</li>
+            <li>Step 3 Ring Details: each breakpoint has its frame&rsquo;s tables (desktop Center Stone Details and Setting Details; mobile Details and Side Stones). Side Stones leaves out Shape and Origin (the catalogue has no data for them) and is left out for settings without accent stones. The mobile Your Setting Info shows Metal, Width and Approx. TCW only, as its frame draws them.</li>
+            <li>Step 3 buttons: the disabled Secure Checkout and Add to Bag carry a screen-reader note, &ldquo;Choose a ring size to continue.&rdquo; Add to Bag opens the bag panel and Secure Checkout goes to the bag page (Figma&rsquo;s prototype sends both to the bag page). A stone already in the bag is not added again: the bag opens instead.</li>
+            <li>Step 3, Modal - Ring Size and Modal - Drop a Hint: the close button is at full strength, as on the site&rsquo;s other modals (Figma draws it at 30%). Drop a Hint&rsquo;s &ldquo;(Optional)&rdquo; is black-alpha-60 (Figma: black-alpha-50), as for the Input placeholder above. Required fields and email format use the Add Address errors&rsquo; wording.</li>
+            <li>A built ring in the bag: the setting row leaves out Figma&rsquo;s &ldquo;Band&rdquo; (the catalogue has no band value); part prices are whole dollars with a struck price only when the cart discounts the line (Figma draws &ldquo;$4,250 $3,750&rdquo;). The bag page has no quantity for a ring, as drawn; the panel draws Quanity Select on rings, so it shows 1 with plus disabled (a stone is one of a kind) and minus removing the ring.</li>
+            <li>Step 3 is kept out of search results (noindex, follow): the page has no content without a ring in its URL.</li>
+            <li>Footer contact details are mock values (123 Sample Ave, New York NY 10001; +1 (212) 555-0142; info@example.com): Figma shows the store&rsquo;s own address, phone and email, which a public demo shouldn&rsquo;t publish. The demo notice says contact details are sample content.</li>
+            <li>Product page &ldquo;Drop a hint&rdquo; opens Step 3&rsquo;s Modal - Drop a Hint with the product&rsquo;s photo and name in the preview (inferred: Figma draws the modal for the ring builder). The optional Ring Size field shows for rings only.</li>
+            <li>Ring builder Step 2 list leaves out stones Shopify reports as unavailable when the site is built. Their stone pages stay, and Step 3 still shows a stone sold since the build as unavailable.</li>
           </ul>
         </Section>
 
@@ -1669,6 +1686,9 @@ export default async function ComponentsPage() {
             <li>Stone page, mobile carat toggle: Figma marks 1.0 under a &ldquo;Shown with 2.50 CT&rdquo; badge. Built marking 2.5, as the desktop frame does.</li>
             <li>Filters / Stone - Expanded draws Polish twice (after Price and again at the end of Advanced Filters). Built once, after Price.</li>
             <li>Stone page specs drawing: Figma labels the side view &ldquo;57.0mm&rdquo; and &ldquo;62.4mm&rdquo;. Those are the table and depth percentages with the wrong unit: built as the stone&rsquo;s table % and depth %, with a % sign.</li>
+            <li>Modal - Drop a Hint draws a fifth &ldquo;Recipient Name *&rdquo; field after Your Email (desktop and mobile). Left out.</li>
+            <li>Step 3 placeholders built from the ring&rsquo;s own data: the Ring Details text (Latin filler), the Setting Details table&rsquo;s copied values (SKU &ldquo;0.5ct&rdquo;, Width &ldquo;Diamond&rdquo;, Style &ldquo;Polished&rdquo;), the Center Stone Details grades (J, SI1, Oval, against an I VVS2 Round title), the stone row&rsquo;s &ldquo;0.50ct &bull; J &bull; VVS2&rdquo; and the installments&rsquo; $147.50 (not $2,290 / 12).</li>
+            <li>Modal - Ring Size: the three steps&rsquo; Latin filler is replaced with plain instructions that match the photos. Modal - Drop a Hint&rsquo;s subheading (Latin filler) reads &ldquo;Let someone know about the ring you&rsquo;ve designed.&rdquo;</li>
           </ul>
         </Section>
 
@@ -1713,6 +1733,7 @@ export default async function ComponentsPage() {
               in the Task 11 report.
             </li>
             <li>Modal - Credit: the inactive Klarna tab label at black-alpha-20 (inert, as drawn).</li>
+            <li>Stone unavailable (Step 3 and the bag): the struck stone summary, the stone&rsquo;s price, the Total Price and the bag stone row&rsquo;s attributes at 50%, as Figma draws them (about 2.8:1). Kept for the same reason as the Step Indicator&rsquo;s Unavailable name: the unavailable stone is meant to read as de-emphasised.</li>
           </ul>
         </Section>
 
@@ -1805,19 +1826,20 @@ export default async function ComponentsPage() {
             <li>Stone list: what does the &ldquo;3&rdquo; badge beside Advanced Filters count? Built as the number of active advanced filters.</li>
             <li>Stone filters differ by breakpoint, each built as drawn: Certificate is in the desktop diamond filters but not the mobile sheet; Type is on desktop gemstones but not in the mobile sheet.</li>
             <li>Should choosing a grade in the Cut / Color / Clarity modal set the filter? Built to change the explanation only.</li>
+            <li>Step 3: the loose &ldquo;Alternate Loading State&rdquo; (6579:198626) is hidden and not built, and the Animations page&rsquo;s add-to-bag loaders are not used. Should Add to Bag show a loader?</li>
+            <li>Drop a Hint: nothing draws what follows Send Hint. It closes the modal with no confirmation message (Rob&rsquo;s decision, Nov 20; the mobile prototype closes it too); nothing is sent or stored.</li>
+            <li>Drop a Hint, mobile: three frames are visible (1 and 2 with Edit / Preview tabs, and v2, one long sheet). Built from v2, the newest. Right? Should the preview fill its blanks with the names typed, and should Ring Size start with the size chosen on the page?</li>
+            <li>Ring size converter: should the result set the page&rsquo;s ring size? (No control for it is drawn.)</li>
+            <li>Mobile Stone Summary and Setting Summary sheets (7327:32013, 7327:32090): no Step 3 frame opens them, so they are not built. Where do they belong?</li>
+            <li>Photos needed for Step 3&rsquo;s fourth gallery tile: a second photo of each setting in each metal. Only Classic Solitaire in yellow gold has one; Vine (all metals), Classic Solitaire in white gold and platinum, Petite Solitaire, Pav&eacute;, Round Halo and Marquise Side-Stone show the worn photo with &ldquo;Shown with 2.50 ct&rdquo; there for now. Figma&rsquo;s own tile (6579:194578) is a second view of the white gold vine ring and could be Vine&rsquo;s.</li>
           </ul>
         </Section>
 
         <Section id="held" title="Held for review">
           <ul className="type-body-sm-regular flex max-w-[40rem] list-disc flex-col gap-space-2 pl-space-5">
             <li>
-              &ldquo;Drop a hint&rdquo; and &ldquo;View Certificate&rdquo; on the product page: shown as designed but inert (plain text, not links
-              or buttons) until their modal and certificate files exist.
-            </li>
-            <li>
-              Bag builder rows (for the ring builder): the setting and stone rows with their Edit links, &ldquo;Select New Stone&rdquo; and the
-              stone-unavailable state, Ring Config Choice, and Figma&rsquo;s four &ldquo;Add Care Plan&rdquo; pages. The Edit link and care
-              plan parts are built and wait for those rows.
+              &ldquo;View Certificate&rdquo; on the product page: shown as designed but inert (plain text, not a link) until certificate
+              files exist. (&ldquo;Drop a hint&rdquo; now opens Modal - Drop a Hint; see Deviations.)
             </li>
             <li>Modal - Credit: the Klarna tab and the arrows are shown but inert (only the Affirm tab is drawn).</li>
             <li>
@@ -1826,16 +1848,16 @@ export default async function ComponentsPage() {
             </li>
             <li>Product card &ldquo;Learn more&rdquo; (hover state): stays inert; the product page, quick view and bag open Modal - Credit.</li>
             <li>
-              Ring builder Step 3 (&ldquo;Builder 3 - Complete&rdquo;, planned at /design-your-own/complete/): the setting and diamond
-              summary cards, Total Price, Ring Details, the ring size and Drop a Hint modals, the Stone Unavailable state and the
-              add-to-bag loaders. &ldquo;Complete Ring&rdquo; and &ldquo;Complete Your Ring&rdquo; link to that route. Part 2.
+              Ring builder Step 3 (/design-your-own/complete/), drawn without a result: the 360&deg; view, &ldquo;View Certificate&rdquo; (plain
+              text) and the add-to-bag loaders from the Animations page. The stone-first flow, the earrings builder and a mock order from
+              checkout are not part of it.
             </li>
             <li>
               Ring builder, drawn without a result: Quick Checkout and Meet With Our Consultant&rsquo;s &ldquo;Book Now&rdquo; on the
               setting page (shown as designed, inert); the 360° view, the video and the carat tabs on the gallery photos (left out or
               inert); &ldquo;View Certificate&rdquo; on stones (plain text). The stone-first frames are not built.
             </li>
-            <li>Quick Checkout&rsquo;s open states (on the Accordion page; unnamed variants Open3, Open4): the closed card is on the setting page, inert; opening it waits for part 2.</li>
+            <li>Quick Checkout&rsquo;s open states (on the Accordion page; unnamed variants Open3, Open4): the closed card is on the setting page, inert. Part 2 (Step 3) doesn&rsquo;t cover it.</li>
             <li>Landing page live chat and text actions (no chat or messaging service to connect to).</li>
             <li>
               Account: Log Out, Account Details Edit, the address cards&rsquo; Edit and Remove, Sky Repairs Opt Out, Download Certificate and

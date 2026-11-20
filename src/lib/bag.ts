@@ -8,8 +8,13 @@
  * instead, so the panel and the bag page still work before the products are imported.
  *
  * Adding an item opens the bag panel (the header draws it); the panel state lives here so any page can open it.
+ *
+ * A ring built in the ring builder is two cart lines, the setting's variant and the stone's, added in one cart call
+ * and linked by two line attributes: a ring id ("_ring") and the ring size ("Ring Size"). bagItems() groups them back
+ * into one ring; the ring counts as one item, and removing either line removes both.
  */
 import { useSyncExternalStore } from "react";
+import { completeHref, parseShape } from "@/components/builder/ring";
 import type { ImageRef } from "@/components/ui/Picture";
 import { METALS, type MetalId } from "@/content/metals";
 import { imagesFor, productHref, type Product, type ProductVariant } from "@/content/products";
@@ -20,14 +25,36 @@ import {
   removeCartLines,
   shopifyConfig,
   updateCartLines,
+  type CartAttribute,
+  type CartLineInput,
   type ShopifyCart,
   type ShopifyCartLine,
 } from "@/lib/shopify";
-import { caratOf, localImage, metalOf, slugify, tagValue } from "@/lib/shopify/mapProduct";
+import type { Stone } from "@/lib/builder";
+import { caratOf, localImage, LOOSE_STONE_TAG, metalOf, slugify, tagValue } from "@/lib/shopify/mapProduct";
 
 const CART_KEY = "sky-cart-id";
 const LOCAL_LINES_KEY = "sky-bag-local-lines";
 const OLD_LOCAL_COUNT_KEY = "sky-bag-local-count";
+
+/** Line attribute keys of a built ring. The leading underscore keeps the id out of Shopify's checkout and order views. */
+export const RING_ID_KEY = "_ring";
+export const RING_SIZE_KEY = "Ring Size";
+
+/** A built ring's part: the ring it belongs to, its size and which part this line is. */
+export type BagRingPart = { id: string; size: string | null; role: "setting" | "stone" };
+
+/** A loose stone's facts (a ring's stone line), read from its tags as the builder catalogue does. */
+export type BagStone = {
+  kind: "diamond" | "gemstone";
+  origin: "natural" | "lab-grown";
+  shape: string;
+  carat: number;
+  color: string;
+  clarity: string;
+  cut: string;
+  gem?: string;
+};
 
 /** One line of the bag, the same shape whether it comes from Shopify or the local bag. */
 export type BagLine = {
@@ -40,6 +67,8 @@ export type BagLine = {
   href: string;
   /** The product's name without metal and carat ("Four Prong Solitaire Lab-Grown Pendant"). */
   name: string;
+  /** The product's full title ("0.50ct I VVS2 Round Natural Diamond"). */
+  title: string;
   metal: MetalId;
   carat: number | null;
   /** Chain or bracelet length in inches ("16-18"), from the product's length: tag. */
@@ -54,10 +83,15 @@ export type BagLine = {
   /** After line discounts. */
   total: number;
   available: boolean;
+  /** Set on the two lines of a built ring; null for a single piece. */
+  ring: BagRingPart | null;
+  /** Set on a ring's stone line. */
+  stone: BagStone | null;
 };
 
 export type Bag = {
   lines: BagLine[];
+  /** Items in the bag for the header and the headings: a built ring counts once. */
   count: number;
   /** Sum of the lines before discounts. */
   subtotal: number;
@@ -109,11 +143,35 @@ export function shortName(title: string) {
   return name.replace(/\b\d+(\.\d+)?\s?ct\b/i, "").replace(/\s+/g, " ").trim();
 }
 
+const attribute = (attributes: CartAttribute[] | undefined, key: string) => attributes?.find((item) => item.key === key)?.value || null;
+
+const isStoneProduct = (product: { productType: string; tags: string[] }) => product.tags.includes(LOOSE_STONE_TAG) || /loose stones?/i.test(product.productType);
+
+/** A stone's facts from its tags (the tags src/lib/builder.ts reads). */
+export function stoneFromTags(tags: string[]): BagStone | null {
+  const kind = tagValue(tags, "stone");
+  const origin = tagValue(tags, "origin");
+  const shape = tagValue(tags, "shape");
+  if ((kind !== "diamond" && kind !== "gemstone") || (origin !== "natural" && origin !== "lab-grown") || !shape) return null;
+  return {
+    kind,
+    origin,
+    shape,
+    carat: Number(tagValue(tags, "carat")) || 0,
+    color: tagValue(tags, "color") ?? "",
+    clarity: tagValue(tags, "clarity") ?? "",
+    cut: tagValue(tags, "cut") ?? "",
+    gem: tagValue(tags, "gem") ?? undefined,
+  };
+}
+
 /** A Shopify cart line in the bag's shape. */
 export function mapCartLine(line: ShopifyCartLine): BagLine {
   const { merchandise } = line;
   const product = merchandise.product;
   const category = slugify(product.productType) || "products";
+  const ringId = attribute(line.attributes, RING_ID_KEY);
+  const stoneLine = isStoneProduct(product);
   const discount = line.discountAllocations.reduce((sum, allocation) => sum + money(allocation.discountedAmount), 0);
   const subtotal = money(line.cost.subtotalAmount);
   return {
@@ -123,6 +181,7 @@ export function mapCartLine(line: ShopifyCartLine): BagLine {
     category,
     href: productHref({ category, slug: product.handle }),
     name: shortName(product.title),
+    title: product.title,
     metal: metalOf(merchandise.selectedOptions, product.tags),
     carat: caratOf(merchandise.selectedOptions),
     length: tagValue(product.tags, "length"),
@@ -133,7 +192,68 @@ export function mapCartLine(line: ShopifyCartLine): BagLine {
     subtotal,
     total: money(line.cost.totalAmount) || subtotal - discount,
     available: merchandise.availableForSale,
+    ring: ringId ? { id: ringId, size: attribute(line.attributes, RING_SIZE_KEY), role: stoneLine ? "stone" : "setting" } : null,
+    stone: stoneLine ? stoneFromTags(product.tags) : null,
   };
+}
+
+/* ---------- Built rings ---------- */
+
+export type BagRingItem = {
+  kind: "ring";
+  key: string;
+  id: string;
+  size: string | null;
+  setting: BagLine | null;
+  stone: BagLine | null;
+  /** Both lines (one if the other has gone from the cart). */
+  lines: BagLine[];
+  subtotal: number;
+  total: number;
+  available: boolean;
+};
+export type BagItem = { kind: "line"; key: string; line: BagLine } | BagRingItem;
+
+/** The bag's lines as the shopper sees them: single pieces, and each built ring as one item, in the order first added. */
+export function bagItems(lines: BagLine[]): BagItem[] {
+  const items: BagItem[] = [];
+  const rings = new Map<string, BagRingItem>();
+  for (const line of lines) {
+    if (!line.ring) {
+      items.push({ kind: "line", key: line.id, line });
+      continue;
+    }
+    let ring = rings.get(line.ring.id);
+    if (!ring) {
+      ring = { kind: "ring", key: `ring:${line.ring.id}`, id: line.ring.id, size: line.ring.size, setting: null, stone: null, lines: [], subtotal: 0, total: 0, available: true };
+      rings.set(line.ring.id, ring);
+      items.push(ring);
+    }
+    if (line.ring.role === "stone") ring.stone = line;
+    else ring.setting = line;
+    ring.lines.push(line);
+    ring.size ??= line.ring.size;
+    ring.subtotal += line.subtotal;
+    ring.total += line.total;
+    ring.available &&= line.available;
+  }
+  return items;
+}
+
+/** The header's count: pieces by quantity, a built ring once. */
+export const itemCount = (lines: BagLine[]) =>
+  bagItems(lines).reduce((sum, item) => sum + (item.kind === "ring" ? Math.max(1, ...item.lines.map((line) => line.quantity)) : item.line.quantity), 0);
+
+/** Step 3 with the ring in the URL, for a bag ring's links (Edit, its name and photo). */
+export function ringHref(ring: Pick<BagRingItem, "setting" | "stone" | "size">) {
+  if (!ring.setting) return "/design-your-own/";
+  return completeHref({
+    setting: ring.setting.handle,
+    metal: ring.setting.metal,
+    shape: parseShape(ring.stone?.stone?.shape),
+    stone: ring.stone?.handle ?? null,
+    size: (ring.size as never) ?? null,
+  });
 }
 
 export function mapCart(cart: ShopifyCart): Bag {
@@ -142,7 +262,7 @@ export function mapCart(cart: ShopifyCart): Bag {
   const orderDiscount = cart.discountAllocations.reduce((sum, allocation) => sum + money(allocation.discountedAmount), 0);
   const subtotal = lines.reduce((sum, line) => sum + line.subtotal, 0);
   const discount = Math.max(0, Math.round((lineDiscounts + orderDiscount) * 100) / 100);
-  return { lines, count: cart.totalQuantity, subtotal, discount, total: money(cart.cost.totalAmount) || subtotal - discount, simulated: false };
+  return { lines, count: itemCount(lines), subtotal, discount, total: money(cart.cost.totalAmount) || subtotal - discount, simulated: false };
 }
 
 /* ---------- Local bag (mock catalogue builds) ---------- */
@@ -152,7 +272,8 @@ type LocalLine = Omit<BagLine, "subtotal" | "total">;
 const readLocal = (): LocalLine[] => {
   try {
     const parsed = JSON.parse(read(LOCAL_LINES_KEY) ?? "[]");
-    return Array.isArray(parsed) ? parsed : [];
+    // Lines saved before rings existed have no title, ring or stone.
+    return Array.isArray(parsed) ? parsed.map((line: LocalLine) => ({ ...line, title: line.title ?? line.name, ring: line.ring ?? null, stone: line.stone ?? null })) : [];
   } catch {
     return [];
   }
@@ -161,7 +282,7 @@ const readLocal = (): LocalLine[] => {
 function localBag(lines: LocalLine[]): Bag {
   const full = lines.map((line) => ({ ...line, subtotal: line.unitPrice * line.quantity, total: line.unitPrice * line.quantity }));
   const subtotal = full.reduce((sum, line) => sum + line.subtotal, 0);
-  return { lines: full, count: full.reduce((sum, line) => sum + line.quantity, 0), subtotal, discount: 0, total: subtotal, simulated: true };
+  return { lines: full, count: itemCount(full), subtotal, discount: 0, total: subtotal, simulated: true };
 }
 
 const saveLocal = (lines: LocalLine[]) => {
@@ -247,6 +368,7 @@ export function addToBag(product: Product, variant: ProductVariant, quantity = 1
           category: product.category,
           href: productHref(product),
           name: shortName(product.name),
+          title: product.name,
           metal: variant.metal,
           carat: variant.carat,
           length: product.length,
@@ -255,32 +377,127 @@ export function addToBag(product: Product, variant: ProductVariant, quantity = 1
           quantity,
           unitPrice: variant.price,
           available: variant.available,
+          ring: null,
+          stone: null,
         });
       saveLocal(lines);
       set({ error: null, panelOpen: openPanel || state.panelOpen });
       return { ok: true, simulated: true } as const;
     }
 
-    const cartLines = [{ merchandiseId: variant.id, quantity }];
-    try {
-      const cartId = read(CART_KEY);
-      let cart: ShopifyCart | null = null;
-      if (cartId) {
-        try {
-          cart = await addCartLines(cartId, cartLines);
-        } catch {
-          cart = null; // the saved cart expired: start a new one below
-        }
+    return addCart([{ merchandiseId: variant.id, quantity }], shortName(product.name), openPanel);
+  });
+}
+
+/** Adds lines to the saved cart, or a new cart when there is none (or it expired). Runs inside serial(). */
+async function addCart(cartLines: CartLineInput[], name: string, openPanel: boolean): Promise<AddResult> {
+  try {
+    const cartId = read(CART_KEY);
+    let cart: ShopifyCart | null = null;
+    if (cartId) {
+      try {
+        cart = await addCartLines(cartId, cartLines);
+      } catch {
+        cart = null; // the saved cart expired: start a new one below
       }
-      cart ??= await createCart(cartLines);
-      write(CART_KEY, cart.id);
-      set({ bag: mapCart(cart), loaded: true, error: null, panelOpen: openPanel || state.panelOpen });
-      return { ok: true, simulated: false } as const;
-    } catch (error) {
-      // A failure always opens the panel, where the message shows.
-      set({ error: `We couldn't add ${shortName(product.name)} to your bag. Please try again.`, panelOpen: true });
-      return { ok: false, message: errorText(error) } as const;
     }
+    cart ??= await createCart(cartLines);
+    write(CART_KEY, cart.id);
+    set({ bag: mapCart(cart), loaded: true, error: null, panelOpen: openPanel || state.panelOpen });
+    return { ok: true, simulated: false };
+  } catch (error) {
+    // A failure always opens the panel, where the message shows.
+    set({ error: `We couldn't add ${name} to your bag. Please try again.`, panelOpen: true });
+    return { ok: false, message: errorText(error) };
+  }
+}
+
+const newRingId = () => {
+  try {
+    return window.crypto.randomUUID();
+  } catch {
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+};
+
+export type RingToAdd = {
+  setting: Product;
+  settingVariant: ProductVariant;
+  stone: Stone;
+  size: string;
+  /** The ring's name in the bag ("Vine Ring"), for a failure message. */
+  name: string;
+};
+
+/**
+ * Adds a built ring: the setting's variant and the stone's variant as two lines in one cart call, linked by the ring
+ * id and size attributes, then opens the bag panel (unless openPanel is false, as for Secure Checkout).
+ * A stone is one of a kind: when this stone is already in the bag, nothing is added and the bag opens instead.
+ */
+export function addRing({ setting, settingVariant, stone, size, name }: RingToAdd, { openPanel = true } = {}): Promise<AddResult> {
+  return serial(async () => {
+    await start();
+    if (state.bag.lines.some((line) => line.ring && line.handle === stone.handle)) {
+      set({ error: null, panelOpen: openPanel || state.panelOpen });
+      return { ok: true, simulated: state.bag.simulated } as const;
+    }
+    const id = newRingId();
+    if (!settingVariant.id || !stone.variantId || !shopifyConfig()) {
+      const lines = readLocal();
+      const settingLine: LocalLine = {
+        id: `local:ring:${id}:setting`,
+        variantId: settingVariant.id,
+        handle: setting._id,
+        category: setting.category,
+        href: productHref(setting),
+        name: shortName(setting.name),
+        title: setting.name,
+        metal: settingVariant.metal,
+        carat: null,
+        length: null,
+        shipsInDays: setting.shipsInDays,
+        image: imagesFor(setting, settingVariant.metal)[0] ?? setting.image,
+        quantity: 1,
+        unitPrice: settingVariant.price,
+        available: settingVariant.available,
+        ring: { id, size, role: "setting" },
+        stone: null,
+      };
+      const stoneLine: LocalLine = {
+        id: `local:ring:${id}:stone`,
+        variantId: stone.variantId,
+        handle: stone.handle,
+        category: "loose-stones",
+        href: `/design-your-own/stone/${stone.handle}/`,
+        name: stone.title,
+        title: stone.title,
+        metal: settingVariant.metal,
+        carat: stone.carat,
+        length: null,
+        shipsInDays: stone.shipsInDays,
+        image: stone.image,
+        quantity: 1,
+        unitPrice: stone.price,
+        available: stone.available,
+        ring: { id, size, role: "stone" },
+        stone: { kind: stone.kind, origin: stone.origin, shape: stone.shape, carat: stone.carat, color: stone.color, clarity: stone.clarity, cut: stone.cut, gem: stone.gem },
+      };
+      saveLocal([...lines, settingLine, stoneLine]);
+      set({ error: null, panelOpen: openPanel || state.panelOpen });
+      return { ok: true, simulated: true } as const;
+    }
+    const attributes = [
+      { key: RING_ID_KEY, value: id },
+      { key: RING_SIZE_KEY, value: size },
+    ];
+    return addCart(
+      [
+        { merchandiseId: settingVariant.id, quantity: 1, attributes },
+        { merchandiseId: stone.variantId, quantity: 1, attributes },
+      ],
+      name,
+      openPanel,
+    );
   });
 }
 
@@ -293,7 +510,12 @@ export function setLineQuantity(lineId: string, quantity: number) {
 }
 
 export function removeLine(lineId: string) {
-  return change(lineId, (cartId) => removeCartLines(cartId, [lineId]), (lines) => lines.filter((line) => line.id !== lineId));
+  return removeLines([lineId]);
+}
+
+/** Removes several lines in one cart call: a built ring's setting and stone lines go together. */
+export function removeLines(lineIds: string[]) {
+  return change(lineIds[0], (cartId) => removeCartLines(cartId, lineIds), (lines) => lines.filter((line) => !lineIds.includes(line.id)));
 }
 
 function change(lineId: string, remote: (cartId: string) => Promise<ShopifyCart>, local: (lines: LocalLine[]) => LocalLine[]) {

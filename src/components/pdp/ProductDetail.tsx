@@ -3,13 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore } from "react";
 import { CreditModal } from "@/components/bag/BagModals";
+import { DropHintModal } from "@/components/builder/DropHintModal";
 import { Accordion, AccordionItem } from "@/components/ui/Accordion";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
+import { IconLabelButton } from "@/components/ui/IconButton";
 import { IconBlock } from "@/components/ui/IconBlock";
 import { CompositionChart, DimensionsDiagram, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
 import { metalComposition, productDetailContent } from "@/content/product-detail";
-import { formatInstallment, formatPrice, variantName, type Product, type ProductVariant } from "@/content/products";
+import { formatInstallment, formatPrice, imagesFor, variantName, type Product, type ProductVariant } from "@/content/products";
 import { addToBag } from "@/lib/bag";
 import { DesktopGallery, MobileGallery } from "./Gallery";
 import { CaratPicker, MetalPicker, MobileMetalPicker } from "./OptionPickers";
@@ -56,6 +58,8 @@ export function ProductDetail({ product }: { product: Product }) {
   const [variant, setVariant] = useVariant(product);
   const [busy, setBusy] = useState(false);
   const [creditOpen, setCreditOpen] = useState(false);
+  const [hintOpen, setHintOpen] = useState(false);
+  const [hintKey, setHintKey] = useState(0);
   const router = useRouter();
   const name = variantName(product, variant);
   const metals = metalsOf(product);
@@ -121,10 +125,18 @@ export function ProductDetail({ product }: { product: Product }) {
           <div className="flex flex-col gap-space-4 ui-desktop:gap-space-3">
             <div className="flex items-start justify-between gap-space-4">
               <h1 className="type-heading-md text-primary-leather">{name}</h1>
-              {/* Drop a hint opens a held modal: shown as designed, not interactive yet. */}
-              <span className="hidden shrink-0 flex-col items-center gap-0.5 text-primary-leather ui-desktop:inline-flex">
-                <Icon name="mail" size={28} />
-                <span className="type-overline-xs-link">{labels.dropHint}</span>
+              {/* Drop a hint opens Step 3's Modal - Drop a Hint with this piece (inferred). Desktop only, as drawn; the wrapper
+                  hides it on mobile (the button's own display would win over "hidden"). */}
+              <span className="hidden shrink-0 ui-desktop:inline-flex">
+                <IconLabelButton
+                  icon="mail"
+                  onClick={() => {
+                    setHintKey((key) => key + 1);
+                    setHintOpen(true);
+                  }}
+                >
+                  {labels.dropHint}
+                </IconLabelButton>
               </span>
             </div>
             {/* type-paragraph keeps the line box this price was built with (it used to come from the base <p> rule). */}
@@ -280,6 +292,14 @@ export function ProductDetail({ product }: { product: Product }) {
       </div>
 
       <CreditModal open={creditOpen} onClose={() => setCreditOpen(false)} />
+      <DropHintModal
+        key={hintKey}
+        open={hintOpen}
+        onClose={() => setHintOpen(false)}
+        name={name}
+        image={imagesFor(product, variant.metal)[0] ?? product.image}
+        ringSize={product.category === "rings"}
+      />
     </div>
   );
 }

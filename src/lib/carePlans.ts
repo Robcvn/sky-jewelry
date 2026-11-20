@@ -63,8 +63,12 @@ export function setCarePlan(lineId: string, plan: CarePlanId | null) {
   save(next);
 }
 
-/** Every Fine Jewelry piece can take a care plan (the plan's coverage lists rings, clasps, earring posts and pearls). */
-export const carePlanEligible = (line: Pick<BagLine, "category">) => bagFeatures.carePlans && isFineJewelry(line.category);
+/**
+ * Every Fine Jewelry piece can take a care plan (the plan's coverage lists rings, clasps, earring posts and pearls), and
+ * so can a built ring: Figma's ring rows draw one care plan row per ring, kept on the ring's setting line.
+ */
+export const carePlanEligible = (line: Pick<BagLine, "category" | "ring">) =>
+  bagFeatures.carePlans && (isFineJewelry(line.category) || line.ring?.role === "setting");
 
 export type CarePlanState = { status: "none" } | { status: "added"; plan: CarePlan } | { status: "unavailable"; id: string };
 

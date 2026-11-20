@@ -29,6 +29,20 @@ export const bagContent = {
   attributes: { metal: "Metal", carat: "Carat", size: "Size", caratValue: (carat: string) => `${carat} Total Carat Weight` },
   /** Fine Jewelry version of Figma's "This stone is no longer available." */
   unavailable: "This item is no longer available.",
+  /**
+   * A ring built in the ring builder: Figma's ring rows (the setting row's Metal, Band and Ring Size; the stone row's
+   * Carat, Color, Cut and Clarity). Band is left out: the catalogue has no band value for a setting.
+   */
+  ring: {
+    metal: "Metal",
+    ringSize: "Ring Size",
+    carat: "Carat",
+    color: "Color",
+    cut: "Cut",
+    clarity: "Clarity",
+    stoneUnavailable: "This stone is no longer available.",
+    selectNewStone: "Select New Stone",
+  },
   orderPrice: "Order Price",
   subtotal: "Subtotal",
   discount: "Discount",

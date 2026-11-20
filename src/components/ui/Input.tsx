@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type Ref } from "react";
+import { useId, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
 import { Icon, type IconName } from "./Icon";
 import { cx, type PreviewState } from "./shared";
 
@@ -149,6 +149,52 @@ export function Input({
       </div>
       {message ? (
         <InputMessage id={messageId} status={status}>
+          {message}
+        </InputMessage>
+      ) : null}
+    </div>
+  );
+}
+
+type TextAreaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "placeholder"> & {
+  /** Shown as the placeholder at the top left until something is typed, as Figma's 96px Input does. */
+  label: ReactNode;
+  error?: boolean;
+  message?: ReactNode;
+};
+
+/**
+ * Figma "Input" (SM) stretched to 96px with its label at the top (Modal - Drop a Hint's "Message (Optional)"): the
+ * same border, colours and focus ring as Input, for text that runs over several lines.
+ */
+export function TextArea({ label, error = false, message, className, id, disabled, rows = 3, ...rest }: TextAreaProps) {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const messageId = `${inputId}-message`;
+  return (
+    <div className={cx("flex w-full flex-col gap-space-1", className)}>
+      <div
+        className={cx(
+          "ui-transition relative flex min-h-24 rounded-4 border text-primary-leather has-[textarea:focus-visible]:outline-2 has-[textarea:focus-visible]:outline-offset-2 has-[textarea:focus-visible]:outline-primary-leather",
+          disabled ? "border-black-alpha-20 bg-secondary-skin" : error ? "border-state-error bg-secondary-skin" : "border-secondary-gold bg-secondary-skin ui-hover:border-black-alpha-50",
+        )}
+      >
+        <textarea
+          id={inputId}
+          placeholder=" "
+          rows={rows}
+          disabled={disabled}
+          aria-invalid={error || undefined}
+          aria-describedby={message ? messageId : undefined}
+          className="peer type-ui-xs-regular w-full min-w-0 resize-none bg-transparent px-space-4 py-[0.6875rem] placeholder:text-transparent focus-visible:outline-none disabled:cursor-not-allowed"
+          {...rest}
+        />
+        <label htmlFor={inputId} className="type-ui-xs-regular pointer-events-none absolute top-[0.6875rem] left-space-4 text-black-alpha-60 peer-[:not(:placeholder-shown)]:sr-only">
+          {label}
+        </label>
+      </div>
+      {message ? (
+        <InputMessage id={messageId} status="error">
           {message}
         </InputMessage>
       ) : null}

@@ -15,6 +15,7 @@ import {
   PRODUCT_BY_HANDLE_QUERY,
   PRODUCTS_QUERY,
   SHOP_QUERY,
+  STONE_AVAILABILITY_QUERY,
 } from "./queries";
 import type {
   CartLineInput,
@@ -63,6 +64,19 @@ export async function getCollectionProductHandles(handle: string, first = 250) {
     { handle, first },
   );
   return data.collection ? data.collection.products.nodes.map((product) => product.handle) : null;
+}
+
+/**
+ * Whether a product (a loose stone) can still be bought: false when it is sold out or no longer on the channel.
+ * Read-only; used in the browser by Step 3.
+ */
+export async function getStoneAvailability(handle: string) {
+  const data = await shopifyFetch<{ product: { availableForSale: boolean; variants: { nodes: Array<{ id: string; availableForSale: boolean }> } } | null }>(
+    STONE_AVAILABILITY_QUERY,
+    { handle },
+  );
+  const product = data.product;
+  return Boolean(product && product.availableForSale && (product.variants.nodes[0]?.availableForSale ?? true));
 }
 
 type CartPayload = { cart: ShopifyCart | null; userErrors: Array<{ field: string[] | null; message: string }> };

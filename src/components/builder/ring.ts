@@ -6,17 +6,18 @@
  *   /design-your-own/setting/<handle>/      Step 1: the setting's page
  *   /design-your-own/stone/                 Step 2: choose a stone (list)
  *   /design-your-own/stone/<handle>/        Step 2: the stone's page
- *   /design-your-own/complete/              Step 3: planned (part 2)
+ *   /design-your-own/complete/              Step 3: the complete ring
  *
  * Query, carried from page to page so a ring can be linked to and resumed:
  *   setting=<handle>          the chosen setting (from Step 2 on)
  *   metal=14k-white-gold      the setting's metal
  *   shape=round               the centre stone shape: a setting option, and Step 2's shape filter
  *   stone=<handle>            the chosen stone (Step 3)
+ *   size=6.5                  the ring size chosen on Step 3
  *   start=lab-diamond         what the menu link started with: sets Step 2's tab or its gemstone mode
  * The list pages add their own filters (see settingFilters.ts and stoneFilters.ts).
  */
-import { STONE_SHAPES, type GemType, type StoneKind, type StoneOrigin, type StoneShape } from "@/content/builder";
+import { GEM_COLORS, GEM_TYPES, RING_SIZES, shapeLabel, STONE_SHAPES, type GemType, type RingSize, type StoneKind, type StoneOrigin, type StoneShape } from "@/content/builder";
 import { metalById, parseMetal, type MetalId } from "@/content/metals";
 import type { Product } from "@/content/products";
 
@@ -25,10 +26,14 @@ export type Ring = {
   metal: MetalId | null;
   shape: StoneShape | null;
   stone: string | null;
+  /** Step 3's ring size (one of Figma's ring size options). */
+  size: RingSize | null;
   start: string | null;
 };
 
-export const EMPTY_RING: Ring = { setting: null, metal: null, shape: null, stone: null, start: null };
+export const EMPTY_RING: Ring = { setting: null, metal: null, shape: null, stone: null, size: null, start: null };
+
+export const parseRingSize = (value: string | null | undefined): RingSize | null => RING_SIZES.find((size) => size === value) ?? null;
 
 export const parseShape = (value: string | null | undefined): StoneShape | null => STONE_SHAPES.find((shape) => shape.value === value)?.value ?? null;
 
@@ -38,6 +43,7 @@ export function parseRing(params: URLSearchParams): Ring {
     metal: parseMetal(params.get("metal")),
     shape: parseShape(params.get("shape")),
     stone: params.get("stone") || null,
+    size: parseRingSize(params.get("size")),
     start: params.get("start") || null,
   };
 }
@@ -49,6 +55,7 @@ export function ringParams(ring: Partial<Ring>) {
   if (ring.metal) params.set("metal", ring.metal);
   if (ring.shape) params.set("shape", ring.shape);
   if (ring.stone) params.set("stone", ring.stone);
+  if (ring.size) params.set("size", ring.size);
   if (ring.start) params.set("start", ring.start);
   return params;
 }
@@ -68,7 +75,7 @@ export const stonesHref = (ring: Partial<Ring>) => withQuery(STONES_PATH, ringPa
 /** A stone's page, carrying the ring. */
 export const stoneHref = (handle: string, ring: Partial<Ring> = {}) =>
   withQuery(`/design-your-own/stone/${handle}/`, ringParams({ setting: ring.setting, metal: ring.metal, shape: ring.shape, start: ring.start }));
-/** Step 3 (planned): the ring with its stone. */
+/** Step 3: the ring with its stone and, once chosen, its size. */
 export const completeHref = (ring: Partial<Ring>) => withQuery("/design-your-own/complete/", ringParams({ ...ring, start: null }));
 
 /**
@@ -102,3 +109,55 @@ export const settingShortName = (product: Pick<Product, "titleTemplate">, metal:
 
 /** The setting's variant for a metal (its default when the metal isn't offered). */
 export const settingVariant = (product: Product, metal: MetalId | null) => product.variants.find((variant) => variant.metal === metal) ?? product.variants[0];
+
+/** "Vine": the setting's name without "Engagement Ring Setting", as Step 3's setting row shows it (Figma's "Petite Pavé"). */
+export const settingShort = (product: Pick<Product, "titleTemplate">) => settingTitle(product).replace(/\s*(Engagement Ring Setting|Ring Setting|Ring)$/i, "");
+
+/** "Vine" from a setting's Shopify title ("Vine Engagement Ring Setting in 14K White Gold"), for bag lines. */
+export const settingShortFromTitle = (title: string) =>
+  title
+    .replace(/\s+in\s+.+$/i, "")
+    .replace(/\s*(Engagement Ring Setting|Ring Setting|Ring)$/i, "")
+    .trim();
+
+/** "0.50 Carat I VVS2 Round Natural Diamond": the stone's title with "ct" written out, as Step 3 writes it. */
+export const stoneCaratTitle = (title: string) => title.replace(/^(\d+(?:\.\d+)?)ct\b/, "$1 Carat");
+
+type StoneFacts = { title: string; kind: StoneKind; origin: StoneOrigin; shape: string; carat: number; color: string; clarity: string; gem?: string };
+
+const gemLabel = (stone: Pick<StoneFacts, "gem">) => GEM_TYPES.find((type) => type.value === stone.gem)?.label ?? "Gemstone";
+const colorLabel = (stone: Pick<StoneFacts, "kind" | "color">) => (stone.kind === "diamond" ? stone.color : (GEM_COLORS.find((item) => item.value === stone.color)?.label ?? stone.color));
+
+/**
+ * The built ring's name, in each place's own wording (each frame words it differently):
+ * - "desktop": Step 3's heading, "Vine 0.50 Carat I VVS2 Round Natural Diamond Engagement Ring" (Figma 6579:194422)
+ * - "mobile": Step 3's heading, "The Vine with a 0.50 Carat I VVS2 Round Natural Diamond" (6579:208211)
+ * - "bag": the bag page's heading, "Vine Ring with a 0.50 Carat I VVS2 Round Natural Diamond" (6579:196270)
+ * - "panel": the bag panel's name, "Vine Ring" (5011:77722: "Hidden Halo Diamond Ring")
+ */
+export function ringName(settingName: string, stone: Pick<StoneFacts, "title">, form: "desktop" | "mobile" | "bag" | "panel") {
+  const stoneName = stoneCaratTitle(stone.title);
+  if (form === "desktop") return `${settingName} ${stoneName} Engagement Ring`;
+  if (form === "mobile") return `The ${settingName} with a ${stoneName}`;
+  if (form === "bag") return `${settingName} Ring with a ${stoneName}`;
+  return `${settingName} Ring`;
+}
+
+/**
+ * The stone's short name: Step 3's mobile row "Round Natural Diamond" (6579:208215), or the bag's "Natural Round
+ * Diamond" / "Lab Pear Diamond" (6579:196303). Gemstones use their title without the weight.
+ */
+export function stoneShortName(stone: StoneFacts, form: "complete" | "bag") {
+  if (stone.kind !== "diamond") return stone.title.replace(/^\S+ct\s+/, "");
+  const shape = shapeLabel(stone.shape);
+  return form === "complete" ? `${shape} ${stone.origin === "natural" ? "Natural" : "Lab-Grown"} Diamond` : `${stone.origin === "natural" ? "Natural" : "Lab"} ${shape} Diamond`;
+}
+
+/** "0.50ct • I • VVS2" (desktop row) or "0.50ct I VVS2" (mobile row). Gemstones: weight, colour and clarity code. */
+export function stoneSummary(stone: StoneFacts, separator: " • " | " ") {
+  return [`${stone.carat.toFixed(2)}ct`, colorLabel(stone), stone.clarity].filter(Boolean).join(separator);
+}
+
+/** The step bar's stone line on Step 3: "Round 0.50 Carat" (Figma "Round 0.50 Carat - $1,040", price shown once). */
+export const stoneStepName = (stone: Pick<StoneFacts, "shape" | "carat">) => `${shapeLabel(stone.shape)} ${stone.carat.toFixed(2)} Carat`;
+export { gemLabel, colorLabel as stoneColorLabel };

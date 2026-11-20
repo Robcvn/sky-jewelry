@@ -11,7 +11,7 @@ type DropdownSize = "md" | "sm" | "xs";
 type DropdownProps = {
   /** Accessible name. Figma keeps this label hidden on the control. */
   label: string;
-  placeholder?: string;
+  placeholder?: ReactNode;
   options?: DropdownOption[];
   value?: string;
   defaultValue?: string;

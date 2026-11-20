@@ -29,13 +29,13 @@ const pdp = productDetailContent;
 const TILE_BG = "bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]";
 
 /** The two photos of a ring being worn that Figma's gallery adds to every setting, each under a "Shown with 2.50 ct" badge. */
-const WORN: Array<{ image: ImageRef; carat: string }> = [
+export const WORN: Array<{ image: ImageRef; carat: string }> = [
   { image: { desktop: "builder-gallery-hand", alt: "A solitaire ring worn on a hand" }, carat: "2.50" },
   { image: { desktop: "builder-gallery-size", alt: "A hand with blue nails wearing a round solitaire ring" }, carat: "2.50" },
 ];
 
 /** Figma "Badge - Overlay" on the gallery photos: a blurred white pill, 16px from the top. */
-function ShownWith({ carat }: { carat: string }) {
+export function ShownWith({ carat }: { carat: string }) {
   return (
     <span className="type-overline-xs-medium absolute top-space-4 left-1/2 flex min-h-space-6 -translate-x-1/2 items-center rounded-full border border-white-alpha-20 bg-white-alpha-10 px-space-3 py-space-1 whitespace-nowrap text-base-white backdrop-blur-[15px]">
       {text.shownWith(carat)}
@@ -333,7 +333,7 @@ function BandCard({ product }: { product: Product }) {
 }
 
 /** "Perfectly Paired Wedding Bands" (Figma 3565:100694), under the desktop gallery: a row of three cards that pages sideways. */
-function PairedBands({ bands }: { bands: Product[] }) {
+export function PairedBands({ bands }: { bands: Product[] }) {
   const { ref, atStart, atEnd, scrollable } = useScrollProgress<HTMLUListElement>();
   const page = (direction: 1 | -1) => {
     const node = ref.current;
@@ -384,7 +384,7 @@ const PROFILE = {
  * (?metal=&shape=), and "Choose This Setting" carries them to Step 2.
  */
 export function SettingDetail({ setting, bands }: { setting: RingSetting; bands: Product[] }) {
-  const { product, specs } = setting;
+  const { product } = setting;
   const [search, setQuery] = useQuery();
   const ring = parseRing(new URLSearchParams(search));
   const variant = settingVariant(product, ring.metal);
@@ -525,45 +525,7 @@ export function SettingDetail({ setting, bands }: { setting: RingSetting; bands:
           </ul>
         </div>
 
-        <section aria-labelledby="builder-setting-info" className="flex flex-col gap-space-5 border-t border-secondary-gold pt-space-6 ui-desktop:gap-space-8 ui-desktop:pt-space-8">
-          <h2 id="builder-setting-info" className="type-heading-sm flex items-center gap-space-2 text-primary-leather ui-desktop:type-heading-md ui-desktop:gap-space-3">
-            <Icon name="setting" size={24} className="ui-desktop:hidden" />
-            <Icon name="setting" size={32} className="hidden ui-desktop:block" />
-            {text.info}
-          </h2>
-          <div className="grid grid-cols-2 items-start gap-space-2 ui-desktop:gap-space-4">
-            <ProductInfoCard label={pdp.labels.metal} value={metalById(variant.metal).label} note={pdp.metalNote} gap="md" className="col-span-2">
-              <CompositionChart parts={metalComposition[variant.metal]} />
-            </ProductInfoCard>
-            <ProductInfoCard label={text.cards.width.label} value={`${specs.width.toFixed(1)}mm`} note={text.cards.width.note} spread className="h-full min-h-[7.75rem] ui-desktop:min-h-36" />
-            {specs.tcw > 0 ? (
-              <ProductInfoCard label={text.cards.tcw.label} value={`${specs.tcw.toFixed(2)} ct`} note={text.cards.tcw.note} spread className="h-full min-h-[7.75rem] ui-desktop:min-h-36" />
-            ) : null}
-            {specs.tcw > 0 ? (
-              <ProductInfoCard
-                label={text.cards.accent.label}
-                value={
-                  <span className="flex gap-space-3">
-                    <span className="flex flex-col">
-                      {ACCENT.color}
-                      <span className="type-ui-2xs-regular">{text.cards.accent.color}</span>
-                    </span>
-                    <span className="flex flex-col border-l border-black-alpha-20 pl-space-3">
-                      {ACCENT.clarity}
-                      <span className="type-ui-2xs-regular">{text.cards.accent.clarity}</span>
-                    </span>
-                  </span>
-                }
-                note={text.cards.accent.note}
-                spread
-                className="h-full min-h-36 ui-desktop:min-h-[11.125rem]"
-              />
-            ) : null}
-            <ProductInfoCard label={text.cards.profile.label} value={PROFILE[specs.profile].label} note={PROFILE[specs.profile].note} className="h-full min-h-36">
-              <Icon name={setting.style ? styleIcon(setting.style) : "setting"} size={48} />
-            </ProductInfoCard>
-          </div>
-        </section>
+        <SettingInfoSection setting={setting} metal={variant.metal} />
 
         <Accordion>
           <AccordionItem question="Shipping" icon="truck" headingLevel={2}>
@@ -585,4 +547,72 @@ export function SettingDetail({ setting, bands }: { setting: RingSetting; bands:
 }
 
 /** SAMPLE: the accent stones' average grades, Figma's example values, for every setting that has accents. */
-const ACCENT = { color: "D–F", clarity: "VVS" };
+export const ACCENT = { color: "D–F", clarity: "VVS" };
+
+export const PROFILE_LABELS = PROFILE;
+
+/**
+ * "Your Setting Info" (Figma 3565:100650; mobile 3587:125891): the Metal card with its composition chart, then Width,
+ * Approx. TCW, Accent Gems and Profile. Settings without accent stones leave out TCW and Accent Gems. Step 3 reuses it;
+ * its mobile frame (6579:208256) draws Metal, Width and Approx. TCW only (mobileCards="three").
+ */
+export function SettingInfoSection({
+  setting,
+  metal,
+  heading = text.info,
+  headingId = "builder-setting-info",
+  mobileCards = "all",
+  className,
+}: {
+  setting: RingSetting;
+  metal: MetalId;
+  heading?: string;
+  headingId?: string;
+  mobileCards?: "all" | "three";
+  className?: string;
+}) {
+  const { specs } = setting;
+  const desktopOnly = mobileCards === "three" ? "hidden ui-desktop:flex" : undefined;
+  return (
+    <section aria-labelledby={headingId} className={cx("flex flex-col gap-space-5 border-t border-secondary-gold ui-desktop:gap-space-8 ui-desktop:pt-space-8", className ?? "pt-space-6")}>
+      <h2 id={headingId} className="type-heading-sm flex items-center gap-space-2 text-primary-leather ui-desktop:type-heading-md ui-desktop:gap-space-3">
+        <Icon name="setting" size={24} className="ui-desktop:hidden" />
+        <Icon name="setting" size={32} className="hidden ui-desktop:block" />
+        {heading}
+      </h2>
+      <div className="grid grid-cols-2 items-start gap-space-2 ui-desktop:gap-space-4">
+        <ProductInfoCard label={pdp.labels.metal} value={metalById(metal).label} note={pdp.metalNote} gap="md" className="col-span-2">
+          <CompositionChart parts={metalComposition[metal]} />
+        </ProductInfoCard>
+        <ProductInfoCard label={text.cards.width.label} value={`${specs.width.toFixed(1)}mm`} note={text.cards.width.note} spread className="h-full min-h-[7.75rem] ui-desktop:min-h-36" />
+        {specs.tcw > 0 ? (
+          <ProductInfoCard label={text.cards.tcw.label} value={`${specs.tcw.toFixed(2)} ct`} note={text.cards.tcw.note} spread className="h-full min-h-[7.75rem] ui-desktop:min-h-36" />
+        ) : null}
+        {specs.tcw > 0 ? (
+          <ProductInfoCard
+            label={text.cards.accent.label}
+            value={
+              <span className="flex gap-space-3">
+                <span className="flex flex-col">
+                  {ACCENT.color}
+                  <span className="type-ui-2xs-regular">{text.cards.accent.color}</span>
+                </span>
+                <span className="flex flex-col border-l border-black-alpha-20 pl-space-3">
+                  {ACCENT.clarity}
+                  <span className="type-ui-2xs-regular">{text.cards.accent.clarity}</span>
+                </span>
+              </span>
+            }
+            note={text.cards.accent.note}
+            spread
+            className={cx("h-full min-h-36 ui-desktop:min-h-[11.125rem]", desktopOnly)}
+          />
+        ) : null}
+        <ProductInfoCard label={text.cards.profile.label} value={PROFILE[specs.profile].label} note={PROFILE[specs.profile].note} className={cx("h-full min-h-36", desktopOnly)}>
+          <Icon name={setting.style ? styleIcon(setting.style) : "setting"} size={48} />
+        </ProductInfoCard>
+      </div>
+    </section>
+  );
+}
+

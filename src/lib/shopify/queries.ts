@@ -28,6 +28,7 @@ const CART_FIELDS = /* GraphQL */ `
       nodes {
         id
         quantity
+        attributes { key value }
         cost {
           amountPerQuantity { amount currencyCode }
           subtotalAmount { amount currencyCode }
@@ -117,5 +118,12 @@ export const CART_LINES_REMOVE_MUTATION = /* GraphQL */ `
   ${CART_FIELDS}
   mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) { cart { ...CartFields } userErrors { field message } }
+  }
+`;
+
+/** A loose stone's availability, read in the browser on Step 3 (no cart is involved). */
+export const STONE_AVAILABILITY_QUERY = /* GraphQL */ `
+  query StoneAvailability($handle: String!) {
+    product(handle: $handle) { handle availableForSale variants(first: 1) { nodes { id availableForSale } } }
   }
 `;

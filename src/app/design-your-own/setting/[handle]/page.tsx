@@ -6,6 +6,7 @@ import { SettingDetail } from "@/components/builder/SettingDetail";
 import { Reviews } from "@/components/home/Reviews";
 import { ButtonCards } from "@/components/pdp/DetailSections";
 import { withBasePath } from "@/components/ui/shared";
+import { PAIRED_BAND_HANDLES } from "@/content/builder";
 import { homePage, type Reviews as ReviewsContent } from "@/content/home";
 import { getBuilderCatalog } from "@/lib/builder";
 import { getCatalog, pickProducts } from "@/lib/catalog";
@@ -30,8 +31,6 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   return setting ? { title: setting.product.name, description: setting.product.description, alternates: { canonical: withBasePath(settingHref(setting.handle)) } } : {};
 }
 
-/** "Perfectly Paired Wedding Bands": the catalogue's bands (Figma's cards are placeholders showing the twig band). */
-const PAIRED_BANDS = ["twig-diamond-stackable-band", "classic-2mm-band", "flush-set-lab-grown-diamond-band", "classic-4mm-band", "flush-set-natural-diamond-band"];
 
 /** The reviews section reuses the Home section and its sample reviews, as Product Detail does. */
 const reviews = homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
@@ -41,7 +40,7 @@ export default async function SettingPage({ params }: { params: Promise<Params> 
   if (!setting) notFound();
   const { product } = setting;
   const { products } = await getCatalog();
-  const bands = pickProducts(products, PAIRED_BANDS);
+  const bands = pickProducts(products, PAIRED_BAND_HANDLES);
 
   // Structured data for search engines: the setting and its metals' price range.
   const jsonLd = {

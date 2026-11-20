@@ -9,11 +9,12 @@ import { Picture } from "@/components/ui/Picture";
 import { cx } from "@/components/ui/shared";
 import { bagContent, bagFeatures, type CarePlanId } from "@/content/bag";
 import { formatInstallment, type Product } from "@/content/products";
-import { removeLine, setLineQuantity, useBag, type BagLine } from "@/lib/bag";
+import { bagItems, removeLine, removeLines, setLineQuantity, useBag, type BagLine, type BagRingItem } from "@/lib/bag";
 import { carePlanEligible, carePlansTotal, carePlanState, setCarePlan, useCarePlans, type CarePlanState } from "@/lib/carePlans";
 import { BagCount, formatMoney, lineAttributes, LinkButton, QuantitySelect } from "./BagParts";
 import { CarePlanInfoModal, CarePlanModal, CheckoutNoticeModal, CreditModal, ProtectionPlansModal } from "./BagModals";
 import { TILE_BG } from "./BagPanel";
+import { BagRingRow } from "./BagRing";
 
 /* ---------- Care plan row (the newer design's addition; off with bagFeatures.carePlans) ---------- */
 
@@ -337,6 +338,22 @@ export function BagPage({ pairedBands }: { pairedBands: Product[] }) {
   const removeItem = async (line: BagLine) => {
     if (await removeLine(line.id)) setCarePlan(line.id, null);
   };
+  // A built ring's two lines go together; its care plan is kept on the setting line.
+  const removeRing = async (ring: BagRingItem) => {
+    if (await removeLines(ring.lines.map((line) => line.id))) ring.lines.forEach((line) => setCarePlan(line.id, null));
+  };
+  const planRow = (line: BagLine) => {
+    const plan = planOf(line);
+    return plan ? (
+      <CarePlanRow
+        state={plan}
+        onAdd={() => open({ kind: "plan", lineId: line.id, initial: (plans[line.id] as CarePlanId) ?? null })}
+        onLearnMore={() => open({ kind: "planInfo", lineId: line.id })}
+        onRemovePlan={() => setCarePlan(line.id, null)}
+        className="-mt-px"
+      />
+    ) : null;
+  };
 
   const orderPrice = (variant: "column" | "card") => (
     <OrderPrice
@@ -384,19 +401,32 @@ export function BagPage({ pairedBands }: { pairedBands: Product[] }) {
               <Icon name="arrow-left" size={16} />
               {bagContent.backToShopping.label}
             </Link>
-            {bag.lines.map((line) => (
-              <BagItem
-                key={line.id}
-                line={line}
-                busy={busyLine === line.id}
-                plan={planOf(line)}
-                onAddPlan={() => open({ kind: "plan", lineId: line.id, initial: (plans[line.id] as CarePlanId) ?? null })}
-                onPlanInfo={() => open({ kind: "planInfo", lineId: line.id })}
-                onRemovePlan={() => setCarePlan(line.id, null)}
-                onQuantity={(quantity) => void setLineQuantity(line.id, quantity)}
-                onRemove={() => void removeItem(line)}
-              />
-            ))}
+            {bagItems(bag.lines).map((item) => {
+              if (item.kind === "ring")
+                return (
+                  <BagRingRow
+                    key={item.key}
+                    ring={item}
+                    busy={item.lines.some((line) => line.id === busyLine)}
+                    carePlan={item.setting ? planRow(item.setting) : null}
+                    onRemove={() => void removeRing(item)}
+                  />
+                );
+              const { line } = item;
+              return (
+                <BagItem
+                  key={item.key}
+                  line={line}
+                  busy={busyLine === line.id}
+                  plan={planOf(line)}
+                  onAddPlan={() => open({ kind: "plan", lineId: line.id, initial: (plans[line.id] as CarePlanId) ?? null })}
+                  onPlanInfo={() => open({ kind: "planInfo", lineId: line.id })}
+                  onRemovePlan={() => setCarePlan(line.id, null)}
+                  onQuantity={(quantity) => void setLineQuantity(line.id, quantity)}
+                  onRemove={() => void removeItem(line)}
+                />
+              );
+            })}
             <div className="grid gap-space-6 ui-desktop:grid-cols-2">
               <BagInfoCard {...bagContent.returnPolicy} className="hidden ui-desktop:flex" />
               <BagInfoCard {...bagContent.skyRepairs} className="ui-desktop:hidden" />

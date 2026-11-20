@@ -23,7 +23,8 @@ export default async function ChooseStonePage() {
   return (
     <main id="main-content" tabIndex={-1} className="flex-1">
       <BuilderSteps current={2} settings={products} />
-      <StoneListing stones={stones} settings={products} />
+      {/* Stones Shopify reports as unavailable at build time are left out of the list (their pages and Step 3 still read them). */}
+      <StoneListing stones={stones.filter((stone) => stone.available)} settings={products} />
     </main>
   );
 }
