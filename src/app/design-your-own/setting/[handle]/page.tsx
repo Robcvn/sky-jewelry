@@ -5,6 +5,7 @@ import { settingHref } from "@/components/builder/ring";
 import { SettingDetail } from "@/components/builder/SettingDetail";
 import { Reviews } from "@/components/home/Reviews";
 import { ButtonCards } from "@/components/pdp/DetailSections";
+import { withBasePath } from "@/components/ui/shared";
 import { homePage, type Reviews as ReviewsContent } from "@/content/home";
 import { getBuilderCatalog } from "@/lib/builder";
 import { getCatalog, pickProducts } from "@/lib/catalog";
@@ -26,7 +27,7 @@ async function findSetting({ handle }: Params) {
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const setting = await findSetting(await params);
-  return setting ? { title: setting.product.name, description: setting.product.description, alternates: { canonical: settingHref(setting.handle) } } : {};
+  return setting ? { title: setting.product.name, description: setting.product.description, alternates: { canonical: withBasePath(settingHref(setting.handle)) } } : {};
 }
 
 /** "Perfectly Paired Wedding Bands": the catalogue's bands (Figma's cards are placeholders showing the twig band). */

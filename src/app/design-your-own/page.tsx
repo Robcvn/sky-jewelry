@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { BuilderSteps } from "@/components/builder/BuilderSteps";
 import { SETTINGS_PATH } from "@/components/builder/ring";
 import { SettingListing } from "@/components/builder/SettingListing";
+import { withBasePath } from "@/components/ui/shared";
 import { builderContent, STONE_SHAPES } from "@/content/builder";
 import { getBuilderCatalog } from "@/lib/builder";
 
 export const metadata: Metadata = {
   title: builderContent.settings.seo.title,
   description: builderContent.settings.seo.description,
-  alternates: { canonical: SETTINGS_PATH },
+  alternates: { canonical: withBasePath(SETTINGS_PATH) },
 };
 
 /** Ring builder Step 1: choose a setting. The menus' "Start with ..." links land here (?start=). */

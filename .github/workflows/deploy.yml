@@ -1,0 +1,105 @@
+# Builds the static export and publishes it to GitHub Pages at /sky-jewelry/.
+# Secrets: FONTS_DEPLOY_KEY (read-only deploy key for Robcvn/sky-jewelry-fonts), NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
+# NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN. Pages must use "GitHub Actions" as its source.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a run in progress finishes before the next starts.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the site
+        uses: actions/checkout@v7
+
+      - name: Check out the BD Megalona fonts (private repository)
+        uses: actions/checkout@v7
+        with:
+          repository: Robcvn/sky-jewelry-fonts
+          ssh-key: ${{ secrets.FONTS_DEPLOY_KEY }}
+          path: src/fonts/bd-megalona
+          persist-credentials: false
+
+      - name: Check the seven font files are present
+        shell: bash
+        run: |
+          missing=0
+          for face in Thin ExtraLight UltraLight Light ThinItalic ExtraLightItalic LightItalic; do
+            file="src/fonts/bd-megalona/BDMegalona-$face.woff2"
+            if [ ! -s "$file" ]; then
+              echo "::error::Missing or empty font file: $file"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then exit 1; fi
+          echo "All seven BD Megalona files are present."
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the static site
+        shell: bash
+        env:
+          NEXT_PUBLIC_BASE_PATH: /sky-jewelry
+          NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN: ${{ secrets.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN }}
+          NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN: ${{ secrets.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN }}
+        # bash runs with -o pipefail, so a failed build still fails this step through tee.
+        run: npm run build 2>&1 | tee build.log
+
+      - name: Check the build read the whole catalogue from Shopify
+        shell: bash
+        run: |
+          fail=0
+          # src/lib/catalog.ts: any fallback to the local catalogue, or a product or collection it couldn't read.
+          if grep -E '\[catalog\] (WARNING|No product with handle)|\[catalog\] .*collection lookup failed' build.log; then
+            echo "::error::The build fell back to the local catalogue for some pages (lines above)."
+            fail=1
+          fi
+          # src/lib/builder.ts: every [builder] line must report no local settings and all 132 stones from Shopify.
+          builder="$(grep -F '[builder]' build.log || true)"
+          if [ -z "$builder" ]; then
+            echo "::error::The build log has no [builder] line."
+            fail=1
+          elif printf '%s\n' "$builder" | grep -vF '0 from the local seed' | grep . \
+            || printf '%s\n' "$builder" | grep -vF '132 stones from Shopify' | grep .; then
+            echo "::error::The ring builder did not read all its settings and stones from Shopify (lines above)."
+            fail=1
+          fi
+          if [ "$fail" -ne 0 ]; then exit 1; fi
+          echo "Catalogue check passed:"
+          printf '%s\n' "$builder" | sort -u
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

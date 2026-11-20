@@ -6,6 +6,7 @@ import { StoneDetail } from "@/components/builder/StoneDetail";
 import { StoneDetailQualities } from "@/components/builder/StoneDetailQualities";
 import { Reviews } from "@/components/home/Reviews";
 import { ButtonCards } from "@/components/pdp/DetailSections";
+import { withBasePath } from "@/components/ui/shared";
 import { homePage, type Reviews as ReviewsContent } from "@/content/home";
 import { getBuilderCatalog } from "@/lib/builder";
 
@@ -26,7 +27,7 @@ async function findStone({ handle }: Params) {
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const stone = await findStone(await params);
-  return stone ? { title: stone.title, description: stone.description, alternates: { canonical: stoneHref(stone.handle) } } : {};
+  return stone ? { title: stone.title, description: stone.description, alternates: { canonical: withBasePath(stoneHref(stone.handle)) } } : {};
 }
 
 /** The reviews section reuses the Home section and its sample reviews, as Product Detail does. */

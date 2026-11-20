@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { BuilderSteps } from "@/components/builder/BuilderSteps";
 import { STONES_PATH } from "@/components/builder/ring";
 import { StoneListing } from "@/components/builder/StoneListing";
+import { withBasePath } from "@/components/ui/shared";
 import { builderContent } from "@/content/builder";
 import { getBuilderCatalog } from "@/lib/builder";
 
 export const metadata: Metadata = {
   title: builderContent.stones.seo.title,
   description: builderContent.stones.seo.description,
-  alternates: { canonical: STONES_PATH },
+  alternates: { canonical: withBasePath(STONES_PATH) },
 };
 
 /**

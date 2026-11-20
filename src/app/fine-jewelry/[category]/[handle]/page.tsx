@@ -6,6 +6,7 @@ import { ProductDetail } from "@/components/pdp/ProductDetail";
 import { homePage, type Reviews as ReviewsContent } from "@/content/home";
 import { sampleDiamondGrades } from "@/content/product-detail";
 import { isFineJewelry, productHref } from "@/content/products";
+import { withBasePath } from "@/components/ui/shared";
 import { getCatalog } from "@/lib/catalog";
 
 type Params = { category: string; handle: string };
@@ -25,7 +26,7 @@ async function findProduct({ category, handle }: Params) {
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const product = await findProduct(await params);
-  return product ? { title: product.name, description: product.description, alternates: { canonical: productHref(product) } } : {};
+  return product ? { title: product.name, description: product.description, alternates: { canonical: withBasePath(productHref(product)) } } : {};
 }
 
 /** The reviews section reuses the Home section and its sample reviews (Figma's PDP reviews are placeholder text). */
