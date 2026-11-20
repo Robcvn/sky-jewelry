@@ -65,6 +65,8 @@
   --color-black-alpha-95: #1b1413f2;
 
   /* Input labels: hard-coded in the Figma Input component, not Figma variables */
+  /* Figma gray/gray-200: the divider between the order number and date on Order Card. */
+  --color-gray-200: #e5e7eb;
   --color-input-label: #6b7280;
   --color-input-label-disabled: #9ca3b0;
 

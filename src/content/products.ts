@@ -70,6 +70,10 @@ export const productHref = (product: Pick<Product, "category" | "slug">) =>
 export const formatPrice = (usd: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(usd);
 
+/** "$1,250.00": the bag and the account pages show cents, as Figma does. */
+export const formatMoney = (usd: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(usd);
+
 /** Monthly amount for the "Pay in 12 interest-free installments" line: cents only when it doesn't divide evenly. */
 export function formatInstallment(usd: number, months = 12) {
   const monthly = Math.ceil((usd / months) * 100) / 100;

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { Header } from "@/components/site/Header";
+import { AccountDemos } from "@/components/styleguide/AccountDemos";
 import { BagDemos } from "@/components/styleguide/BagDemos";
 import { MegaMenuPanel } from "@/components/site/MegaMenu";
 import { CategoryCard } from "@/components/ui/CategoryCard";
@@ -111,6 +112,7 @@ const SECTIONS = [
   ["cards", "Cards"],
   ["site-chrome", "Header and footer"],
   ["bag", "Bag"],
+  ["account", "Account"],
   ["icons", "Icons"],
   ["deviations", "Deviations from Figma"],
   ["corrected-oversights", "Corrected design oversights"],
@@ -1258,6 +1260,10 @@ export default function ComponentsPage() {
           <BagDemos />
         </Section>
 
+        <Section id="account" title="Account">
+          <AccountDemos />
+        </Section>
+
         <Section id="icons" title="Icons">
           <ul className="flex flex-wrap gap-space-5">
             {(Object.keys(iconData) as IconName[]).map((name) => (
@@ -1389,6 +1395,42 @@ export default function ComponentsPage() {
               Warranty, 30 Days Free Return and Certificate on the product page, parts of Earrings and Diamond Experts). Built
               at 0.99px, also at every size: Chrome draws an exactly-1px curved line as a dotted line on standard-density
               screens; 0.99px renders solid and looks the same.
+            </li>
+            <li>
+              Account sign-in: Figma draws no sign-in screen. The header&rsquo;s Account link goes to /account/, which shows a mock signed-in
+              customer. There are no sign-in, sign-up or password fields (not drawn).
+            </li>
+            <li>
+              Account labels (Name, Email Address, Shipment Method, Method of Payment, Shipping and Billing Address): Figma uses black-alpha-50,
+              3.42:1 on secondary/skin, which fails AA. Built with black-alpha-60, 4.70:1.
+            </li>
+            <li>
+              Add Address: a saved address is kept in this browser only. The form has no name field, so the card shows the customer&rsquo;s
+              name, as Figma&rsquo;s cards do; Company and Phone are saved but not shown, as the cards don&rsquo;t draw them.
+            </li>
+            <li>
+              Order pieces: Figma draws builder rings (&ldquo;Product Title / Config 1, Config 2&rdquo;; &ldquo;Setting Name&rdquo; and
+              &ldquo;Diamond Type&rdquo; with Metal, Band, Ring Size). Built for the catalogue&rsquo;s Fine Jewelry: the short product name,
+              config &ldquo;metal, length, carat&rdquo;, and Metal / Carat / Size rows as on the bag page. Download Certificate shows where
+              the product page shows View Certificate.
+            </li>
+            <li>Order Price: the Discount row shows only when the order has one (Figma&rsquo;s sample has one; inferred).</li>
+            <li>
+              Order Details: the Order Price card sits beside the pieces when the page column is at least 800px wide (the 1440 frame, 822px)
+              and below them when narrower (the 1280 frame, 716px). The switch point between the two drawn widths is inferred.
+            </li>
+            <li>
+              Add Address: every field Figma marks with an asterisk is required (Address 1, City, State, Zip / Postal Code, Country, Phone
+              Number), with the wording of the drawn &ldquo;City is required&rdquo;, plus the drawn phone check. The Errors frames only show
+              City and Phone, so the other required fields are inferred.
+            </li>
+            <li>
+              Account page column at 1280: 733px, where the 1280 frame draws 716. The site&rsquo;s side margin is fluid (84px at 1280); the
+              frame keeps 1440&rsquo;s 96px.
+            </li>
+            <li>
+              Order cards grow when a product name takes two lines (Figma&rsquo;s sample &ldquo;Product Title&rdquo; is one line), e.g. 523px
+              against the frame&rsquo;s 504.5 on desktop.
             </li>
           </ul>
         </Section>
@@ -1542,6 +1584,18 @@ export default function ComponentsPage() {
               plans table and its mobile cards. The bag row keeps &ldquo;from $89/year&rdquo; as drawn.
             </li>
             <li>Bag Special Instructions: &ldquo;I.E gift note&rdquo;. Built as &ldquo;i.e. gift note&rdquo;.</li>
+            <li>
+              Account email: Figma&rsquo;s sample is a real-looking Gmail address. Built with omar.little@example.com (Figma&rsquo;s sample name
+              and addresses are kept).
+            </li>
+            <li>
+              Modal / Add Address - Errors (desktop 4430:48685): the phone field says &ldquo;Please provide a valid email address.&rdquo; Built
+              with the mobile frame&rsquo;s &ldquo;Please provide a valid phone number.&rdquo;
+            </li>
+            <li>
+              Account - Order Details (desktop 3565:98015 and 1280 4430:61649): the reused Order Card keeps View Details, which links to the
+              page it is on. Built without it, as the mobile frame draws the card there.
+            </li>
           </ul>
         </Section>
 
@@ -1658,6 +1712,14 @@ export default function ComponentsPage() {
             <li>Bag added care plan: &ldquo;Change&rdquo; on desktop, &ldquo;Edit&rdquo; on mobile; unavailable plan: &ldquo;Remove Plan&rdquo; and &ldquo;Remove&rdquo;. Which wording?</li>
             <li>Is checkout meant to be blocked while a stone or care plan is unavailable? Desktop draws it at 60%, mobile dark.</li>
             <li>Should an added care plan be removable, and how?</li>
+            <li>Account: Figma draws no sign-in, sign-out or sign-up screens. Are they planned?</li>
+            <li>What does Opt Out under Sky Repairs do?</li>
+            <li>Address cards: should a saved address show its company and phone number?</li>
+            <li>How should orders that aren&rsquo;t delivered yet look?</li>
+            <li>
+              Order Details photos: the 1440 frame rounds them 4px; the 1280 frame, the mobile frame and the Design System&rsquo;s Product
+              Order Detail don&rsquo;t. Built square. Which is right?
+            </li>
           </ul>
         </Section>
 
@@ -1690,6 +1752,14 @@ export default function ComponentsPage() {
             </li>
             <li>Quick Checkout (on the Accordion page): product-page content with unnamed variants (Open3, Open4), held for the product page.</li>
             <li>Landing page live chat and text actions (no chat or messaging service to connect to).</li>
+            <li>
+              Account: Log Out, Account Details Edit, the address cards&rsquo; Edit and Remove, Sky Repairs Opt Out, Download Certificate and
+              the Sky Repair Requests &ldquo;Request&rdquo; links have no drawn destination or flow: shown as designed but inert.
+            </li>
+            <li>
+              Account address Edit and Remove flows: not drawn beyond the links. Editing might reuse Modal / Add Address (as &ldquo;Edit
+              Address&rdquo;) and Remove might ask for confirmation; both wait for a design.
+            </li>
           </ul>
         </Section>
       </main>

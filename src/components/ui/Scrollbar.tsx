@@ -55,11 +55,15 @@ type ScrollAreaProps = {
   label: string;
   overlay?: boolean;
   className?: string;
+  /** Extra classes for the scrolling row, e.g. to bleed it to the screen edge. */
+  regionClassName?: string;
+  /** Classes for the indicator (default: 12px under the row). */
+  scrollbarClassName?: string;
   children: ReactNode;
 };
 
 /** A horizontal scroller that hides the native scrollbar and shows the Figma one below. */
-export function ScrollArea({ label, overlay = false, className, children }: ScrollAreaProps) {
+export function ScrollArea({ label, overlay = false, className, regionClassName, scrollbarClassName = "mt-space-3", children }: ScrollAreaProps) {
   const { ref, progress } = useScrollProgress<HTMLDivElement>();
 
   return (
@@ -69,12 +73,12 @@ export function ScrollArea({ label, overlay = false, className, children }: Scro
         role="region"
         aria-label={label}
         tabIndex={0}
-        className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className={cx("flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", regionClassName)}
       >
         {children}
       </div>
       {/* Figma's Filters sheet (5746:89744): the indicator sits 12px under the row. */}
-      <Scrollbar progress={progress} overlay={overlay} className="mt-space-3" />
+      <Scrollbar progress={progress} overlay={overlay} className={scrollbarClassName} />
     </div>
   );
 }

@@ -72,6 +72,27 @@ export function TextButton({
   );
 }
 
+/**
+ * A Text Button with no destination yet (Held for review): drawn as Figma draws it, but plain text. It takes no
+ * focus, screen readers read it as text, and hover states don't apply.
+ */
+export function TextButtonText({
+  size = "md",
+  variant = "default",
+  leadingIcon,
+  trailingIcon,
+  className,
+  children,
+}: TextButtonStyle & Pick<TextButtonProps, "leadingIcon" | "trailingIcon"> & { className?: string; children: ReactNode }) {
+  return (
+    <span className={cx(textButtonClasses({ size, variant }), "cursor-default ui-hover:text-primary-leather", className)}>
+      <TextButtonContent size={size} variant={variant} leadingIcon={leadingIcon} trailingIcon={trailingIcon}>
+        {children}
+      </TextButtonContent>
+    </span>
+  );
+}
+
 type TextButtonLinkProps = ComponentProps<typeof Link> & TextButtonStyle & Pick<TextButtonProps, "leadingIcon" | "trailingIcon">;
 
 /** Figma "Text Button" used as a link, such as "Shop More Styles" in the mega menus. */

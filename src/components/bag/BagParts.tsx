@@ -10,9 +10,9 @@ import { formatCarat, formatPrice } from "@/content/products";
 import { lengthLabel } from "@/components/plp/filters";
 import type { BagLine } from "@/lib/bag";
 
-/** "$1,250.00": the bag shows cents, as Figma does. */
-export const formatMoney = (usd: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(usd);
+import { formatMoney } from "@/content/products";
+
+export { formatMoney };
 
 /** The panel's "14K Yellow Gold / 16–18” / 0.80ct" line (Figma: metal / ring size / carat). */
 export const lineSummary = (line: BagLine) =>

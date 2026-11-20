@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type ReactNode } from "react";
+import { useId, type InputHTMLAttributes, type ReactNode, type Ref } from "react";
 import { Icon, type IconName } from "./Icon";
 import { cx, type PreviewState } from "./shared";
 
@@ -30,6 +30,8 @@ export function InputMessage({
 }
 
 type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "placeholder"> & {
+  /** Passed to the <input>, e.g. to move focus to a field with an error. */
+  ref?: Ref<HTMLInputElement>;
   /** Shown as the placeholder, and as the small floating label on filled MD inputs. */
   label: string;
   /** "responsive" is SM below 1024px and MD from 1024px, without the floating label. */

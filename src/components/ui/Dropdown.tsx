@@ -43,6 +43,10 @@ type DropdownProps = {
   panelAlign?: "start" | "end";
   /** Called when the panel opens or closes. */
   onOpenChange?: (open: boolean) => void;
+  /** Marks the control as required for assistive technology (aria-required). */
+  required?: boolean;
+  /** Id of a message about the control, e.g. its error (aria-describedby). */
+  describedBy?: string;
   className?: string;
 };
 
@@ -97,6 +101,8 @@ export function Dropdown({
   panelTone = "gold",
   panelAlign = "start",
   onOpenChange,
+  required,
+  describedBy,
   className,
 }: DropdownProps) {
   const id = useId();
@@ -229,6 +235,8 @@ export function Dropdown({
         "aria-controls": panelId,
         "aria-activedescendant": open ? optionId(activeIndex) : undefined,
         "aria-invalid": error || undefined,
+        "aria-required": required || undefined,
+        "aria-describedby": describedBy,
         onClick: () => (open ? setOpen(false) : openMenu()),
         onKeyDown: onListKeyDown,
       };
