@@ -1432,6 +1432,7 @@ export default function ComponentsPage() {
               Order cards grow when a product name takes two lines (Figma&rsquo;s sample &ldquo;Product Title&rdquo; is one line), e.g. 523px
               against the frame&rsquo;s 504.5 on desktop.
             </li>
+            <li>Sticky header: not drawn in Figma; added at Rob&rsquo;s request on Nov 20. Desktop uses the Header page&rsquo;s one-row bar.</li>
           </ul>
         </Section>
 
@@ -1646,8 +1647,8 @@ export default function ComponentsPage() {
         <Section id="open-questions" title="Open questions">
           <ul className="type-body-sm-regular flex max-w-[48rem] list-disc flex-col gap-space-2 pl-space-5">
             <li>
-              When is the one-row header used, and is the header sticky? For now the header is two-row and scrolls with the page, and the
-              one-row bar is an unused option.
+              When is the one-row header used, and is the header sticky? For now (Rob&rsquo;s decision, Nov 20) the two-row header scrolls
+              away and the one-row bar is the sticky header on desktop; see Deviations.
             </li>
             <li>
               Should the mobile announcement messages auto-scroll as a ticker? The site now shows the countdown Top Bar, as every Figma page

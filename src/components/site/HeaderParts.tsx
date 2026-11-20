@@ -52,6 +52,8 @@ type MobileBarProps = {
 export function MobileBar({ content, bagLabel, menuOpen, onMenuClick, menuButtonRef, controls, className }: MobileBarProps) {
   return (
     <div
+      // Hook for the sticky header's scroll rule in components.css.
+      data-header-row=""
       className={cx(
         "relative flex min-h-space-12 shrink-0 items-center justify-between border-b border-primary-leather bg-secondary-ivory px-space-3",
         className,

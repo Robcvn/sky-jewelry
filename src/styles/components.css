@@ -70,3 +70,33 @@
     }
   }
 }
+
+/*
+ * Sticky header (the owner's decision; Figma does not draw a scrolled state). What the header covers at the top
+ * of the viewport once the page has scrolled: the 56px header row on mobile, the 66px one-row bar from 1024px.
+ * Sticky elements start below it, and scroll targets (anchors, the skip link's target, focused elements) stop
+ * below it instead of under it.
+ */
+:root {
+  --sticky-header-height: 3.5rem;
+}
+
+@media (width >= 64rem) {
+  :root {
+    --sticky-header-height: 4.125rem;
+  }
+}
+
+html {
+  scroll-padding-top: var(--sticky-header-height);
+}
+
+/*
+ * The sticky mobile row sits inside that scroll padding, so browsers treat a control in it as hidden and scroll
+ * the page up to "reveal" it each time it takes focus (Safari does the same for the row's copy at the top of the
+ * mobile menu and the bag screen). Pulling the controls' scroll area in by the same amount cancels that.
+ * The fixed desktop bar needs nothing: browsers do not scroll the page for it.
+ */
+body > header [data-header-row] :is(a, button) {
+  scroll-margin-top: calc(var(--sticky-header-height) * -1);
+}

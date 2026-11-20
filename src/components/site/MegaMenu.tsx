@@ -104,10 +104,11 @@ type MegaMenuPanelProps = {
   open?: boolean;
   /** Style guide only: render in the flow instead of overlaying the page. */
   inline?: boolean;
+  className?: string;
 };
 
 /** Figma "Mega Menu" dropdown: equal columns with leather dividers, then the Shop All row. */
-export function MegaMenuPanel({ menu, id, label, open = true, inline = false }: MegaMenuPanelProps) {
+export function MegaMenuPanel({ menu, id, label, open = true, inline = false, className }: MegaMenuPanelProps) {
   const compact = menu.density === "compact";
   const columns = [
     ...menu.groups.map((group) => <MenuGroupBlock key={group._key} group={group} compact={compact} />),
@@ -124,6 +125,7 @@ export function MegaMenuPanel({ menu, id, label, open = true, inline = false }: 
         "bg-secondary-ivory text-primary-leather",
         !inline &&
           "absolute inset-x-0 top-full z-30 transition-opacity duration-200 ease-out starting:opacity-0",
+        className,
       )}
     >
       <div className="flex">

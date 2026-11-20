@@ -12,8 +12,10 @@ import {
   type KeyboardEvent,
   type MouseEvent,
   type PointerEvent,
+  type RefObject,
 } from "react";
 import { Icon } from "@/components/ui/Icon";
+import { cx } from "@/components/ui/shared";
 import { useIsDesktop } from "@/components/ui/useIsDesktop";
 import { siteHeader, type HeaderContent, type NavLink } from "@/content/site";
 import { headerIconButtonClasses, IconLink, MobileBar } from "./HeaderParts";
@@ -43,71 +45,59 @@ function NavList({ label, links }: { label: string; links: NavLink[] }) {
   );
 }
 
-type HeaderProps = {
-  content?: HeaderContent;
+/** Ties a control in one desktop bar to the same control in the other, so focus can follow when the bars swap. */
+const KEY = "data-header-key";
+
+type DesktopBarProps = {
+  content: HeaderContent;
+  layout: "two-row" | "one-row";
+  labelSuffix: string;
+  pathname: string;
+  bagCount: number;
+  bagLabel: string;
   /**
-   * Figma has a two-row header (the default, used on the Home frame) and a one-row version.
-   * Figma does not say when the one-row version is used, so it is a prop for now.
+   * The page header has two desktop bars: "page" (in the flow, scrolls away) and "fixed" (the one-row bar fixed to
+   * the top of the viewport once the page has scrolled past the first). Style guide previews have neither.
    */
-  layout?: "two-row" | "one-row";
-  breakpoint?: "desktop" | "mobile";
-  /** Style guide only: show the mobile menu open, in the flow instead of full screen. */
-  defaultMenuOpen?: boolean;
-  /** Style guide only: the category sub-screen to show with defaultMenuOpen. */
-  defaultMenuCategory?: string;
-  /** Appended to landmark labels so style guide previews stay unique. */
-  labelSuffix?: string;
+  bar?: "page" | "fixed";
+  /** False while the other bar is the one in use: this one closes what it had open and goes inert. */
+  active?: boolean;
+  /** False until the fixed bar is first shown, so its copy of the mega menus stays out of the static HTML. */
+  panels?: boolean;
+  barRef: RefObject<HTMLDivElement | null>;
 };
 
-export function Header({
-  content = siteHeader,
-  layout = "two-row",
-  breakpoint,
-  defaultMenuOpen = false,
-  defaultMenuCategory,
-  labelSuffix = "",
-}: HeaderProps) {
-  const bagCount = useBagCount();
-  const bagLabel = `${content.bag.label}, ${bagCount} ${bagCount === 1 ? "item" : "items"}`;
+/** The desktop header (1024px and up) with its mega menus and search panel. Each bar keeps its own open state. */
+function DesktopBar({ content, layout, labelSuffix, pathname, bagCount, bagLabel, bar, active = true, panels = true, barRef }: DesktopBarProps) {
   const baseId = useId();
   const panelId = (key: string) => `${baseId}-panel-${key}`;
   const triggerId = (key: string) => `${baseId}-trigger-${key}`;
-  const pathname = usePathname() ?? "/";
-  const isDesktop = useIsDesktop();
-  const isPageHeader = !breakpoint && !defaultMenuOpen && !labelSuffix;
-  // Following a link closes the bag panel.
-  useEffect(() => {
-    if (isPageHeader) closeBagPanel();
-  }, [pathname, isPageHeader]);
+  const fixed = bar === "fixed";
 
-  /* ---------- Desktop: mega menus and search ---------- */
   const [openPanel, setOpenPanel] = useState<string | null>(null);
   const openedBy = useRef<"hover" | "click">("click");
   const openTimer = useRef<number | undefined>(undefined);
   const closeTimer = useRef<number | undefined>(undefined);
   const focusOnOpen = useRef<"first-link" | "search" | null>(null);
-  const headerRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  /* ---------- Mobile menu ---------- */
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [menuTop, setMenuTop] = useState(0);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const mobileBarRef = useRef<HTMLDivElement>(null);
-
-  // Close everything on navigation, and the mobile menu when the window grows to desktop.
+  // Close everything on navigation, and when the other bar takes over.
   const [lastPath, setLastPath] = useState(pathname);
   if (pathname !== lastPath) {
     setLastPath(pathname);
     setOpenPanel(null);
-    setMenuOpen(false);
   }
-  if (menuOpen && isDesktop && !breakpoint) setMenuOpen(false);
+  if (!active && openPanel) setOpenPanel(null);
 
   const clearTimers = () => {
     window.clearTimeout(openTimer.current);
     window.clearTimeout(closeTimer.current);
   };
+
+  // A hover that was still waiting to open must not open a panel in the bar that just went away.
+  useEffect(() => {
+    if (!active) clearTimers();
+  }, [active]);
 
   const open = (key: string, by: "hover" | "click") => {
     clearTimers();
@@ -132,11 +122,11 @@ export function Header({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openPanel]);
 
-  // A press anywhere outside the header closes the open panel.
+  // A press anywhere outside the bar closes the open panel.
   useEffect(() => {
     if (!openPanel) return;
     const onPointerDown = (event: globalThis.PointerEvent) => {
-      if (!headerRef.current?.contains(event.target as Node)) close();
+      if (!barRef.current?.contains(event.target as Node)) close();
     };
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
@@ -173,7 +163,7 @@ export function Header({
     }
   };
 
-  const onHeaderKeyDown = (event: KeyboardEvent) => {
+  const onBarKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape" && openPanel) {
       event.preventDefault();
       close(openPanel);
@@ -181,7 +171,7 @@ export function Header({
   };
 
   // Keyboard users: close when focus leaves the open trigger and its panel.
-  const onHeaderFocus = (event: FocusEvent) => {
+  const onBarFocus = (event: FocusEvent) => {
     if (!openPanel) return;
     const trigger = document.getElementById(triggerId(openPanel));
     const panel = document.getElementById(panelId(openPanel));
@@ -189,11 +179,11 @@ export function Header({
     if (!trigger?.contains(target) && !panel?.contains(target)) close();
   };
 
-  const onHeaderBlur = (event: FocusEvent) => {
-    if (openPanel && event.relatedTarget && !headerRef.current?.contains(event.relatedTarget as Node)) close();
+  const onBarBlur = (event: FocusEvent) => {
+    if (openPanel && event.relatedTarget && !barRef.current?.contains(event.relatedTarget as Node)) close();
   };
 
-  const onHeaderPointerLeave = (event: PointerEvent) => {
+  const onBarPointerLeave = (event: PointerEvent) => {
     if (event.pointerType !== "mouse" || !openPanel) {
       window.clearTimeout(openTimer.current);
       return;
@@ -207,40 +197,49 @@ export function Header({
     if ((event.target as Element).closest("a[href]")) close();
   };
 
-  const searchButton = (
-    <button
-      id={triggerId(SEARCH)}
-      type="button"
-      aria-label={content.search.label}
-      aria-expanded={openPanel === SEARCH}
-      aria-controls={panelId(SEARCH)}
-      onClick={() => onTriggerClick(SEARCH)}
-      className={headerIconButtonClasses("md")}
-    >
-      <Icon name="search" size={24} />
-    </button>
+  const search = (
+    <div data-header-key={SEARCH} className="contents">
+      <button
+        id={triggerId(SEARCH)}
+        type="button"
+        aria-label={content.search.label}
+        aria-expanded={openPanel === SEARCH}
+        aria-controls={panels ? panelId(SEARCH) : undefined}
+        onClick={() => onTriggerClick(SEARCH)}
+        className={headerIconButtonClasses("md")}
+      >
+        <Icon name="search" size={24} />
+      </button>
+      {panels ? (
+        <div onClick={onPanelClick} className="contents">
+          <SearchPanel
+            id={panelId(SEARCH)}
+            content={content.searchPanel}
+            open={openPanel === SEARCH}
+            inputRef={searchInputRef}
+            onSubmitted={() => close()}
+          />
+        </div>
+      ) : null}
+    </div>
   );
 
-  const searchPanel = (
-    <SearchPanel
-      id={panelId(SEARCH)}
-      content={content.searchPanel}
-      open={openPanel === SEARCH}
-      inputRef={searchInputRef}
-      onSubmitted={() => close()}
-    />
+  const logo = (
+    <div data-header-key="logo" className="contents">
+      <Logo width={160} />
+    </div>
   );
 
   const mainNav = (
     <nav aria-label={`Main${labelSuffix}`}>
       <ul className="flex items-center gap-space-10">
         {content.primary.map((link) => (
-          <li key={link._key}>
+          <li key={link._key} data-header-key={link._key}>
             <button
               id={triggerId(link._key)}
               type="button"
               aria-expanded={openPanel === link._key}
-              aria-controls={panelId(link._key)}
+              aria-controls={panels ? panelId(link._key) : undefined}
               data-current={pathname.startsWith(link.href) ? "" : undefined}
               onClick={() => onTriggerClick(link._key)}
               onPointerEnter={(event) => onTriggerPointerEnter(event, link._key)}
@@ -251,84 +250,227 @@ export function Header({
               {link.label}
             </button>
             {/* In the DOM right after its trigger, so Tab moves from the trigger into the panel. */}
-            <div onClick={onPanelClick} className="contents">
-              <MegaMenuPanel id={panelId(link._key)} menu={link.menu} label={link.label} open={openPanel === link._key} />
-            </div>
+            {panels ? (
+              <div onClick={onPanelClick} className="contents">
+                <MegaMenuPanel
+                  id={panelId(link._key)}
+                  menu={link.menu}
+                  label={link.label}
+                  open={openPanel === link._key}
+                  // Under the fixed bar the page cannot scroll a tall panel into view, so the panel scrolls instead.
+                  className={fixed ? "max-h-[calc(100dvh-var(--sticky-header-height))] overflow-y-auto overscroll-contain" : undefined}
+                />
+              </div>
+            ) : null}
           </li>
         ))}
       </ul>
     </nav>
   );
 
-  /* ---------- Mobile handlers ---------- */
+  return (
+    // Panels position against the header (page bar) or against the fixed bar, under the bottom border.
+    <div
+      ref={barRef}
+      data-header-bar={bar}
+      inert={!active}
+      onKeyDown={onBarKeyDown}
+      onFocus={onBarFocus}
+      onBlur={onBarBlur}
+      onPointerEnter={() => window.clearTimeout(closeTimer.current)}
+      onPointerLeave={onBarPointerLeave}
+      className={cx(
+        "hidden ui-desktop:block",
+        // Figma's "Move In", from the top: 300ms ease-out (instant under reduced motion).
+        fixed && "fixed inset-x-0 top-0 bg-secondary-ivory duration-300 ease-out motion-reduce:transition-none",
+        // Hiding: visibility waits for the slide out to finish. Showing: visible at once, so focus can move in.
+        fixed && (active ? "transition-[translate]" : "invisible -translate-y-full transition-[translate,visibility]"),
+      )}
+    >
+      {layout === "two-row" ? (
+        <>
+          <div className="grid min-h-space-13 grid-cols-[1fr_auto_1fr] items-center border-b border-primary-leather px-space-6 py-space-2">
+            <NavList label={`Utility${labelSuffix}`} links={content.utility} />
+            {logo}
+            <div className="flex items-center justify-end gap-space-6">
+              {search}
+              <nav aria-label={`Account${labelSuffix}`}>
+                <ul className="flex items-center gap-space-10">
+                  <li data-header-key="account">
+                    <NavItem href={content.account.href}>{content.account.label}</NavItem>
+                  </li>
+                  <li data-header-key="bag">
+                    <NavItem href={content.bag.href} onClick={bagLinkClick}>
+                      <span aria-hidden="true">
+                        {content.bag.label} ({bagCount})
+                      </span>
+                      <span className="sr-only">{bagLabel}</span>
+                    </NavItem>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+          <div className="flex min-h-space-10 items-center justify-center border-b border-primary-leather px-space-6">
+            {mainNav}
+          </div>
+        </>
+      ) : (
+        // Figma's bar is 66px with its bottom border inside: 13px above the 40px controls, 12px and the border below.
+        <div className="grid min-h-(--sticky-header-height) grid-cols-[1fr_auto_1fr] items-center border-b border-primary-leather px-space-6 pt-[0.8125rem] pb-[calc(0.8125rem-1px)]">
+          {logo}
+          {mainNav}
+          <div className="flex items-center justify-end gap-space-2">
+            {search}
+            <div data-header-key="account" className="contents">
+              <IconLink link={content.account} icon="account" size="sm" label={content.account.label} />
+            </div>
+            <div data-header-key="bag" className="contents">
+              <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} onClick={bagLinkClick} />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+type HeaderProps = {
+  content?: HeaderContent;
+  /**
+   * Figma has a two-row header (the default, used on the Home frame) and a one-row version. The page header uses
+   * both: the two-row header in the flow, and the one-row version as the bar fixed to the top once the page has
+   * scrolled past it (the owner's decision; Figma does not draw a scrolled state).
+   */
+  layout?: "two-row" | "one-row";
+  breakpoint?: "desktop" | "mobile";
+  /** Style guide only: show the mobile menu open, in the flow instead of full screen. */
+  defaultMenuOpen?: boolean;
+  /** Style guide only: the category sub-screen to show with defaultMenuOpen. */
+  defaultMenuCategory?: string;
+  /** Appended to landmark labels so style guide previews stay unique. */
+  labelSuffix?: string;
+};
+
+/**
+ * The site header. As the page's own header it stays reachable while the page scrolls:
+ * - Desktop: the two-row header scrolls away with the Top Bar, then the one-row bar slides in, fixed to the top.
+ *   It is out of the flow, so nothing moves. Only one of the two is in use at a time: the other is inert
+ *   (out of the tab order and the accessibility tree), so there is one set of header controls and landmarks.
+ * - Mobile: the header (the 56px row) is sticky, so it stops at the top while the Top Bar scrolls away.
+ * Style guide previews (breakpoint, defaultMenuOpen or labelSuffix set) get neither.
+ */
+export function Header({
+  content = siteHeader,
+  layout = "two-row",
+  breakpoint,
+  defaultMenuOpen = false,
+  defaultMenuCategory,
+  labelSuffix = "",
+}: HeaderProps) {
+  const bagCount = useBagCount();
+  const bagLabel = `${content.bag.label}, ${bagCount} ${bagCount === 1 ? "item" : "items"}`;
+  const baseId = useId();
+  const mobilePanelId = `${baseId}-panel-mobile`;
+  const pathname = usePathname() ?? "/";
+  const isDesktop = useIsDesktop();
+  const isPageHeader = !breakpoint && !defaultMenuOpen && !labelSuffix;
+  // Following a link closes the bag panel.
+  useEffect(() => {
+    if (isPageHeader) closeBagPanel();
+  }, [pathname, isPageHeader]);
+
+  /* ---------- Desktop: the fixed bar ---------- */
+  const headerRef = useRef<HTMLElement>(null);
+  const pageBarRef = useRef<HTMLDivElement>(null);
+  const fixedBarRef = useRef<HTMLDivElement>(null);
+  /** True once the whole header has scrolled off the top. On mobile the header is sticky, so it never does. */
+  const [scrolledPast, setScrolledPast] = useState(false);
+  const [fixedBarShown, setFixedBarShown] = useState(false);
+  if (scrolledPast && !fixedBarShown) setFixedBarShown(true);
+  /** The control that had focus in the bar that is going away, or "" for one with no twin; null if focus was elsewhere. */
+  const focusHandOff = useRef<string | null>(null);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!isPageHeader || !header) return;
+    let current = false;
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[entries.length - 1];
+      const next = !entry.isIntersecting && entry.boundingClientRect.bottom <= 0;
+      if (next === current) return;
+      current = next;
+      const leaving = next ? pageBarRef.current : fixedBarRef.current;
+      const focused = document.activeElement;
+      focusHandOff.current = leaving?.contains(focused) ? (focused?.closest(`[${KEY}]`)?.getAttribute(KEY) ?? "") : null;
+      setScrolledPast(next);
+    });
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, [isPageHeader]);
+
+  // Keyboard focus follows the swap: to the same control in the bar now in use, or to its first control.
+  useEffect(() => {
+    const key = focusHandOff.current;
+    focusHandOff.current = null;
+    if (key === null) return;
+    const arriving = scrolledPast ? fixedBarRef.current : pageBarRef.current;
+    const twin = key ? arriving?.querySelector<HTMLElement>(`[${KEY}="${key}"]`) : null;
+    const target = twin?.querySelector<HTMLElement>("a[href], button") ?? arriving?.querySelector<HTMLElement>("a[href], button");
+    if (!target) return;
+    // Under reduced motion the global 0.01ms transition leaves the bar's controls hidden until the next frame,
+    // and a hidden control cannot take focus: try again then.
+    let frame = 0;
+    const focus = (triesLeft: number) => {
+      target.focus({ preventScroll: true });
+      if (document.activeElement !== target && triesLeft > 0) frame = requestAnimationFrame(() => focus(triesLeft - 1));
+    };
+    focus(3);
+    return () => cancelAnimationFrame(frame);
+  }, [scrolledPast]);
+
+  /* ---------- Mobile menu ---------- */
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuTop, setMenuTop] = useState(0);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileBarRef = useRef<HTMLDivElement>(null);
+
+  // Close the mobile menu on navigation, and when the window grows to desktop.
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setMenuOpen(false);
+  }
+  if (menuOpen && isDesktop && !breakpoint) setMenuOpen(false);
+
+  // The top of the header row: 0 once it has stuck, the Top Bar's height or less before that.
+  const mobileBarTop = () => Math.max(0, mobileBarRef.current?.getBoundingClientRect().top ?? 0);
+
   const openMenu = () => {
     // Start the full-screen menu at the header row, so the announcement bar stays visible at the top of the page.
-    setMenuTop(Math.max(0, mobileBarRef.current?.getBoundingClientRect().top ?? 0));
+    setMenuTop(mobileBarTop());
     setMenuOpen(true);
   };
 
   const closeMenu = () => {
     setMenuOpen(false);
-    requestAnimationFrame(() => menuButtonRef.current?.focus());
+    requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }));
   };
+
+  const desktopBar = { content, labelSuffix, pathname, bagCount, bagLabel };
 
   return (
     <header
       ref={headerRef}
       data-breakpoint={breakpoint}
-      onKeyDown={onHeaderKeyDown}
-      onFocus={onHeaderFocus}
-      onBlur={onHeaderBlur}
-      onPointerEnter={() => window.clearTimeout(closeTimer.current)}
-      onPointerLeave={onHeaderPointerLeave}
-      className="relative z-20 bg-secondary-ivory text-primary-leather"
+      className={cx(
+        // Above everything in the page (cards and dropdowns go up to z-30); dialogs are in the top layer, above it.
+        "z-40 bg-secondary-ivory text-primary-leather",
+        isPageHeader ? "sticky top-0 ui-desktop:relative" : "relative",
+      )}
     >
-      {/* Desktop, 1024px and up. Panels position against the header, under its bottom border. */}
-      <div className="hidden ui-desktop:block">
-        {layout === "two-row" ? (
-          <>
-            <div className="grid min-h-space-13 grid-cols-[1fr_auto_1fr] items-center border-b border-primary-leather px-space-6 py-space-2">
-              <NavList label={`Utility${labelSuffix}`} links={content.utility} />
-              <Logo width={160} />
-              <div className="flex items-center justify-end gap-space-6">
-                {searchButton}
-                <div onClick={onPanelClick} className="contents">
-                  {searchPanel}
-                </div>
-                <nav aria-label={`Account${labelSuffix}`}>
-                  <ul className="flex items-center gap-space-10">
-                    <li>
-                      <NavItem href={content.account.href}>{content.account.label}</NavItem>
-                    </li>
-                    <li>
-                      <NavItem href={content.bag.href} onClick={bagLinkClick}>
-                        <span aria-hidden="true">
-                          {content.bag.label} ({bagCount})
-                        </span>
-                        <span className="sr-only">{bagLabel}</span>
-                      </NavItem>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
-            </div>
-            <div className="flex min-h-space-10 items-center justify-center border-b border-primary-leather px-space-6">
-              {mainNav}
-            </div>
-          </>
-        ) : (
-          <div className="grid min-h-[4.125rem] grid-cols-[1fr_auto_1fr] items-center border-b border-primary-leather px-space-6 py-[0.8125rem]">
-            <Logo width={160} />
-            {mainNav}
-            <div className="flex items-center justify-end gap-space-2">
-              {searchButton}
-              {searchPanel}
-              <IconLink link={content.account} icon="account" size="sm" label={content.account.label} />
-              <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} onClick={bagLinkClick} />
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Desktop, 1024px and up. */}
+      <DesktopBar {...desktopBar} layout={layout} bar={isPageHeader ? "page" : undefined} active={!scrolledPast} barRef={pageBarRef} />
 
       {/* Mobile, below 1024px */}
       {defaultMenuOpen ? (
@@ -352,16 +494,20 @@ export function Header({
               menuOpen={menuOpen}
               onMenuClick={menuOpen ? closeMenu : openMenu}
               menuButtonRef={menuButtonRef}
-              controls={panelId("mobile")}
+              controls={mobilePanelId}
             />
           </div>
-          <div id={panelId("mobile")} hidden={!menuOpen} className="ui-desktop:hidden">
+          <div id={mobilePanelId} hidden={!menuOpen} className="ui-desktop:hidden">
             {menuOpen ? <MobileMenu content={content} bagLabel={bagLabel} top={menuTop} onClose={closeMenu} /> : null}
           </div>
         </>
       )}
+      {/* Desktop: the one-row bar, fixed to the top once the page has scrolled past the header. */}
+      {isPageHeader ? (
+        <DesktopBar {...desktopBar} layout="one-row" bar="fixed" active={scrolledPast} panels={fixedBarShown} barRef={fixedBarRef} />
+      ) : null}
       {/* The bag panel belongs to the page's own header only, not to the style guide's header previews. */}
-      {isPageHeader ? <BagPanel content={content} bagLabel={bagLabel} getTop={() => Math.max(0, mobileBarRef.current?.getBoundingClientRect().top ?? 0)} /> : null}
+      {isPageHeader ? <BagPanel content={content} bagLabel={bagLabel} getTop={mobileBarTop} /> : null}
     </header>
   );
 }

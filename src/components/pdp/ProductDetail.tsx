@@ -106,7 +106,8 @@ export function ProductDetail({ product }: { product: Product }) {
     <div className="ui-desktop:site-container ui-desktop:grid ui-desktop:grid-cols-[minmax(0,718fr)_minmax(0,506fr)] ui-desktop:gap-space-6">
       <div className="hidden ui-desktop:block">
         {/* Figma's images frame (3565:98419) pads its right side 24px: the tile grid is 694 of the 718 column. */}
-        <div className="sticky top-0 py-space-15 pr-space-6">
+        {/* Sticks under the fixed header bar, keeping the frame's 60px above the photos. */}
+        <div className="sticky top-(--sticky-header-height) py-space-15 pr-space-6">
           <DesktopGallery product={product} variant={variant} name={name} />
         </div>
       </div>
