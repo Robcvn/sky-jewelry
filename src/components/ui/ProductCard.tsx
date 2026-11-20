@@ -89,17 +89,31 @@ export function Installments({ price, labels, className, onLearnMore }: { price:
   );
 }
 
+/**
+ * The ring builder's setting cards (Figma Builder 1 - Setting, 3565:101312; hover 3565:101327): the same card with
+ * the setting's name without its metal, a "with stone: $1,800" note beside the price, links into the builder, and
+ * "Choose Setting" (a link to Step 2) where the product list has Add to Bag.
+ */
+export type ProductCardBuilder = {
+  title: string;
+  href: (variant: ProductVariant) => string;
+  priceNote: (variant: ProductVariant) => string | null;
+  action: { label: string; href: (variant: ProductVariant) => string };
+};
+
 type ProductCardProps = {
   product: Product;
   /** The variant to show first: the first one matching the filters. */
   initialVariant: ProductVariant;
   labels: ProductCardLabels;
-  onAddToBag: (product: Product, variant: ProductVariant) => void;
+  /** Not used by the ring builder's cards, whose main action is a link. */
+  onAddToBag?: (product: Product, variant: ProductVariant) => void;
   /** Mobile: tapping the card opens the quick-view sheet. */
   onQuickView: (product: Product, variant: ProductVariant) => void;
   busy?: boolean;
   /** "grid": the product list (smaller text below 1024px). "carousel": landing page rows (desktop text sizes throughout). */
   size?: "grid" | "carousel";
+  builder?: ProductCardBuilder;
 };
 
 /**
@@ -110,14 +124,15 @@ type ProductCardProps = {
  * the installments line show below. The swatches switch the photo, title and price to that metal's variant.
  * Mobile: no hover; tapping the photo or title opens the quick view.
  */
-export function ProductCard({ product, initialVariant, labels, onAddToBag, onQuickView, busy = false, size = "grid" }: ProductCardProps) {
+export function ProductCard({ product, initialVariant, labels, onAddToBag, onQuickView, busy = false, size = "grid", builder }: ProductCardProps) {
   const carousel = size === "carousel";
   const [variant, setVariant] = useState(initialVariant);
   const [view, setView] = useState(0);
   const images = imagesFor(product, variant.metal);
   const image = images[Math.min(view, images.length - 1)];
-  const name = variantName(product, variant);
-  const href = productHref(product);
+  const name = builder?.title ?? variantName(product, variant);
+  const href = builder ? builder.href(variant) : productHref(product);
+  const priceNote = builder?.priceNote(variant) ?? null;
 
   const chooseVariant = (next: ProductVariant) => {
     setVariant(next);
@@ -154,7 +169,10 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
 
         <div className={cx("flex flex-col gap-space-1 px-space-2 text-center", carousel ? "pt-space-3" : "pt-space-2 ui-desktop:pt-space-3")}>
           <h3 className={carousel ? "type-heading-sm" : "type-heading-xs ui-desktop:type-heading-sm"}>{name}</h3>
-          <p className={carousel ? "type-ui-xs-medium" : "type-ui-2xs-medium ui-desktop:type-ui-xs-medium"}>{formatPrice(variant.price)}</p>
+          <p className={carousel ? "type-ui-xs-medium" : "type-ui-2xs-medium ui-desktop:type-ui-xs-medium"}>
+            {formatPrice(variant.price)}
+            {priceNote ? <span className="pl-space-1 font-normal text-primary-hazel">{priceNote}</span> : null}
+          </p>
         </div>
 
         {/* Desktop: the photo and title open the product page. Mobile: they open the quick view. */}
@@ -176,15 +194,21 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
             <ButtonLink href={href} size="sm" variant="secondary" className="w-19 shrink-0">
               {labels.info}
             </ButtonLink>
-            <Button
-              size="sm"
-              rightIcon="chevron-right"
-              className="flex-1"
-              disabled={busy || !variant.available}
-              onClick={() => onAddToBag(product, variant)}
-            >
-              {labels.addToBag}
-            </Button>
+            {builder ? (
+              <ButtonLink href={builder.action.href(variant)} size="sm" rightIcon="chevron-right" className="flex-1">
+                {builder.action.label}
+              </ButtonLink>
+            ) : (
+              <Button
+                size="sm"
+                rightIcon="chevron-right"
+                className="flex-1"
+                disabled={busy || !variant.available}
+                onClick={() => onAddToBag?.(product, variant)}
+              >
+                {labels.addToBag}
+              </Button>
+            )}
           </div>
           <Installments price={variant.price} labels={labels} />
         </div>

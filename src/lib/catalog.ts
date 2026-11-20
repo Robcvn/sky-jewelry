@@ -4,11 +4,12 @@
  * because the store is unavailable.
  */
 import type { Product } from "@/content/products";
-import { getCollectionProductHandles, getProducts, shopifyConfig } from "@/lib/shopify";
+import { getCollectionProductHandles, getProducts, shopifyConfig, type ShopifyProduct } from "@/lib/shopify";
 import { mapShopifyProduct } from "@/lib/shopify/mapProduct";
 import { getMockProducts } from "./mockCatalog";
 
-export type Catalog = { products: Product[]; source: "shopify" | "mock" };
+/** `raw`: the Storefront API products as fetched (empty for the mock catalogue); the ring builder reads its stones from them. */
+export type Catalog = { products: Product[]; source: "shopify" | "mock"; raw: ShopifyProduct[] };
 
 let catalog: Promise<Catalog> | undefined;
 
@@ -17,16 +18,17 @@ function fallback(reason: string): Catalog {
     `\n[catalog] WARNING: using the mock catalogue from src/content/catalog-seed.ts, because ${reason}.\n` +
       "[catalog] Check NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN and NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN, and that the products are available to the Headless channel.\n",
   );
-  return { products: getMockProducts(), source: "mock" };
+  return { products: getMockProducts(), source: "mock", raw: [] };
 }
 
 async function loadCatalog(): Promise<Catalog> {
   if (!shopifyConfig()) return fallback("Shopify is not configured");
   try {
-    const products = (await getProducts({ first: 250 })).map(mapShopifyProduct).filter((product): product is Product => product !== null);
+    const raw = await getProducts({ first: 250 });
+    const products = raw.map(mapShopifyProduct).filter((product): product is Product => product !== null);
     if (!products.length) return fallback("Shopify returned no products");
     console.info(`[catalog] ${products.length} products from Shopify.`);
-    return { products, source: "shopify" };
+    return { products, source: "shopify", raw };
   } catch (error) {
     return fallback(`Shopify failed: ${error instanceof Error ? error.message : String(error)}`);
   }

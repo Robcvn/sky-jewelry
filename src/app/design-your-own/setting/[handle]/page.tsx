@@ -1,0 +1,71 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { BuilderSteps } from "@/components/builder/BuilderSteps";
+import { settingHref } from "@/components/builder/ring";
+import { SettingDetail } from "@/components/builder/SettingDetail";
+import { Reviews } from "@/components/home/Reviews";
+import { ButtonCards } from "@/components/pdp/DetailSections";
+import { homePage, type Reviews as ReviewsContent } from "@/content/home";
+import { getBuilderCatalog } from "@/lib/builder";
+import { getCatalog, pickProducts } from "@/lib/catalog";
+
+type Params = { handle: string };
+
+/** One static page per ring setting: the engagement rings in the catalogue plus the builder's seed settings. */
+export async function generateStaticParams(): Promise<Params[]> {
+  const { settings } = await getBuilderCatalog();
+  return settings.map((setting) => ({ handle: setting.handle }));
+}
+
+export const dynamicParams = false;
+
+async function findSetting({ handle }: Params) {
+  const { settings } = await getBuilderCatalog();
+  return settings.find((setting) => setting.handle === handle) ?? null;
+}
+
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const setting = await findSetting(await params);
+  return setting ? { title: setting.product.name, description: setting.product.description, alternates: { canonical: settingHref(setting.handle) } } : {};
+}
+
+/** "Perfectly Paired Wedding Bands": the catalogue's bands (Figma's cards are placeholders showing the twig band). */
+const PAIRED_BANDS = ["twig-diamond-stackable-band", "classic-2mm-band", "flush-set-lab-grown-diamond-band", "classic-4mm-band", "flush-set-natural-diamond-band"];
+
+/** The reviews section reuses the Home section and its sample reviews, as Product Detail does. */
+const reviews = homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
+
+export default async function SettingPage({ params }: { params: Promise<Params> }) {
+  const setting = await findSetting(await params);
+  if (!setting) notFound();
+  const { product } = setting;
+  const { products } = await getCatalog();
+  const bands = pickProducts(products, PAIRED_BANDS);
+
+  // Structured data for search engines: the setting and its metals' price range.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    sku: product.variants[0].sku ?? undefined,
+    brand: { "@type": "Brand", name: "Sky Jewelry" },
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "USD",
+      lowPrice: product.priceFrom,
+      highPrice: Math.max(...product.variants.map((variant) => variant.price)),
+      offerCount: product.variants.length,
+    },
+  };
+
+  return (
+    <main id="main-content" tabIndex={-1} className="flex-1">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <BuilderSteps current={1} />
+      <SettingDetail setting={setting} bands={bands} />
+      <Reviews content={reviews} />
+      <ButtonCards />
+    </main>
+  );
+}

@@ -50,6 +50,8 @@ export type Product = {
   shipsInDays: number | null;
   /** "Best Match" order within the category. */
   rank: number;
+  /** The Shopify tags, for attributes only some pages read (the ring builder's setting specs). */
+  tags: string[];
   /**
    * 360° image sequence (Shopify images named "<photo>-spin-01", "-spin-02", ...), or null.
    * No product has one yet: the 360° view is hidden until a sequence is added.
@@ -63,9 +65,16 @@ export type FineJewelryCategory = (typeof FINE_JEWELRY_CATEGORIES)[number];
 export const isFineJewelry = (category: string): category is FineJewelryCategory =>
   (FINE_JEWELRY_CATEGORIES as readonly string[]).includes(category);
 
-/** Product detail route. Fine Jewelry products live under /fine-jewelry/<category>/. */
+/**
+ * Product detail route. Fine Jewelry products live under /fine-jewelry/<category>/. Engagement rings are ring
+ * settings: their page is the ring builder's setting page.
+ */
 export const productHref = (product: Pick<Product, "category" | "slug">) =>
-  isFineJewelry(product.category) ? `/fine-jewelry/${product.category}/${product.slug}/` : `/${product.category}/${product.slug}/`;
+  isFineJewelry(product.category)
+    ? `/fine-jewelry/${product.category}/${product.slug}/`
+    : product.category === "engagement-rings"
+      ? `/design-your-own/setting/${product.slug}/`
+      : `/${product.category}/${product.slug}/`;
 
 export const formatPrice = (usd: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(usd);

@@ -1,0 +1,37 @@
+"use client";
+
+import { useCallback, useSyncExternalStore } from "react";
+
+const EVENT = "builder:querychange";
+
+function subscribe(listener: () => void) {
+  window.addEventListener("popstate", listener);
+  window.addEventListener(EVENT, listener);
+  return () => {
+    window.removeEventListener("popstate", listener);
+    window.removeEventListener(EVENT, listener);
+  };
+}
+
+/**
+ * The page's query string, as the product list and Product Detail keep theirs: read from window.location (not
+ * useSearchParams) so the static HTML renders the default state, and the URL's state applies as the page hydrates.
+ * setQuery replaces the history entry, so Back leaves the page instead of undoing each choice.
+ */
+export function useQuery() {
+  const search = useSyncExternalStore(
+    subscribe,
+    () => window.location.search,
+    () => "",
+  );
+  const setQuery = useCallback((params: URLSearchParams | string) => {
+    const query = params.toString();
+    window.history.replaceState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+    window.dispatchEvent(new Event(EVENT));
+  }, []);
+  return [search, setQuery] as const;
+}
+
+const noop = () => () => {};
+/** True after hydration, for values that only exist in the browser (ship dates, the URL's ring). */
+export const useIsClient = () => useSyncExternalStore(noop, () => true, () => false);

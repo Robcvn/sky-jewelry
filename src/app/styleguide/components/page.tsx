@@ -5,6 +5,8 @@ import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { Header } from "@/components/site/Header";
 import { AccountDemos } from "@/components/styleguide/AccountDemos";
 import { BagDemos } from "@/components/styleguide/BagDemos";
+import { BuilderDemos } from "@/components/styleguide/BuilderDemos";
+import { getBuilderCatalog } from "@/lib/builder";
 import { MegaMenuPanel } from "@/components/site/MegaMenu";
 import { CategoryCard } from "@/components/ui/CategoryCard";
 import { DyoCard } from "@/components/ui/DyoCard";
@@ -113,6 +115,7 @@ const SECTIONS = [
   ["site-chrome", "Header and footer"],
   ["bag", "Bag"],
   ["account", "Account"],
+  ["ring-builder", "Ring builder"],
   ["icons", "Icons"],
   ["deviations", "Deviations from Figma"],
   ["corrected-oversights", "Corrected design oversights"],
@@ -359,7 +362,13 @@ function DropdownMatrix({ overlay = false }: { overlay?: boolean }) {
 
 const productCardSample = getMockProducts().find((product) => product.slug === "vine-natural-diamond-ring")!;
 
-export default function ComponentsPage() {
+export default async function ComponentsPage() {
+  // Catalogue samples for the Ring builder section.
+  const builder = await getBuilderCatalog();
+  const builderSetting = builder.settings.find((setting) => setting.handle === "vine-engagement-ring-setting") ?? builder.settings[0];
+  const roundStone = builder.stones.find((stone) => stone.kind === "diamond" && stone.shape === "round" && stone.certificate === "GIA") ?? builder.stones[0];
+  const drawnStone = builder.stones.find((stone) => !stone.image) ?? builder.stones[0];
+  const otherLabStone = builder.stones.find((stone) => stone.kind === "diamond" && stone.certificate !== "GIA") ?? builder.stones[0];
   return (
     <>
       <main id="main-content" tabIndex={-1} className="site-container flex flex-col gap-space-15 py-space-13">
@@ -1264,6 +1273,10 @@ export default function ComponentsPage() {
           <AccountDemos />
         </Section>
 
+        <Section id="ring-builder" title="Ring builder">
+          <BuilderDemos setting={builderSetting} round={roundStone} drawn={drawnStone} otherLab={otherLabStone} />
+        </Section>
+
         <Section id="icons" title="Icons">
           <ul className="flex flex-wrap gap-space-5">
             {(Object.keys(iconData) as IconName[]).map((name) => (
@@ -1433,6 +1446,61 @@ export default function ComponentsPage() {
               against the frame&rsquo;s 504.5 on desktop.
             </li>
             <li>Sticky header: not drawn in Figma; added at Rob&rsquo;s request on Nov 20. Desktop uses the Header page&rsquo;s one-row bar.</li>
+            <li>Ring builder catalogue: Figma&rsquo;s frames repeat one ring and one diamond on every card. Built with six settings, each around a ring photo Figma has, and 132 sample stones; the names, grades, measurements and prices are sample data.</li>
+            <li>
+              Ring builder stone photos: Figma has loose-stone photos for five diamond shapes (round, cushion, emerald, radiant,
+              marquise) and five coloured stones. A stone without one shows Figma&rsquo;s line drawing of its shape instead of a photo
+              of a different stone (inferred).
+            </li>
+            <li>
+              Ring builder &ldquo;Set with&rdquo;: every sample setting can be made for every centre stone shape, so Set with sets the
+              shape the ring is built for and does not shorten the list. Before a shape is chosen the control reads
+              &ldquo;Shape&rdquo; (Figma only draws &ldquo;Set with Round&rdquo;). Its open panel is not drawn; it reuses the Price
+              panel&rsquo;s look with the shape tiles (inferred).
+            </li>
+            <li>
+              Ring builder price notes: &ldquo;with stone&rdquo; is the setting plus the lowest-priced stone of the chosen shape (of any
+              shape when none is chosen); &ldquo;with setting&rdquo; is the stone plus the chosen setting (inferred).
+            </li>
+            <li>
+              Ring builder setting cards and Modal / Setting Selection: the 360° View / Images / Video tabs are left out (no setting has a
+              360° sequence or a video); the hover card&rsquo;s photos use the product card&rsquo;s dots instead.
+            </li>
+            <li>
+              Setting page gallery: Figma&rsquo;s 360° tile and its video tile are left out, as are the dots and arrow on the first worn
+              photo and the carat tabs on the second (there is one photo of each). That leaves three tiles, laid out by Product
+              Detail&rsquo;s rule: the first spans the row.
+            </li>
+            <li>
+              Setting page at 1140: the site&rsquo;s margin is fluid (74px where the 1140 frame keeps 64), so the photo column is 501px
+              against 512 and the text column 450 against 460.
+            </li>
+            <li>
+              Setting page info cards: Width, Approx. TCW, Accent Gems and Profile show sample values; settings without accent stones
+              leave out the TCW and Accent Gems cards. The Profile note states the height only (Figma: &ldquo;Only stacks with a
+              chevron/curved band&rdquo;), and the Metal note is Product Detail&rsquo;s (Figma: Latin filler).
+            </li>
+            <li>
+              Ring builder promo cards: Figma&rsquo;s &ldquo;Promotional Headline&rdquo; and Latin filler are replaced with copy that
+              repeats what the site already says. View More comes after 24 settings on desktop and 15 on mobile, as each frame draws.
+            </li>
+            <li>Mobile setting page: the Style tile shows the setting&rsquo;s style and is not a picker.</li>
+            <li>Step Indicator: the current step&rsquo;s name is in the italic heading style, as every builder frame draws it (the Design System variant uses the upright style).</li>
+            <li>Ring builder ships line: &ldquo;Ships in N days&rdquo; from the piece&rsquo;s own lead time (Figma: &ldquo;Ships in 2-3 weeks&rdquo;), as on the product page.</li>
+            <li>Stone page specs tile: Figma&rsquo;s numbers are placeholders. Built with the stone&rsquo;s own length and width in mm on the top view, and its table and depth percentages on the side view. Figma draws a round stone only: the other shapes show their line drawing with length and width.</li>
+            <li>Stone page tiles without a photo sit on the certificate tile&rsquo;s fill (#f2f0ec), since the product gradient only shows behind a photo.</li>
+            <li>Stone page info cards: the Cut card&rsquo;s note is the grade&rsquo;s short description (Figma: &ldquo;Ratio: 1.46&rdquo;); the Carat note is Product Detail&rsquo;s (Figma: Latin filler); Color I reads &ldquo;Nearly colorless&rdquo; (Figma: &ldquo;Slightly tinted&rdquo;). The Clarity card is as tall as its note needs (142px against 158).</li>
+            <li>Stone page labs: Figma draws the GIA seal. Every lab (GIA, AGS, IGI) shows the certificate icon and the lab&rsquo;s name instead, as third-party logos are shown as names elsewhere on the site.</li>
+            <li>Gemstone stone pages (not drawn): &ldquo;Your Stone Info&rdquo; and &ldquo;Stone Specs&rdquo;, the colour and gem type on the Color card, no grade scales, no Qualities section and no hand photo.</li>
+            <li>Grade descriptions: Figma writes one grade per scale (Color G, Clarity VVS2, Cut Excellent). The other grades use replacement copy that states the grade&rsquo;s standard definition.</li>
+            <li>Stone list slider bounds come from the stones in the tab, as on the product list (Figma: 0.50 to 6.00 carats and $200 to $5,000,000).</li>
+            <li>Stone list, desktop Advanced Filters for diamonds: Figma draws the open row for gemstones only (Treatment, L/W Ratio, Certificate dropdowns). Diamonds are built on that pattern with Polish, Symmetry, Fluorescence, Table, Depth and L/W Ratio, the filters the mobile sheet lists (inferred). The count badge shows the number of active advanced filters, and Clear Filters shows when a filter is active.</li>
+            <li>Stone list question marks are leather (Figma: gold) to reach 3:1 against the page. Desktop number inputs have Product List&rsquo;s 24px stepper column (Figma: 20px), and the sheet&rsquo;s shape tiles are 80px squares (Figma&rsquo;s hug to about 72px tall).</li>
+            <li>Stone cards and Modal / Stone Selection: the 360° View / Images tabs are left out (no 360° sequences), so the hover card is 525px tall against 572 and the sheet 602 against 646. The card title is the shape, as Figma&rsquo;s &ldquo;Round&rdquo;; the stone&rsquo;s full name is its accessible name.</li>
+            <li>Cut / Color / Clarity modal: choosing a grade changes the explanation only, not the filters. The Color and Clarity drawings reuse Product Detail&rsquo;s (the modal&rsquo;s Clarity drawing differs slightly). No close button is drawn: Escape and the backdrop close it.</li>
+            <li>Ring builder Step 1 lists only settings tagged &ldquo;setting&rdquo;: the six new ones. The store&rsquo;s four engagement rings (Channel Set, Halo, Side-Stone, Eternity) are left out of the list and its filters, because their photos are the vine ring&rsquo;s. They keep their setting pages, which Home&rsquo;s best sellers link to.</li>
+            <li>Ring builder style tiles: a style with no settings is left out, on desktop and in the mobile sheet. The Design System&rsquo;s Radio Button (Radio 588:1170) draws Inactive, Hover, Pressed and Active, and no disabled state. Desktop shows Solitaire, Pave, Side Stone, Halo and Natural of Figma&rsquo;s nine; the sheet shows Solitaire, Pave, Side Stone and Halo of its eight (it draws no Natural).</li>
+            <li>Gemstone Type: a type with no stones in the tab is not offered (Moissanite is lab-grown only, so the Natural tab doesn&rsquo;t list it).</li>
           </ul>
         </Section>
 
@@ -1597,6 +1665,10 @@ export default function ComponentsPage() {
               Account - Order Details (desktop 3565:98015 and 1280 4430:61649): the reused Order Card keeps View Details, which links to the
               page it is on. Built without it, as the mobile frame draws the card there.
             </li>
+            <li>Setting page, Meet With Our Consultant: Figma&rsquo;s &ldquo;inour showroom&rdquo; is built as &ldquo;in our showroom&rdquo;.</li>
+            <li>Stone page, mobile carat toggle: Figma marks 1.0 under a &ldquo;Shown with 2.50 CT&rdquo; badge. Built marking 2.5, as the desktop frame does.</li>
+            <li>Filters / Stone - Expanded draws Polish twice (after Price and again at the end of Advanced Filters). Built once, after Price.</li>
+            <li>Stone page specs drawing: Figma labels the side view &ldquo;57.0mm&rdquo; and &ldquo;62.4mm&rdquo;. Those are the table and depth percentages with the wrong unit: built as the stone&rsquo;s table % and depth %, with a % sign.</li>
           </ul>
         </Section>
 
@@ -1681,7 +1753,9 @@ export default function ComponentsPage() {
             <li>Ships by and Sort by options are not designed. Built with the Dropdown option list.</li>
             <li>
               Product photos of the other metals for necklaces, earrings and bracelets (white gold, rose gold and platinum). Figma has these
-              designs in yellow gold only, so their cards show one metal swatch.
+              designs in yellow gold only, so their cards show one metal swatch. For the ring builder: photos for oval, princess, asscher,
+              heart and pear diamonds and the other coloured stones (they show a line drawing for now); a photo per carat size for the carat
+              toggle; a cut-out ring for the step bar.
             </li>
             <li>360° image sequences for the products (the viewer is ready; no sequences exist).</li>
             <li>
@@ -1721,12 +1795,21 @@ export default function ComponentsPage() {
               Order Details photos: the 1440 frame rounds them 4px; the 1280 frame, the mobile frame and the Design System&rsquo;s Product
               Order Detail don&rsquo;t. Built square. Which is right?
             </li>
+            <li>Photos are needed for Channel Set, Halo, Side-Stone and Eternity before they can be listed in the builder.</li>
+            <li>Ring builder: the stone-first menu links (&ldquo;Start with a Natural Diamond&rdquo; and the others) land on Step 1; a stone-first flow is not part of part 2.</li>
+            <li>Ring builder: Remove Setting and Remove Stone are drawn, and built, on mobile only.</li>
+            <li>Ring builder installments: setting cards say &ldquo;Pay in 12&rdquo; and stone cards &ldquo;Pay in 4&rdquo;; each is built as drawn.</li>
+            <li>Ring builder step bar: one frame repeats the price inside the setting&rsquo;s name; built with the name and one price.</li>
+            <li>Stone page title: desktop &ldquo;2.50ct &hellip;&rdquo; and mobile &ldquo;0.50 Carat &hellip;&rdquo;; each is built as drawn.</li>
+            <li>Ring builder Step 2 has no switch between diamonds and gemstones; gemstone mode is reached from the gemstone menu links.</li>
+            <li>Stone list: what does the &ldquo;3&rdquo; badge beside Advanced Filters count? Built as the number of active advanced filters.</li>
+            <li>Stone filters differ by breakpoint, each built as drawn: Certificate is in the desktop diamond filters but not the mobile sheet; Type is on desktop gemstones but not in the mobile sheet.</li>
+            <li>Should choosing a grade in the Cut / Color / Clarity modal set the filter? Built to change the explanation only.</li>
           </ul>
         </Section>
 
         <Section id="held" title="Held for review">
           <ul className="type-body-sm-regular flex max-w-[40rem] list-disc flex-col gap-space-2 pl-space-5">
-            <li>Modal - CCC Filters: a content-specific modal, held for its page task.</li>
             <li>
               &ldquo;Drop a hint&rdquo; and &ldquo;View Certificate&rdquo; on the product page: shown as designed but inert (plain text, not links
               or buttons) until their modal and certificate files exist.
@@ -1743,15 +1826,16 @@ export default function ComponentsPage() {
             </li>
             <li>Product card &ldquo;Learn more&rdquo; (hover state): stays inert; the product page, quick view and bag open Modal - Credit.</li>
             <li>
-              Engagement ring product pages (/engagement-rings/&hellip;, linked from the Home best sellers): they belong to the ring builder
-              stage. The Home links stay as they are.
+              Ring builder Step 3 (&ldquo;Builder 3 - Complete&rdquo;, planned at /design-your-own/complete/): the setting and diamond
+              summary cards, Total Price, Ring Details, the ring size and Drop a Hint modals, the Stone Unavailable state and the
+              add-to-bag loaders. &ldquo;Complete Ring&rdquo; and &ldquo;Complete Your Ring&rdquo; link to that route. Part 2.
             </li>
             <li>
-              Ring builder pages (mobile 3587:125910 &ldquo;Builder 2 - Stone Info&rdquo; and 3587:125411 &ldquo;Builder 3 - Complete&rdquo;):
-              step bar, loose-diamond viewer, Diamond Specs, Carat Size Guide, setting and diamond summary cards, Total Price, Your Setting
-              Info, Ring Details, and the add-to-bag loaders. Held for the ring builder.
+              Ring builder, drawn without a result: Quick Checkout and Meet With Our Consultant&rsquo;s &ldquo;Book Now&rdquo; on the
+              setting page (shown as designed, inert); the 360° view, the video and the carat tabs on the gallery photos (left out or
+              inert); &ldquo;View Certificate&rdquo; on stones (plain text). The stone-first frames are not built.
             </li>
-            <li>Quick Checkout (on the Accordion page): product-page content with unnamed variants (Open3, Open4), held for the product page.</li>
+            <li>Quick Checkout&rsquo;s open states (on the Accordion page; unnamed variants Open3, Open4): the closed card is on the setting page, inert; opening it waits for part 2.</li>
             <li>Landing page live chat and text actions (no chat or messaging service to connect to).</li>
             <li>
               Account: Log Out, Account Details Edit, the address cards&rsquo; Edit and Remove, Sky Repairs Opt Out, Download Certificate and
@@ -1761,6 +1845,7 @@ export default function ComponentsPage() {
               Account address Edit and Remove flows: not drawn beyond the links. Editing might reuse Modal / Add Address (as &ldquo;Edit
               Address&rdquo;) and Remove might ask for confirmation; both wait for a design.
             </li>
+            <li>Stone list: the question marks Figma draws on Carat, the gemstone Color and Certificate are left out (nothing is drawn for them to open). &ldquo;Learn more&rdquo; on the stone hover card is inert, as on the product card; in the mobile sheet it opens Modal - Credit.</li>
           </ul>
         </Section>
       </main>

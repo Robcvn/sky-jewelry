@@ -33,6 +33,9 @@ export function localImage(url: string, alt: string): ImageRef | null {
   return key in productImageManifest ? { desktop: key as keyof typeof productImageManifest, alt } : null;
 }
 
+/** The tag every loose stone carries (shopify/builder-import.csv). */
+export const LOOSE_STONE_TAG = "loose-stone";
+
 /** 360° frames: images whose file name ends in "-spin-<number>", in number order. */
 const SPIN = /-spin-(\d+)$/;
 
@@ -59,6 +62,8 @@ export function caratOf(options: Array<{ name: string; value: string }>) {
  */
 export function mapShopifyProduct(product: ShopifyProduct): Product | null {
   if (!product.handle || !product.title) return null;
+  // Loose stones are the ring builder's (src/lib/builder.ts), not jewellery products.
+  if (product.tags.includes(LOOSE_STONE_TAG)) return null;
 
   const variants: ProductVariant[] = product.variants.nodes
     .map((variant) => ({
@@ -119,6 +124,7 @@ export function mapShopifyProduct(product: ShopifyProduct): Product | null {
     length: tagValue(product.tags, "length"),
     shipsInDays: Number.isFinite(shipsIn) && shipsIn > 0 ? shipsIn : null,
     rank,
+    tags: product.tags,
     spin: spinFrames(product),
   };
 }

@@ -9,6 +9,8 @@ type StepIndicatorProps = {
   verb: string;
   /** "Setting" in "Select Setting". */
   noun: string;
+  /** The noun on mobile where its frames word it differently (the builder's "Diamond" is "Stone" on mobile). */
+  mobileNoun?: string;
   /** Figma State=Active. */
   active?: boolean;
   /** Figma Complete=True. */
@@ -31,6 +33,7 @@ export function StepIndicator({
   step,
   verb,
   noun,
+  mobileNoun,
   active = false,
   complete = false,
   unavailable = false,
@@ -68,9 +71,17 @@ export function StepIndicator({
             Step {step}, {status}:{" "}
           </span>
           <span className="type-overline-2xs-medium -mb-space-1 text-black-alpha-60 ui-desktop:hidden">{verb}</span>
-          <span className={cx("type-heading-xs", error && "text-state-error")}>
+          {/* The builder frames set the current step's name in the italic heading style. */}
+          <span className={cx(active ? "type-heading-italic-xs" : "type-heading-xs", error && "text-state-error")}>
             <span className="hidden ui-desktop:inline">{verb} </span>
-            {noun}
+            {mobileNoun && mobileNoun !== noun ? (
+              <>
+                <span className="hidden ui-desktop:inline">{noun}</span>
+                <span className="ui-desktop:hidden">{mobileNoun}</span>
+              </>
+            ) : (
+              noun
+            )}
           </span>
           {complete && selectedName ? (
             <span
@@ -116,7 +127,8 @@ function StepActions({ children }: { children: ReactNode }) {
     <span className="flex items-center gap-space-2">
       {items.map((child, index) => (
         <Fragment key={index}>
-          {index > 0 ? <span aria-hidden="true" className="h-px w-space-2 bg-black-alpha-20" /> : null}
+          {/* Figma: a vertical 8px rule between the links ("Line 1", 0 x 8). */}
+          {index > 0 ? <span aria-hidden="true" className="h-space-2 w-px bg-black-alpha-20" /> : null}
           {child}
         </Fragment>
       ))}
