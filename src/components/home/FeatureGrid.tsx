@@ -16,6 +16,7 @@ export function FeatureGrid({ content }: { content: FeatureGridContent }) {
               ctaLabel={content.ctaLabel}
               href={card.href}
               image={card.image}
+              mobileRuleAboveTitle={content.mobileCaption === "rule-title"}
               sizes={card.wide ? { desktop: "calc(66vw - 64px)", mobile: "calc(100vw - 40px)" } : { desktop: "calc(33vw - 80px)", mobile: "calc(50vw - 24px)" }}
               className="size-full"
             />

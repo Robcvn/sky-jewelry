@@ -1,31 +1,34 @@
 import { SECTION_HEADING, SECTION_HEADING_EM } from "@/components/home/styles";
 import { RichText, type RichSpan } from "@/components/ui/RichText";
-import { cx } from "@/components/ui/shared";
 
 /** Desktop card width for four cards across the content width (the landing carousels and rows). */
 export const CARD_W = "(100cqw - 2 * var(--grid-margin) - 3 * var(--spacing-space-6)) / 4";
 export const CARD_ITEM = "w-[18.125rem] ui-desktop:w-[calc((100cqw-2*var(--grid-margin)-3*var(--spacing-space-6))/4)]";
 
 /**
- * The landing pages' standard heading block: optional overline (10/14 mobile, 12/16 desktop), the section h2
- * (caps-lg / caps-xl, one italic word) and an optional body line, centred.
+ * The landing pages' standard heading block: optional overline (10/14 mobile, 12/16 desktop; `overlineSize="sm"`
+ * for 12/16 at both, as the Guarantee section), the section h2 (caps-lg / caps-xl, one italic word) and an
+ * optional body line, centred. The overline gets one type class per breakpoint: two competing classes on one
+ * element resolve by stylesheet order, not by the order they are written.
  */
 export function SectionHeading({
   id,
   overline,
   heading,
   body,
-  overlineClassName,
+  overlineSize = "responsive",
 }: {
   id: string;
   overline?: string;
   heading: RichSpan[];
   body?: string;
-  overlineClassName?: string;
+  overlineSize?: "responsive" | "sm";
 }) {
   return (
     <div className="site-container flex flex-col items-center gap-space-3 text-center text-primary-leather ui-desktop:gap-space-4">
-      {overline ? <p className={cx("type-overline-xs-medium ui-desktop:type-overline-sm-medium", overlineClassName)}>{overline}</p> : null}
+      {overline ? (
+        <p className={overlineSize === "sm" ? "type-overline-sm-medium" : "type-overline-xs-medium ui-desktop:type-overline-sm-medium"}>{overline}</p>
+      ) : null}
       <h2 id={id} className={`max-w-[51.5rem] ${SECTION_HEADING}`}>
         <RichText value={heading} emClassName={SECTION_HEADING_EM} />
       </h2>

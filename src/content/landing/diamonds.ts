@@ -31,8 +31,8 @@ export const diamondsPage: LandingPage = {
       heading: [span("Choose "), em("your"), br(), span(" Diamond Type")],
       body: "Natural or lab-grown: both are real diamonds.",
       cards: [
-        { _key: "natural", icon: "natural-diamond", title: "Natural\nDiamonds", body: "Diamonds formed in the earth.", cta: { label: "Shop Natural Diamonds", href: `${SHOP}?type=natural` } },
-        { _key: "lab-grown", icon: "lab-diamond", title: "Lab-Grown\nDiamonds", body: "Diamonds grown above ground.", cta: { label: "Shop Lab-Grown Diamonds", href: `${SHOP}?type=lab-grown` } },
+        { _key: "natural", icon: "natural-diamond", title: "Natural\nDiamonds", body: "Celebrate your love with our stunning selection of engagement ring designs.", cta: { label: "Shop Natural Diamonds", href: `${SHOP}?type=natural` } },
+        { _key: "lab-grown", icon: "lab-diamond", title: "Lab-Grown\nDiamonds", body: "Browse our dazzling diamond collection and experience the brilliance in every piece.", cta: { label: "Shop Lab-Grown Diamonds", href: `${SHOP}?type=lab-grown` } },
       ],
     },
     {
@@ -66,6 +66,7 @@ export const diamondsPage: LandingPage = {
       _key: "diamond-jewelry",
       heading: "Shop diamond jewelry",
       padTop: true,
+      mobileCaption: "rule-title",
       cards: homeFeatures.cards.map((card, index) => ({
         ...card,
         ...[

@@ -47,6 +47,11 @@ export type FeatureGrid = {
   heading: string;
   /** Desktop top padding: Home's grid has none (it follows the category strip); the Diamonds frame has 80px. */
   padTop?: boolean;
+  /**
+   * Mobile card caption. Home's mobile frame: title, then a rule and Shop Now. "rule-title" is the Diamonds mobile
+   * frame (3587:123850): a rule, then the title under it, and no Shop Now. Desktop is the same for both.
+   */
+  mobileCaption?: "rule-title";
   cards: Array<{ _key: string; title: string; href: string; image: ImageRef; wide?: boolean }>;
   ctaLabel: string;
 };
@@ -58,6 +63,8 @@ export type HeroModule = {
   _key: string;
   /** No top padding on that breakpoint: Figma's landing pages butt the module against the Reviews band above. */
   flushTop?: "desktop" | "mobile" | "both";
+  /** "tight": 12px from the title to the body on mobile instead of 20, where the module's own frame draws 12. */
+  mobileTitleGap?: "tight";
   /**
    * Built from Figma's landing page frames: on mobile their outline button is a fixed 160px (Home's hugs its label).
    */

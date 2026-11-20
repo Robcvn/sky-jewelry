@@ -123,6 +123,37 @@ export const landingImageManifest = {
       "h": 1321
     }
   ],
+  "card-women-er-m": [
+    {
+      "src": "/images/landing/card-women-er-m-350.webp",
+      "w": 350,
+      "h": 438
+    },
+    {
+      "src": "/images/landing/card-women-er-m-700.webp",
+      "w": 700,
+      "h": 876
+    }
+  ],
+  "card-women-fj-m": [
+    {
+      "src": "/images/landing/card-women-fj-m-350.webp",
+      "w": 350,
+      "h": 438
+    },
+    {
+      "src": "/images/landing/card-women-fj-m-700.webp",
+      "w": 700,
+      "h": 876
+    }
+  ],
+  "guarantee-er-m": [
+    {
+      "src": "/images/landing/guarantee-er-m-390.webp",
+      "w": 390,
+      "h": 640
+    }
+  ],
   "module-moissanite-m": [
     {
       "src": "/images/landing/module-moissanite-m-390.webp",

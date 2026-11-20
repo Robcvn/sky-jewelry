@@ -47,7 +47,7 @@ export const fineJewelryPage: LandingPage = {
       overline: "For Him, For Her, Forever in Style",
       heading: [span("Fine Jewelry "), em("for"), span(" men & women")],
       cards: [
-        { _key: "womens", title: "Women’s Fine Jewelry", body: "Rings, necklaces, earrings and bracelets.", cta: { label: "Shop for her", href: "/fine-jewelry/women/" }, image: couplePhoto },
+        { _key: "womens", title: "Women’s Fine Jewelry", body: "Rings, necklaces, earrings and bracelets.", cta: { label: "Shop for her", href: "/fine-jewelry/women/" }, image: couplePhoto("card-women-fj-m") },
         { ...menCard, title: "Men’s Fine Jewelry", body: "Bands and pieces for him.", cta: { label: "Shop for him", href: "/fine-jewelry/men/" } },
       ],
     },

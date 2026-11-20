@@ -80,7 +80,7 @@ export function GuaranteeIconsSection({ content }: { content: GuaranteeIcons }) 
   return (
     <section aria-labelledby={headingId} className={`bg-secondary-skin ${LANDING_SECTION}`}>
       {/* Figma's mobile overline here is 12/16 (overline-sm) on both breakpoints. */}
-      <SectionHeading id={headingId} overline={content.overline} heading={content.heading} overlineClassName="type-overline-sm-medium" />
+      <SectionHeading id={headingId} overline={content.overline} heading={content.heading} overlineSize="sm" />
       <ul className="site-container flex flex-col items-center gap-space-6 ui-desktop:flex-row ui-desktop:items-start">
         {content.items.map((item) => (
           <li key={item._key} className="flex w-full max-w-[21.875rem] flex-1 ui-desktop:max-w-none">
@@ -191,10 +191,12 @@ export function DiamondInspectionSection({ content }: { content: DiamondInspecti
           </h2>
           <p className="type-body-sm-regular ui-desktop:type-body-md-regular">{content.body}</p>
         </div>
-        <ol className="flex flex-col gap-space-4 self-stretch">
+        {/* Figma 3565:97438 / 3587:123850: 48px circles, 32px apart on desktop and 16px on mobile, each step's text centred
+            on its circle; 40px above the first circle and 48px below the last on desktop, 24 and 32 on mobile. */}
+        <ol className="flex flex-col gap-space-4 self-stretch py-space-2 ui-desktop:gap-space-8 ui-desktop:py-space-4">
           {content.steps.map((step, index) => (
-            <li key={step} className="flex items-center gap-space-4 py-space-2 ui-desktop:h-space-15 ui-desktop:py-0">
-              <span aria-hidden="true" className="type-heading-caps-md flex size-space-12 shrink-0 items-center justify-center rounded-full border border-secondary-gold pb-0.5">
+            <li key={step} className="flex items-center gap-space-4">
+              <span aria-hidden="true" className="type-heading-caps-md flex size-space-11 shrink-0 items-center justify-center rounded-full border border-secondary-gold pb-0.5">
                 {index + 1}
               </span>
               <span className="type-body-sm-medium flex-1 ui-desktop:type-body-md-medium">{step}</span>

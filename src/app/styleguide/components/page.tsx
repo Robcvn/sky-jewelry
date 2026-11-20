@@ -1484,6 +1484,11 @@ export default function ComponentsPage() {
               Search panel: Figma&rsquo;s search frame shows &ldquo;Education&rdquo; in hazel with no underline, a leftover from the Education menu
               frame it was copied from. Built with all nav items in their default colour while search is open.
             </li>
+            <li>
+              &ldquo;Have Questions?&rdquo; card photo on mobile (product page and Fine Jewelry). Figma squeezes the desktop crop to about 65% of
+              its width to fill the narrower mobile card. Built undistorted with the same framing (same centre and height), so the hands keep
+              their shape and a little of the scene at the sides is cropped.
+            </li>
           </ul>
         </Section>
 
@@ -1588,6 +1593,7 @@ export default function ComponentsPage() {
               Filters sheet and desktop Metal panel: the badge is at 15px on both Yellow Gold tiles and 8px on the other five. Which is
               intended, and should it change on selection?
             </li>
+            <li>Title-to-body gap is 12px on the Sky Guarantee card and 20px on the Consult module on the same page. Which is intended?</li>
           </ul>
         </Section>
 
@@ -1611,6 +1617,10 @@ export default function ComponentsPage() {
             </li>
             <li>Quick Checkout (on the Accordion page): product-page content with unnamed variants (Open3, Open4), held for the product page.</li>
             <li>Landing page live chat and text actions (no chat or messaging service to connect to).</li>
+            <li>
+              Fine Jewelry Birthday card photo: the build uses a tighter export than Figma&rsquo;s original (card 3565:97698); waiting for Rob to
+              export the image layer.
+            </li>
           </ul>
         </Section>
       </main>

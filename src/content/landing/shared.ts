@@ -25,8 +25,16 @@ export const customerStories = () => homeSection("customerStories", "stories");
 export const reviews = () => ({ ...homeSection("reviews", "reviews"), landing: true });
 export const faqs = () => ({ ...homeSection("faqs", "faqs"), landing: true });
 
-/** Home's "the Sky Guarantee" module; flushTop where Figma butts it against the Reviews band. */
-export const guaranteeModule = (flushTop?: HeroModule["flushTop"]): HeroModule => ({ ...homeSection("heroModule", "guarantee"), flushTop, landing: true });
+/**
+ * Home's "the Sky Guarantee" module; flushTop where Figma butts it against the Reviews band. The Engagement Rings
+ * mobile frame (3587:123662) crops the photo tighter than Home's (3587:124706), so the landing copy has its own
+ * mobile image; desktop is the same crop on both.
+ */
+export const guaranteeModule = (flushTop?: HeroModule["flushTop"]): HeroModule => {
+  const home = homeSection("heroModule", "guarantee");
+  // Its mobile card also has 12px from title to body (Home's has 20; Consult and Moissanite 20).
+  return { ...home, flushTop, landing: true, mobileTitleGap: "tight", image: { ...home.image, mobile: "guarantee-er-m" } };
+};
 
 /**
  * "Consult with our Experts". Figma's button starts a live chat, which has nothing to connect to: shown as
@@ -134,4 +142,9 @@ export const menCard = {
   image: { desktop: "card-mens-d", mobile: "card-mens-m", alt: "A man in a navy suit wearing a gold band and a watch" },
 } as const;
 
-export const couplePhoto = { desktop: "card-questions-d", mobile: "card-questions-m", alt: "Two hands held together, one wearing an engagement ring" } as const;
+/**
+ * The couple photo on the Women's cards. Desktop uses the product page's crop on both pages; on mobile each
+ * frame crops it differently (Engagement Rings 3587:123620, Fine Jewelry 3587:124091), so each has its own file.
+ */
+export const couplePhoto = (mobile: "card-women-er-m" | "card-women-fj-m") =>
+  ({ desktop: "card-questions-d", mobile, alt: "Two hands held together, one wearing an engagement ring" }) as const;

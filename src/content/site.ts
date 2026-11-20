@@ -29,8 +29,10 @@ export type MenuLink = NavLink & { media?: MenuMedia };
 export type MenuGroup = {
   _key: string;
   title: string;
-  /** Desktop and mobile both show two-column groups as a two-column grid. */
+  /** Columns in the desktop mega menu, and in the mobile menu unless `mobileColumns` says otherwise. */
   columns: 1 | 2;
+  /** The mobile menu's own column count where its Figma frame differs from the desktop one. */
+  mobileColumns?: 1 | 2;
   links: MenuLink[];
   /** Text link under the group, such as "Shop More Styles". */
   footerLink?: NavLink;
@@ -290,7 +292,9 @@ const weddingBandsMenu: MegaMenu = {
     {
       _key: "for-him",
       title: "For Him",
+      // Figma: two columns in the desktop mega menu (3565:99947), one in the mobile menu (3587:124991).
       columns: 2,
+      mobileColumns: 1,
       links: (
         [
           ["Classic", "band-classic"],

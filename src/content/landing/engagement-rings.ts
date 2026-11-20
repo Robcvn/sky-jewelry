@@ -57,7 +57,7 @@ export const engagementRingsPage: LandingPage = {
       overline: "Rings for Every Love Story",
       heading: [span("Rings "), em("for"), span(" men & women")],
       cards: [
-        { _key: "womens", title: "Women’s Engagement Rings", body: "Settings and stones, chosen your way.", cta: { label: "Shop Now", href: SHOP }, image: couplePhoto },
+        { _key: "womens", title: "Women’s Engagement Rings", body: "Settings and stones, chosen your way.", cta: { label: "Shop Now", href: SHOP }, image: couplePhoto("card-women-er-m") },
         { ...menCard, title: "Men’s Wedding Bands", body: "Classic and diamond bands for him.", cta: { label: "Shop Now", href: "/wedding-bands/men/" } },
       ],
     },

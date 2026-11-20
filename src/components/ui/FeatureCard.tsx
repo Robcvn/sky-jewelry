@@ -14,6 +14,11 @@ type FeatureCardProps = {
   ctaOnMobile?: boolean;
   /** Figma's cards with a body line use a 16px desktop caption padding instead of 24. */
   compact?: boolean;
+  /**
+   * Below 1024px: the hairline above the title (12px from the rule to the title, 16px below) and no CTA, as the Diamonds mobile frame
+   * draws its feature cards. From 1024px the card is the usual title, hairline and CTA.
+   */
+  mobileRuleAboveTitle?: boolean;
   /** Size and aspect ratio of the card, which differ per use. */
   className?: string;
 };
@@ -22,7 +27,8 @@ type FeatureCardProps = {
  * Figma "Feature Card": a photo with a dark gradient, a centred title, optional body and a text CTA
  * over a hairline. The whole card is one link. Figma hides a chevron beside the CTA; it shows on hover.
  */
-export function FeatureCard({ title, body, ctaLabel, href, image, sizes, ctaOnMobile = true, compact = false, className }: FeatureCardProps) {
+export function FeatureCard({ title, body, ctaLabel, href, image, sizes, ctaOnMobile = true, compact = false, mobileRuleAboveTitle = false, className }: FeatureCardProps) {
+  const showCtaOnMobile = ctaOnMobile && !mobileRuleAboveTitle;
   return (
     <Link
       href={href}
@@ -33,11 +39,18 @@ export function FeatureCard({ title, body, ctaLabel, href, image, sizes, ctaOnMo
     >
       <Picture image={image} sizes={sizes} className="ui-transition absolute inset-0 -z-10 size-full rounded-4 object-cover" />
       <span aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-b from-black-alpha-0 from-25% to-black-alpha-40 to-75%" />
-      <span className={cx("flex flex-col gap-space-1 py-space-3 ui-desktop:gap-space-2", compact ? "ui-desktop:py-space-4" : "ui-desktop:py-space-6")}>
+      <span
+        className={cx(
+          "flex flex-col gap-space-1 ui-desktop:gap-space-2",
+          // Figma draws the rule inside the caption's 12px top padding, so the padding is 12px less the 1px rule.
+          mobileRuleAboveTitle ? "border-t border-white-alpha-20 pt-[calc(var(--spacing-space-3)-1px)] pb-space-4 ui-desktop:border-t-0" : "py-space-3",
+          compact ? "ui-desktop:py-space-4" : "ui-desktop:py-space-6",
+        )}
+      >
         <h3 className="type-heading-sm ui-desktop:type-heading-md">{title}</h3>
         {body ? <span className="type-body-xs-regular mx-auto max-w-[30rem]">{body}</span> : null}
       </span>
-      <span className={cx("justify-center border-t border-white-alpha-20 pt-space-3 pb-space-4 ui-desktop:pt-space-4", ctaOnMobile ? "flex" : "hidden ui-desktop:flex")}>
+      <span className={cx("justify-center border-t border-white-alpha-20 pt-space-3 pb-space-4 ui-desktop:pt-space-4", showCtaOnMobile ? "flex" : "hidden ui-desktop:flex")}>
         <span className="type-overline-xs-medium relative py-space-1">
           {ctaLabel}
           <Icon

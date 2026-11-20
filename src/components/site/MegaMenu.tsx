@@ -25,7 +25,7 @@ export function MenuGroupBlock({
       <Heading id={headingId} className="type-overline-xs-medium text-primary-leather">
         {group.title}
       </Heading>
-      <ul aria-labelledby={headingId} className={group.columns === 2 ? "grid grid-cols-2" : "flex flex-col"}>
+      <ul aria-labelledby={headingId} className={groupColumns(group)}>
         {group.links.map((link) => (
           <li key={link._key} className="flex min-w-0">
             <MenuLinkItem link={link} compact={compact} />
@@ -35,6 +35,13 @@ export function MenuGroupBlock({
       {group.footerLink ? <GroupFooterLink link={group.footerLink} /> : null}
     </div>
   );
+}
+
+/** Desktop column count everywhere, with the mobile menu's own count below 1024px where Figma gives one. */
+function groupColumns(group: MenuGroup) {
+  const mobile = group.mobileColumns ?? group.columns;
+  const desktop = group.columns;
+  return cx(mobile === 2 ? "grid grid-cols-2" : "flex flex-col", desktop !== mobile && (desktop === 2 ? "ui-desktop:grid ui-desktop:grid-cols-2" : "ui-desktop:flex ui-desktop:flex-col"));
 }
 
 function GroupFooterLink({ link }: { link: NavLink }) {
