@@ -69,12 +69,22 @@ export function MetalSwatches({
   );
 }
 
-/** "Pay in 12 interest-free installments of $100 Learn more". Learn more opens the Credit modal, held for later: inert. */
-export function Installments({ price, labels, className }: { price: number; labels: ProductCardLabels; className?: string }) {
+/**
+ * "Pay in 12 interest-free installments of $100 Learn more". With onLearnMore (the quick view), Learn more opens
+ * the Credit modal; on the product card it stays inert, as before.
+ */
+export function Installments({ price, labels, className, onLearnMore }: { price: number; labels: ProductCardLabels; className?: string; onLearnMore?: () => void }) {
   return (
     <p className={cx("type-ui-2xs-medium text-center text-primary-hazel", className)}>
       {labels.installments} <span className="text-base-black">{formatInstallment(price)}</span>{" "}
-      <span className="text-base-black">{labels.learnMore}</span>
+      {onLearnMore ? (
+        <button type="button" onClick={onLearnMore} className="ui-transition cursor-pointer rounded-4 text-base-black underline underline-offset-2 ui-hover:text-black-alpha-60">
+          {labels.learnMore}
+          <span className="sr-only">: payment plans</span>
+        </button>
+      ) : (
+        <span className="text-base-black">{labels.learnMore}</span>
+      )}
     </p>
   );
 }

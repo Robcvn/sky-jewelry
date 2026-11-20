@@ -12,9 +12,8 @@ import { Tag } from "@/components/ui/Tag";
 import { cx } from "@/components/ui/shared";
 import { metalById } from "@/content/metals";
 import { productListContent } from "@/content/product-list";
-import { formatPrice, variantName, type FineJewelryCategory, type Product, type ProductVariant } from "@/content/products";
+import { formatPrice, type FineJewelryCategory, type Product, type ProductVariant } from "@/content/products";
 import { addToBag } from "@/lib/bag";
-import { BagToast, type BagNotice } from "./BagToast";
 import { FilterBar } from "./FilterBar";
 import { formatCaratValue } from "./FilterControls";
 import { FilterSheet } from "./FilterSheet";
@@ -60,7 +59,6 @@ export function ProductListing({ category, products }: ProductListingProps) {
   const [state, setState] = useFilterState();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [quickView, setQuickView] = useState<{ product: Product; variant: ProductVariant; open: boolean } | null>(null);
-  const [notice, setNotice] = useState<BagNotice | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const gridRef = useRef<HTMLUListElement>(null);
   const focusFrom = useRef<number | null>(null);
@@ -108,18 +106,12 @@ export function ProductListing({ category, products }: ProductListingProps) {
     first?.focus();
   }, [state.page]);
 
+  // Adding opens the bag panel (the header draws it); a failure is shown there too.
   const onAddToBag = useCallback(async (product: Product, variant: ProductVariant) => {
-    const name = variantName(product, variant);
     setBusy(product.slug);
-    const result = await addToBag(variant.id);
+    await addToBag(product, variant);
     setBusy(null);
-    setNotice({
-      id: Date.now(),
-      tone: result.ok ? "success" : "error",
-      text: result.ok ? `Added to bag: ${name}` : `Couldn't add ${name} to the bag. Please try again.`,
-    });
   }, []);
-  const dismissNotice = useCallback(() => setNotice(null), []);
 
   const sortOptions = content.sortOptions;
 
@@ -298,7 +290,6 @@ export function ProductListing({ category, products }: ProductListingProps) {
         />
       ) : null}
 
-      <BagToast notice={notice} onDismiss={dismissNotice} />
     </div>
   );
 }

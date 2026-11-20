@@ -31,11 +31,22 @@ export type ShopifyProduct = {
 
 export type ShopifyCollection = { id: string; handle: string; title: string; description: string };
 
+type DiscountAllocation = { discountedAmount: Money };
+
 export type ShopifyCartLine = {
   id: string;
   quantity: number;
-  cost: { totalAmount: Money };
-  merchandise: { id: string; title: string; product: { handle: string; title: string } };
+  /** subtotalAmount is before line discounts; totalAmount after them. */
+  cost: { amountPerQuantity: Money; subtotalAmount: Money; totalAmount: Money };
+  discountAllocations: DiscountAllocation[];
+  merchandise: {
+    id: string;
+    title: string;
+    availableForSale: boolean;
+    selectedOptions: Array<{ name: string; value: string }>;
+    image: { url: string } | null;
+    product: { handle: string; title: string; productType: string; tags: string[] };
+  };
 };
 
 /** Deliberately has no checkoutUrl: checkout on this site is simulated and never goes to Shopify. */
@@ -43,6 +54,8 @@ export type ShopifyCart = {
   id: string;
   totalQuantity: number;
   cost: { subtotalAmount: Money; totalAmount: Money };
+  /** Cart-level (order) discounts. Line discounts are on each line. */
+  discountAllocations: DiscountAllocation[];
   lines: { nodes: ShopifyCartLine[] };
 };
 

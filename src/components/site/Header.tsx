@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useBagCount } from "@/lib/bag";
+import { BagPanel } from "@/components/bag/BagPanel";
+import { bagLinkClick, closeBagPanel, useBagCount } from "@/lib/bag";
 import {
   useEffect,
   useId,
@@ -73,6 +74,11 @@ export function Header({
   const triggerId = (key: string) => `${baseId}-trigger-${key}`;
   const pathname = usePathname() ?? "/";
   const isDesktop = useIsDesktop();
+  const isPageHeader = !breakpoint && !defaultMenuOpen && !labelSuffix;
+  // Following a link closes the bag panel.
+  useEffect(() => {
+    if (isPageHeader) closeBagPanel();
+  }, [pathname, isPageHeader]);
 
   /* ---------- Desktop: mega menus and search ---------- */
   const [openPanel, setOpenPanel] = useState<string | null>(null);
@@ -295,7 +301,7 @@ export function Header({
                       <NavItem href={content.account.href}>{content.account.label}</NavItem>
                     </li>
                     <li>
-                      <NavItem href={content.bag.href}>
+                      <NavItem href={content.bag.href} onClick={bagLinkClick}>
                         <span aria-hidden="true">
                           {content.bag.label} ({bagCount})
                         </span>
@@ -318,7 +324,7 @@ export function Header({
               {searchButton}
               {searchPanel}
               <IconLink link={content.account} icon="account" size="sm" label={content.account.label} />
-              <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} />
+              <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} onClick={bagLinkClick} />
             </div>
           </div>
         )}
@@ -354,6 +360,8 @@ export function Header({
           </div>
         </>
       )}
+      {/* The bag panel belongs to the page's own header only, not to the style guide's header previews. */}
+      {isPageHeader ? <BagPanel content={content} bagLabel={bagLabel} getTop={() => Math.max(0, mobileBarRef.current?.getBoundingClientRect().top ?? 0)} /> : null}
     </header>
   );
 }

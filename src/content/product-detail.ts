@@ -169,8 +169,6 @@ export const productDetailContent = {
     showStone: "Show the stone",
     showSetting: "Show the piece",
   },
-  /** The Secure Checkout button goes to the site's own (simulated) checkout, a later task. */
-  checkoutHref: "/checkout/",
   iconRow: [
     { _key: "shipping", icon: "truck", label: "Overnight Shipping", lines: ["Overnight", "Shipping"] },
     { _key: "warranty", icon: "seal-check", label: "Lifetime Warranty", lines: ["Lifetime", "Warranty"] },

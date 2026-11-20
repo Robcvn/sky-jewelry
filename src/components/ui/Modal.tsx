@@ -9,7 +9,7 @@ import { useIsDesktop } from "./useIsDesktop";
 
 type Breakpoint = "desktop" | "mobile";
 
-export type ModalAction = { label: string; onClick?: () => void };
+export type ModalAction = { label: string; onClick?: () => void; disabled?: boolean };
 
 type ModalPanelProps = {
   heading: ReactNode;
@@ -101,7 +101,7 @@ export function ModalPanel({
                 </Button>
               ) : null}
               {primaryAction ? (
-                <Button size={buttonSize} onClick={primaryAction.onClick} className="flex-1">
+                <Button size={buttonSize} onClick={primaryAction.onClick} disabled={primaryAction.disabled} className="flex-1">
                   {primaryAction.label}
                 </Button>
               ) : null}
@@ -136,6 +136,8 @@ type DialogShellProps = {
   labelledBy: string;
   describedBy?: string;
   breakpoint?: Breakpoint;
+  /** "center" (default): bottom sheet on mobile, centred from 1024px. "top-end": the desktop bag panel, top right. */
+  placement?: "center" | "top-end";
   /** Classes for the panel wrapper, e.g. a width. Its children are the panel itself. */
   children: (state: { visible: boolean }) => ReactNode;
 };
@@ -144,9 +146,11 @@ type DialogShellProps = {
  * The dialog behaviour shared by Modal, the Filters sheet and the product quick view: a native <dialog> with
  * a black-alpha-50 backdrop, focus trap, Escape and backdrop click to close, scroll lock, and focus returned
  * to the trigger. Opens with Figma's "Move In" from the bottom: 300ms ease-out (instant under reduced motion).
- * On mobile the panel sits at the bottom of the screen; from 1024px it is centred.
+ * On mobile the panel sits at the bottom of the screen; from 1024px it is centred. The dialog itself never scrolls
+ * (overflow: clip): the panels scroll inside, so focusing the close button while the panel is still sliding in
+ * can't leave the dialog scrolled.
  */
-export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint, children }: DialogShellProps) {
+export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint, placement = "center", children }: DialogShellProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
@@ -155,10 +159,13 @@ export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint
     const dialog = dialogRef.current;
     if (!dialog) return;
 
-    if (open && !dialog.open) {
-      returnFocusRef.current = document.activeElement as HTMLElement | null;
-      dialog.showModal();
-      document.documentElement.style.overflow = "hidden";
+    if (open) {
+      if (!dialog.open) {
+        returnFocusRef.current = document.activeElement as HTMLElement | null;
+        dialog.showModal();
+        document.documentElement.style.overflow = "hidden";
+      }
+      // Scheduled on every run, so a dialog mounted already open still fades in when effects run twice (dev).
       const frame = requestAnimationFrame(() => setVisible(true));
       return () => cancelAnimationFrame(frame);
     }
@@ -211,7 +218,7 @@ export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint
         onClose();
       }}
       onKeyDown={trapFocus}
-      className="fixed inset-0 m-0 size-full max-h-none max-w-none bg-transparent p-0 backdrop:bg-transparent open:flex"
+      className="fixed inset-0 m-0 size-full max-h-none max-w-none overflow-clip bg-transparent p-0 backdrop:bg-transparent open:flex"
     >
       <div
         aria-hidden="true"
@@ -220,7 +227,8 @@ export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint
       />
       <div
         className={cx(
-          "relative flex w-full items-end justify-center ui-desktop:items-center ui-desktop:p-space-6",
+          "relative flex w-full",
+          placement === "top-end" ? "items-start justify-end p-space-6" : "items-end justify-center ui-desktop:items-center ui-desktop:p-space-6",
           "pointer-events-none [&>*]:pointer-events-auto",
         )}
       >

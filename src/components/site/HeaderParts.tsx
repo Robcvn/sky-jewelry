@@ -1,8 +1,9 @@
 import Link from "next/link";
-import type { Ref } from "react";
+import type { MouseEvent, Ref } from "react";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { cx } from "@/components/ui/shared";
 import type { HeaderContent, NavLink } from "@/content/site";
+import { bagLinkClick } from "@/lib/bag";
 import { Logo } from "./Logo";
 
 const ICON_BUTTON =
@@ -16,9 +17,21 @@ export const headerIconButtonClasses = (size: "md" | "sm") =>
     size === "md" ? "size-space-10" : "size-space-8",
   );
 
-export function IconLink({ link, icon, size, label }: { link: NavLink; icon: IconName; size: "md" | "sm"; label: string }) {
+export function IconLink({
+  link,
+  icon,
+  size,
+  label,
+  onClick,
+}: {
+  link: NavLink;
+  icon: IconName;
+  size: "md" | "sm";
+  label: string;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+}) {
   return (
-    <Link href={link.href} aria-label={label} className={headerIconButtonClasses(size)}>
+    <Link href={link.href} aria-label={label} onClick={onClick} className={headerIconButtonClasses(size)}>
       <Icon name={icon} size={24} />
     </Link>
   );
@@ -58,7 +71,7 @@ export function MobileBar({ content, bagLabel, menuOpen, onMenuClick, menuButton
       <Logo width={140} className="absolute left-1/2 -translate-x-1/2" />
       <div className="flex items-center gap-space-2">
         <IconLink link={content.account} icon="account" size="sm" label={content.account.label} />
-        <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} />
+        <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} onClick={bagLinkClick} />
       </div>
     </div>
   );

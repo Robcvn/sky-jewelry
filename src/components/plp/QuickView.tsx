@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { CreditModal } from "@/components/bag/BagModals";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
@@ -37,6 +38,7 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
   const id = useId();
   const [variant, setVariant] = useState(initialVariant);
   const [view, setView] = useState(0);
+  const [creditOpen, setCreditOpen] = useState(false);
   const images = imagesFor(product, variant.metal);
   const image = images[Math.min(view, images.length - 1)];
   const name = variantName(product, variant);
@@ -51,6 +53,7 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
   };
 
   return (
+    <>
     <DialogShell open={open} onClose={onClose} labelledBy={`${id}-title`}>
       {({ visible }) => (
         // Figma 3587:127035: 8px padding and no gap, so the text block starts right under the photo.
@@ -141,10 +144,12 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
                 {labels.addToBag}
               </Button>
             </div>
-            <Installments price={variant.price} labels={labels} />
+            <Installments price={variant.price} labels={labels} onLearnMore={() => setCreditOpen(true)} />
           </div>
         </div>
       )}
     </DialogShell>
+    <CreditModal open={creditOpen} onClose={() => setCreditOpen(false)} />
+    </>
   );
 }

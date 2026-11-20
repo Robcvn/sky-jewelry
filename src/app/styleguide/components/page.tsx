@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { Header } from "@/components/site/Header";
+import { BagDemos } from "@/components/styleguide/BagDemos";
 import { MegaMenuPanel } from "@/components/site/MegaMenu";
 import { CategoryCard } from "@/components/ui/CategoryCard";
 import { DyoCard } from "@/components/ui/DyoCard";
@@ -109,6 +110,7 @@ const SECTIONS = [
   ["scrollbar", "Scrollbar"],
   ["cards", "Cards"],
   ["site-chrome", "Header and footer"],
+  ["bag", "Bag"],
   ["icons", "Icons"],
   ["deviations", "Deviations from Figma"],
   ["corrected-oversights", "Corrected design oversights"],
@@ -1252,6 +1254,10 @@ export default function ComponentsPage() {
           </Group>
         </Section>
 
+        <Section id="bag" title="Bag">
+          <BagDemos />
+        </Section>
+
         <Section id="icons" title="Icons">
           <ul className="flex flex-wrap gap-space-5">
             {(Object.keys(iconData) as IconName[]).map((name) => (
@@ -1317,8 +1323,31 @@ export default function ComponentsPage() {
               added back, as on the card Swatch.
             </li>
             <li>
-              &ldquo;Added to bag&rdquo; confirmation: a temporary stand-in for the bag panel, not in Figma. A short message at the bottom of
-              the screen, announced to screen readers.
+              Bag panel (desktop): Figma draws the overlay on its own. Built as a 390px dialog at the top right of the window, over the dimmed
+              page like the other overlays, so it shows wherever the shopper adds an item.
+            </li>
+            <li>Bag screen (mobile): the frame ends just above the Shop All bar. Built with the bar fixed to the bottom of the screen.</li>
+            <li>Empty bag: not drawn. Built from the product list&rsquo;s empty state: a one-line message and Back to Shopping.</li>
+            <li>
+              Bag page Secure Checkout: Figma draws no checkout page. It opens Modal - Default with a short notice that this is a portfolio
+              demo and no order is placed. No payment fields, and nothing goes to Shopify&rsquo;s checkout.
+            </li>
+            <li>
+              Affirm, Klarna and Jeweler&rsquo;s Mutual logos (Modal - Credit, Modal - JM Info, the protection plans table): shown as their
+              names in heading type, as with the GIA logo.
+            </li>
+            <li>Bag &ldquo;Ships in 2-3 weeks&rdquo;: built from the pieces&rsquo; own shipping times (the longest in the bag), as on the product page.</li>
+            <li>Bag Special Instructions and This is a Gift: kept in the browser only, since checkout is simulated.</li>
+            <li>
+              Bag lines: Figma draws builder rings (a setting row and a stone row, each with Edit). Fine Jewelry lines use Figma&rsquo;s tennis
+              bracelet row (Metal, Carat, Size), with short names as in the panel. An unavailable piece reads &ldquo;This item is no longer
+              available.&rdquo; (Figma: &ldquo;This stone&hellip;&rdquo;).
+            </li>
+            <li>Product page Secure Checkout: adds the piece and goes to the bag page (not drawn; inferred).</li>
+            <li>Bag panel Secure Checkout (Shop All bar): leads to the bag page, where checkout starts (not drawn; inferred).</li>
+            <li>
+              Bag care plan: Figma draws no way to remove an added plan. When the picker is reopened from Change (desktop) or Edit (mobile),
+              &ldquo;No Thanks&rdquo; removes the plan from that line (inferred).
             </li>
             <li>
               Asset gap, 360° view: no product has a 360° image sequence, so the 360° tile (desktop) and the &ldquo;360° View / Images&rdquo;
@@ -1502,6 +1531,17 @@ export default function ComponentsPage() {
               Desktop footer: Figma leaves 41px under the bottom bar, which is leftover space in a fixed-height frame (all three desktop
               footer frames are 857px tall whatever their content). Built with 32px.
             </li>
+            <li>Modal - Credit: &ldquo;Pay ever month&rdquo; under Pay in 12. Built as &ldquo;Pay every month&rdquo;, as under Pay in 24.</li>
+            <li>
+              Modal - JM Info and the protection plans table: &ldquo;We&rsquo;ve partnered with Extend&rdquo; and &ldquo;your Extend
+              protection&rdquo;, where every other line names Jeweler&rsquo;s Mutual. Built with Jeweler&rsquo;s Mutual.
+            </li>
+            <li>
+              Care plan prices: Figma&rsquo;s frames show four different prices (the picker $89 / $149, the plans table $150 / $380, and $180
+              on the added 3-Year plan). Built with one set everywhere, the picker&rsquo;s $89 (3-Year) and $149 (Lifetime), including the
+              plans table and its mobile cards. The bag row keeps &ldquo;from $89/year&rdquo; as drawn.
+            </li>
+            <li>Bag Special Instructions: &ldquo;I.E gift note&rdquo;. Built as &ldquo;i.e. gift note&rdquo;.</li>
           </ul>
         </Section>
 
@@ -1545,6 +1585,7 @@ export default function ComponentsPage() {
               pale flat-lay photo, the weakest), Gemstones 3.0 / 3.4. Feature card titles 2.5 to 3.8 at the 10th percentile. Full table
               in the Task 11 report.
             </li>
+            <li>Modal - Credit: the inactive Klarna tab label at black-alpha-20 (inert, as drawn).</li>
           </ul>
         </Section>
 
@@ -1610,18 +1651,34 @@ export default function ComponentsPage() {
             <li>Gemstones: the heading says &lsquo;Birthstone&rsquo; on desktop and &lsquo;Gemstones&rsquo; on mobile. Which is intended?</li>
             <li>Product page mobile: the Carat and Dimensions cards are fixed 4px taller than the cards beside them. Is that intended?</li>
             <li>Filters sheet: frame 5746:89744 shows it expanded to 950px. How does the sheet reach that state?</li>
+            <li>Care plan prices differ between the picker, the plans table and the bag row. Which are right?</li>
+            <li>Two versions of the plans modal are drawn, and mobile v2 has no Select Plan. Which is current?</li>
+            <li>Bag page: Return Policy on desktop, Sky Repairs on mobile. Should both show both, or is each intended for its breakpoint?</li>
+            <li>Bag page: This is a Gift is mobile only; Back to Shopping and Perfectly Paired Wedding Bands are desktop only. Intended?</li>
+            <li>Bag added care plan: &ldquo;Change&rdquo; on desktop, &ldquo;Edit&rdquo; on mobile; unavailable plan: &ldquo;Remove Plan&rdquo; and &ldquo;Remove&rdquo;. Which wording?</li>
+            <li>Is checkout meant to be blocked while a stone or care plan is unavailable? Desktop draws it at 60%, mobile dark.</li>
+            <li>Should an added care plan be removable, and how?</li>
           </ul>
         </Section>
 
         <Section id="held" title="Held for review">
           <ul className="type-body-sm-regular flex max-w-[40rem] list-disc flex-col gap-space-2 pl-space-5">
-            <li>Shop All: a checkout bar with a price. Planned for the bag and checkout tasks.</li>
-            <li>Quanity Select: variants are unnamed. Planned for the bag and checkout tasks.</li>
-            <li>Modal - CCC Filters, Modal / Care Plan and Modal - Credit: content-specific modals, held for their page tasks.</li>
+            <li>Modal - CCC Filters: a content-specific modal, held for its page task.</li>
             <li>
-              &ldquo;Drop a hint&rdquo;, the installments &ldquo;Learn more&rdquo; and &ldquo;View Certificate&rdquo; on the product page: shown as
-              designed but inert (plain text, not links or buttons) until their modals and certificate files exist.
+              &ldquo;Drop a hint&rdquo; and &ldquo;View Certificate&rdquo; on the product page: shown as designed but inert (plain text, not links
+              or buttons) until their modal and certificate files exist.
             </li>
+            <li>
+              Bag builder rows (for the ring builder): the setting and stone rows with their Edit links, &ldquo;Select New Stone&rdquo; and the
+              stone-unavailable state, Ring Config Choice, and Figma&rsquo;s four &ldquo;Add Care Plan&rdquo; pages. The Edit link and care
+              plan parts are built and wait for those rows.
+            </li>
+            <li>Modal - Credit: the Klarna tab and the arrows are shown but inert (only the Affirm tab is drawn).</li>
+            <li>
+              Bag Return Policy and Sky Repairs &ldquo;Learn More&rdquo;, and the plans table&rsquo;s &ldquo;Visit support page&rdquo; and terms
+              links: shown as designed but inert, as there are no pages for them yet.
+            </li>
+            <li>Product card &ldquo;Learn more&rdquo; (hover state): stays inert; the product page, quick view and bag open Modal - Credit.</li>
             <li>
               Engagement ring product pages (/engagement-rings/&hellip;, linked from the Home best sellers): they belong to the ring builder
               stage. The Home links stay as they are.

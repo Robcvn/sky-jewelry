@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import { cx, type PreviewState } from "@/components/ui/shared";
 
 export function useIsCurrent(href: string) {
@@ -18,6 +18,7 @@ type NavItemProps = {
   /** Style guide only: force Hover or Active. */
   previewState?: PreviewState | "current";
   className?: string;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 };
 
 const NAV_ITEM = "ui-transition type-overline-xs-medium relative inline-flex items-center whitespace-nowrap";
@@ -35,13 +36,14 @@ export const navItemButtonClasses = cx(
 );
 
 /** Figma "Nav Item": a top-level link with Default, Hover and Active states. */
-export function NavItem({ href, children, overlay = false, previewState, className }: NavItemProps) {
+export function NavItem({ href, children, overlay = false, previewState, className, onClick }: NavItemProps) {
   const isCurrent = useIsCurrent(href);
   const current = previewState === "current" || (previewState === undefined && isCurrent);
 
   return (
     <Link
       href={href}
+      onClick={onClick}
       aria-current={current ? "page" : undefined}
       data-state={previewState === "current" ? undefined : previewState}
       className={cx(

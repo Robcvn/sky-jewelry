@@ -1,9 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore } from "react";
-import { BagToast, type BagNotice } from "@/components/plp/BagToast";
+import { CreditModal } from "@/components/bag/BagModals";
 import { Accordion, AccordionItem } from "@/components/ui/Accordion";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { IconBlock } from "@/components/ui/IconBlock";
 import { CompositionChart, DimensionsDiagram, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
@@ -53,8 +54,9 @@ const mm = (n: number) => n.toFixed(2);
  */
 export function ProductDetail({ product }: { product: Product }) {
   const [variant, setVariant] = useVariant(product);
-  const [notice, setNotice] = useState<BagNotice | null>(null);
   const [busy, setBusy] = useState(false);
+  const [creditOpen, setCreditOpen] = useState(false);
+  const router = useRouter();
   const name = variantName(product, variant);
   const metals = metalsOf(product);
   const carats = caratsFor(product, variant.metal);
@@ -63,13 +65,19 @@ export function ProductDetail({ product }: { product: Product }) {
   const icon = pieceIcon(product);
   const [dollar, amount] = [formatPrice(variant.price).slice(0, 1), formatPrice(variant.price).slice(1)];
 
+  // Add to Bag opens the bag panel (the header draws it), which also shows a failure.
   const add = async () => {
     setBusy(true);
-    const result = await addToBag(variant.id);
+    await addToBag(product, variant);
     setBusy(false);
-    setNotice({ id: Date.now(), tone: result.ok ? "success" : "error", text: result.ok ? `Added to bag: ${name}` : `Couldn't add ${name} to the bag. Please try again.` });
   };
-  const dismiss = useCallback(() => setNotice(null), []);
+  // Secure Checkout adds the piece and goes to the bag page, where checkout starts (Figma draws no step between).
+  const checkout = async () => {
+    setBusy(true);
+    const result = await addToBag(product, variant, 1, { openPanel: false });
+    setBusy(false);
+    if (result.ok) router.push("/bag/");
+  };
 
   const sectionHeading = (title: string, headingIcon: Parameters<typeof Icon>[0]["name"]) => (
     <h2 className="type-heading-sm flex items-center gap-space-2 text-primary-leather ui-desktop:type-heading-md ui-desktop:gap-space-3">
@@ -139,9 +147,9 @@ export function ProductDetail({ product }: { product: Product }) {
         <div className="flex flex-col gap-space-6 ui-desktop:gap-space-8">
           <div className="flex flex-col gap-space-4">
             <div className="flex flex-col gap-space-3 ui-desktop:gap-space-4">
-              <ButtonLink href={content.checkoutHref} leftIcon="security" className="w-full">
+              <Button leftIcon="security" className="w-full" disabled={busy || !variant.available} onClick={checkout}>
                 {labels.secureCheckout}
-              </ButtonLink>
+              </Button>
               <Button variant="secondary" leftIcon="bag" className="w-full" disabled={busy || !variant.available} onClick={add}>
                 {labels.addToBag}
               </Button>
@@ -150,8 +158,10 @@ export function ProductDetail({ product }: { product: Product }) {
               <span>
                 {labels.installments} <span className="font-medium">{formatInstallment(variant.price)}</span>
               </span>
-              {/* Learn more opens the held Credit modal: shown as designed, not interactive yet. */}
-              <span className="type-overline-xs-link">{labels.learnMore}</span>
+              <button type="button" onClick={() => setCreditOpen(true)} className="type-overline-xs-link ui-transition cursor-pointer rounded-4 ui-hover:text-black-alpha-60">
+                {labels.learnMore}
+                <span className="sr-only">: payment plans</span>
+              </button>
             </p>
           </div>
           {product.shipsInDays ? (
@@ -268,7 +278,7 @@ export function ProductDetail({ product }: { product: Product }) {
         </Accordion>
       </div>
 
-      <BagToast notice={notice} onDismiss={dismiss} />
+      <CreditModal open={creditOpen} onClose={() => setCreditOpen(false)} />
     </div>
   );
 }

@@ -23,12 +23,27 @@ const CART_FIELDS = /* GraphQL */ `
     id
     totalQuantity
     cost { subtotalAmount { amount currencyCode } totalAmount { amount currencyCode } }
+    discountAllocations { discountedAmount { amount currencyCode } }
     lines(first: 100) {
       nodes {
         id
         quantity
-        cost { totalAmount { amount currencyCode } }
-        merchandise { ... on ProductVariant { id title product { handle title } } }
+        cost {
+          amountPerQuantity { amount currencyCode }
+          subtotalAmount { amount currencyCode }
+          totalAmount { amount currencyCode }
+        }
+        discountAllocations { discountedAmount { amount currencyCode } }
+        merchandise {
+          ... on ProductVariant {
+            id
+            title
+            availableForSale
+            selectedOptions { name value }
+            image { url }
+            product { handle title productType tags }
+          }
+        }
       }
     }
   }

@@ -5,7 +5,7 @@ import { productImageManifest } from "@/content/product-image-manifest";
 import type { Product, ProductVariant } from "@/content/products";
 import type { ShopifyProduct } from "./types";
 
-const slugify = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+export const slugify = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 /**
  * The file name of a Shopify image without its extension, query and the "_<uuid>" Shopify adds when the same
@@ -26,7 +26,7 @@ const HOME_CROPS: Record<string, Omit<ImageRef, "alt">> = {
  * The site's own optimised WebP for a Shopify image, matched by file name (the Picture component serves
  * pre-sized local files; Shopify's CDN URL is not used for display). Unknown images are skipped.
  */
-function localImage(url: string, alt: string): ImageRef | null {
+export function localImage(url: string, alt: string): ImageRef | null {
   const stem = imageStem(url);
   if (HOME_CROPS[stem]) return { ...HOME_CROPS[stem], alt };
   const key = `product-${stem}`;
@@ -36,14 +36,14 @@ function localImage(url: string, alt: string): ImageRef | null {
 /** 360° frames: images whose file name ends in "-spin-<number>", in number order. */
 const SPIN = /-spin-(\d+)$/;
 
-const tagValue = (tags: string[], prefix: string) => tags.find((tag) => tag.startsWith(`${prefix}:`))?.slice(prefix.length + 1) ?? null;
+export const tagValue = (tags: string[], prefix: string) => tags.find((tag) => tag.startsWith(`${prefix}:`))?.slice(prefix.length + 1) ?? null;
 
-function metalOf(options: Array<{ name: string; value: string }>, tags: string[]): MetalId {
+export function metalOf(options: Array<{ name: string; value: string }>, tags: string[]): MetalId {
   const option = options.find((selected) => selected.name.toLowerCase() === "metal")?.value;
   return parseMetal(option) ?? tags.map(parseMetal).find(Boolean) ?? "14k-white-gold";
 }
 
-function caratOf(options: Array<{ name: string; value: string }>) {
+export function caratOf(options: Array<{ name: string; value: string }>) {
   const value = options.find((selected) => selected.name.toLowerCase() === "carat weight")?.value;
   const carat = value ? Number.parseFloat(value) : Number.NaN;
   return Number.isFinite(carat) ? carat : null;
