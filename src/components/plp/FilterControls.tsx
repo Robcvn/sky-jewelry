@@ -55,7 +55,11 @@ export function FilterLabel({ label, value, help, id, tall = false }: { label: s
 
 export const metalBadge = (id: MetalId) => <MetalBadge metal={id} />;
 
-/** The seven metal tiles (Figma "Metal - 14k White Gold" ...), multi-select. */
+/**
+ * The seven metal tiles (Figma "Metal - 14k White Gold" ...), multi-select. Badge position as Figma's Filters sheet
+ * frames and its desktop Metal panel (Dropdown page, 4055:55935) draw it: 15px from the top on the two Yellow Gold
+ * tiles, 8px on the other five, selected or not (an open question). The label is at 51px on every tile.
+ */
 export function MetalTiles({ value, onChange, labelledBy, wrap = false }: { value: MetalId[]; onChange: (value: MetalId[]) => void; labelledBy: string; wrap?: boolean }) {
   return (
     <div role="group" aria-labelledby={labelledBy} className={wrap ? "grid grid-cols-3 gap-space-2" : "flex gap-space-2"}>
@@ -63,6 +67,7 @@ export function MetalTiles({ value, onChange, labelledBy, wrap = false }: { valu
         <OptionTile
           key={metal.id}
           media={metalBadge(metal.id)}
+          mediaPosition={metal.family === "yellow-gold" ? "center" : "top"}
           aria-label={metal.label}
           checked={value.includes(metal.id)}
           onChange={() => onChange(toggle(value, metal.id))}
@@ -118,10 +123,14 @@ export function PriceRange({ bounds, value, onChange }: { bounds: Range; value: 
   return <RangeField name="price" min={bounds[0]} max={bounds[1]} step={100} value={clampTo(value, bounds)} onChange={onChange} format={formatPrice} />;
 }
 
-/** The desktop dropdown panel body, styled as Figma's open Price panel: a label, then the control. */
+/**
+ * The desktop dropdown panel body, styled as Figma's open Price panel: a label, then the control. Figma's panel
+ * ("Dropdown Menu" 5958:58666, 320 x 130) draws its 1px border inside its edge and pads 16px from that edge, so the
+ * padding here is 16px less the border: the Price panel is 130px tall outside, border included.
+ */
 export function PanelBody({ label, id, children }: { label: string; id: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col gap-space-1 p-space-4">
+    <div className="flex flex-col gap-space-1 p-[calc(var(--spacing-space-4)-1px)]">
       <p id={id} className="type-overline-xs-medium leading-5 text-primary-leather">
         {label}
       </p>

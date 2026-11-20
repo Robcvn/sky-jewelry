@@ -15,6 +15,12 @@ type OptionTileProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "chi
   icon?: IconName;
   /** An image instead of an icon, e.g. a metal badge. */
   media?: ReactNode;
+  /**
+   * "center" (default): image and label centred together (the image 15px from the top of an 80px tile).
+   * "top": the image 8px from the tile's outer edge and the label centred in the space left, which puts it at the
+   * same 51px as "center". Figma's Filters sheet and desktop Metal panel draw most metal tiles this way.
+   */
+  mediaPosition?: "center" | "top";
   children: ReactNode;
 };
 
@@ -24,11 +30,13 @@ type OptionTileProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "chi
  * leather border when selected, ivory when pressed. The native input stays in the page for keyboard and
  * screen readers (Space toggles; arrow keys move within a radio group).
  */
-export function OptionTile({ type = "checkbox", shape = "square", icon, media, className, children, ...rest }: OptionTileProps) {
+export function OptionTile({ type = "checkbox", shape = "square", icon, media, mediaPosition = "center", className, children, ...rest }: OptionTileProps) {
   return (
     <label
       className={cx(
-        "ui-transition relative flex cursor-pointer flex-col items-center justify-center gap-space-1 rounded-4 border border-black-alpha-20 bg-secondary-skin p-space-2 text-center text-primary-leather",
+        "ui-transition relative flex cursor-pointer flex-col items-center gap-space-1 rounded-4 border border-black-alpha-20 bg-secondary-skin p-space-2 text-center text-primary-leather",
+        // Figma measures the 8px from the outer edge (its stroke sits inside), so the padding is 8px less the 1px border.
+        mediaPosition === "top" ? "justify-start py-[calc(var(--spacing-space-2)-1px)]" : "justify-center",
         "has-checked:border-primary-leather active:not-has-checked:bg-secondary-ivory hover:not-has-checked:border-black-alpha-50",
         "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary-leather",
         // Fixed-size tiles keep their size in a scrolling row; text tiles share (and shrink with) their row.
@@ -38,7 +46,7 @@ export function OptionTile({ type = "checkbox", shape = "square", icon, media, c
     >
       <input type={type} className="sr-only" {...rest} />
       {media ?? (icon ? <Icon name={icon} size={32} /> : null)}
-      <span className="type-ui-2xs-medium">{children}</span>
+      <span className={cx("type-ui-2xs-medium", mediaPosition === "top" && "flex flex-1 items-center")}>{children}</span>
     </label>
   );
 }

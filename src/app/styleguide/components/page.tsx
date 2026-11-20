@@ -1484,12 +1484,6 @@ export default function ComponentsPage() {
               Search panel: Figma&rsquo;s search frame shows &ldquo;Education&rdquo; in hazel with no underline, a leftover from the Education menu
               frame it was copied from. Built with all nav items in their default colour while search is open.
             </li>
-            <li>
-              Metal tile badge position: in the Filters sheet frames, the unselected metal tiles pin the badge 8px from the tile top
-              (11px above the label), while the selected tile and every metal tile on the product page and in the quick view centre it
-              15px from the top (4px above the label). Built at 15px on every metal tile; the label (51px from the top) and the 80px
-              tile are the same either way.
-            </li>
           </ul>
         </Section>
 
@@ -1590,6 +1584,10 @@ export default function ComponentsPage() {
             </li>
             <li>Fine Jewelry: the occasion, women&rsquo;s and men&rsquo;s tiles link to planned routes with no matching filter yet.</li>
             <li>Landing photos: the band rows use engagement-ring photos; best sellers use the catalogue&rsquo;s bands (there are no wedding bands); Gemstones carousels use coloured-diamond photos; Platinum reuses the white gold photo; the Wedding Bands and Gemstones heroes, the guarantee photo and the men&rsquo;s card photo are below 2x for their slots.</li>
+            <li>
+              Filters sheet and desktop Metal panel: the badge is at 15px on both Yellow Gold tiles and 8px on the other five. Which is
+              intended, and should it change on selection?
+            </li>
           </ul>
         </Section>
 
