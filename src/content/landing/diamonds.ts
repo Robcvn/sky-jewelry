@@ -6,8 +6,10 @@ import { br, em, span } from "@/components/ui/RichText";
 import { colorTiles, consultModule, diamondShapes, faqs, guaranteeIcons, reviews } from "./shared";
 import type { LandingPage } from "./types";
 import { homeSection } from "./shared";
+import { DIAMOND_JEWELRY, diamondList } from "../links";
 
-const SHOP = "/diamonds/shop/";
+// No Diamonds list page: its shop links lead to the stone-first stone list, filtered (src/content/links.ts).
+const SHOP = diamondList();
 const homeFeatures = homeSection("featureGrid", "features");
 const dyo = homeSection("designYourOwn", "design-your-own");
 
@@ -31,8 +33,8 @@ export const diamondsPage: LandingPage = {
       heading: [span("Choose "), em("your"), br(), span(" Diamond Type")],
       body: "Natural or lab-grown: both are real diamonds.",
       cards: [
-        { _key: "natural", icon: "natural-diamond", title: "Natural\nDiamonds", body: "Celebrate your love with our stunning selection of engagement ring designs.", cta: { label: "Shop Natural Diamonds", href: `${SHOP}?type=natural` } },
-        { _key: "lab-grown", icon: "lab-diamond", title: "Lab-Grown\nDiamonds", body: "Browse our dazzling diamond collection and experience the brilliance in every piece.", cta: { label: "Shop Lab-Grown Diamonds", href: `${SHOP}?type=lab-grown` } },
+        { _key: "natural", icon: "natural-diamond", title: "Natural\nDiamonds", body: "Celebrate your love with our stunning selection of engagement ring designs.", cta: { label: "Shop Natural Diamonds", href: diamondList({ origin: "natural" }) } },
+        { _key: "lab-grown", icon: "lab-diamond", title: "Lab-Grown\nDiamonds", body: "Browse our dazzling diamond collection and experience the brilliance in every piece.", cta: { label: "Shop Lab-Grown Diamonds", href: diamondList({ origin: "lab-grown" }) } },
       ],
     },
     {
@@ -41,7 +43,7 @@ export const diamondsPage: LandingPage = {
       layout: "carousel",
       overline: "Cut to Perfection",
       heading: [span("Shop "), em("by"), span(" Diamond Shape")],
-      items: diamondShapes(SHOP),
+      items: diamondShapes((shape) => diamondList({ shape })),
     },
     {
       _type: "tileCarousel",
@@ -50,7 +52,8 @@ export const diamondsPage: LandingPage = {
       overline: "A Spectrum of Sparkle",
       // Mobile frame (3587:123850) breaks the line before "by" (a hard line break in Figma's text).
       heading: [span("Shop Diamonds "), br(true), em("by"), span(" Color")],
-      items: colorTiles(`${SHOP}`, "diamonds"),
+      // No coloured diamonds in the stone list: the tiles are drawn but not links (Held for review).
+      items: colorTiles(() => null, "diamonds"),
     },
     {
       _type: "diamondInspection",
@@ -70,13 +73,8 @@ export const diamondsPage: LandingPage = {
       mobileCaption: "rule-title",
       cards: homeFeatures.cards.map((card, index) => ({
         ...card,
-        ...[
-          { title: "Eternity Rings", href: "/diamond-jewelry/?type=eternity-rings" },
-          { title: "Anniversary Rings", href: "/diamond-jewelry/?type=anniversary-rings" },
-          { title: "Diamond Studs", href: "/diamond-jewelry/?type=studs" },
-          { title: "Diamond Pendants", href: "/diamond-jewelry/?type=pendants" },
-          { title: "Tennis Bracelets", href: "/diamond-jewelry/?type=tennis-bracelets" },
-        ][index],
+        title: DIAMOND_JEWELRY[index].label,
+        href: DIAMOND_JEWELRY[index].href,
         _key: `diamond-jewelry-${index}`,
       })),
     },

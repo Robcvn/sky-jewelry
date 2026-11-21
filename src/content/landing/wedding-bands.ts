@@ -6,9 +6,12 @@ import { em, span } from "@/components/ui/RichText";
 import type { TileCarousel } from "./types";
 import { consultModule, ctaCallout, customerStories, faqs, guaranteeIcons, metalRow, reviews } from "./shared";
 import type { LandingPage } from "./types";
+import { fineJewelryList } from "../links";
 
-const WOMEN = "/wedding-bands/women/";
-const MEN = "/wedding-bands/men/";
+// No Wedding Bands list pages, and no rings-list filter isolates the band products (Stackable misses the Classic 4mm,
+// Gold has only the two Classic bands): the shop links lead to the Fine Jewelry rings list unfiltered (src/content/links.ts).
+const WOMEN = fineJewelryList("rings");
+const MEN = fineJewelryList("rings");
 
 /**
  * Figma's style rows use the engagement-ring style photos (no band photos exist) and repeat "Pavé"; the men's
@@ -32,7 +35,7 @@ const styles = (base: string): TileCarousel["items"] =>
     title,
     body,
     priceLabel: "starting at $999",
-    href: `${base}?style=${slug}`,
+    href: base,
     image: { desktop: image, alt: "" },
   }));
 
@@ -54,7 +57,7 @@ export const weddingBandsPage: LandingPage = {
       ],
     },
     // Figma's mobile title reads "20% Off  Wedding Bands" (double space, no "Up to"): built as the desktop title.
-    ctaCallout("promo", "Up to 20% Off Wedding Bands", "/wedding-bands/shop/?sale=true"),
+    ctaCallout("promo", "Up to 20% Off Wedding Bands", fineJewelryList("rings")),
     {
       _type: "tileCarousel",
       _key: "womens-styles",
@@ -71,7 +74,7 @@ export const weddingBandsPage: LandingPage = {
       heading: [span("Men’s Wedding rings "), em("by"), span(" Style")],
       items: styles(MEN),
     },
-    metalRow("metals", "/wedding-bands/shop/"),
+    metalRow("metals", (metal) => fineJewelryList("rings", { metal })),
     consultModule("consult"),
     {
       _type: "bestSellers",

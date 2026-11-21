@@ -5,6 +5,7 @@
  */
 import type { IconName } from "@/icons/icon-data";
 import { homePosts, postHref } from "./blog";
+import { CONTACT, DIAMOND_JEWELRY, diamondList, fineJewelryList, gemstoneList, settingsList, SUPPORT } from "./links";
 
 export type NavLink = { _key: string; label: string; href: string };
 
@@ -15,7 +16,8 @@ export type AnnouncementBarContent = {
   messages: string[];
   /** endsAt: ISO date. A mock sale whose end has passed restarts every `restartDays`, so the timer never sits at zero. */
   countdown: { label: string; endsAt: string; restartDays: number };
-  contact: NavLink;
+  /** Contact: the desktop text link, and the mobile message icon (`mobileHref`, below 1024px only). */
+  contact: NavLink & { mobileHref: string };
 };
 
 /** What sits before a menu link's label: a Figma icon or a colour swatch. */
@@ -24,7 +26,8 @@ export type MenuMedia =
   /** Swatch colours are product data (metal and stone colours), not design tokens. */
   | { _type: "menuSwatch"; color: string };
 
-export type MenuLink = NavLink & { media?: MenuMedia };
+/** A menu link. No href: shown as drawn but not a link (no page matches it yet; Held for review). */
+export type MenuLink = Omit<NavLink, "href"> & { href?: string; media?: MenuMedia };
 
 export type MenuGroup = {
   _key: string;
@@ -114,27 +117,30 @@ export const announcementBar: AnnouncementBarContent = {
   mode: "countdown",
   messages: ["30 days free returns", "Free Shipping Worldwide", "Lifetime Warranty"],
   countdown: { label: "Up to 20% Off", endsAt: new Date(BUILD_TIME + SALE_AFTER_BUILD_MS).toISOString(), restartDays: 7 },
-  contact: { _key: "contact", label: "Contact", href: "/contact/" },
+  contact: { _key: "contact", label: "Contact", href: SUPPORT, mobileHref: CONTACT },
 };
 
 /* ---------- Mega menus ----------
- * Copy and icons from the Figma "Mega Menu" desktop frames and "Nav" mobile frames.
- * Hrefs are planned routes; filters use query strings so each listing stays one static page.
+ * Copy and icons from the Figma "Mega Menu" desktop frames and "Nav" mobile frames. The prototype links only each menu's
+ * Shop All (its landing page) and the Fine Jewelry rows (the product list); the other items lead to the lists that exist,
+ * with the filter in the address (src/content/links.ts; Deviations). An item no list matches has no href: it is drawn but
+ * not a link (Held for review).
  */
 
 const icon = (name: IconName): MenuMedia => ({ _type: "menuIcon", icon: name });
 const swatch = (color: string): MenuMedia => ({ _type: "menuSwatch", color });
 const slug = (label: string) => label.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-/** One menu link. The key comes from the label, the href from the base plus an optional query. */
-const item = (label: string, href: string, media?: MenuMedia): MenuLink => ({ _key: slug(label), label, href, media });
+/** One menu link. The key comes from the label; a null href draws the item without a link. */
+const item = (label: string, href: string | null, media?: MenuMedia): MenuLink => ({ _key: slug(label), label, ...(href ? { href } : {}), media });
 
-const METALS = (base: string): MenuLink[] => [
-  item("Yellow Gold", `${base}?metal=yellow-gold`, swatch("#e0d06b")),
-  item("Rose Gold", `${base}?metal=rose-gold`, swatch("#fdb2a1")),
-  item("White Gold", `${base}?metal=white-gold`, swatch("#e3e5cb")),
+const METALS = (href: (metal: string) => string): MenuLink[] => [
+  item("Yellow Gold", href("yellow-gold"), swatch("#e0d06b")),
+  item("Rose Gold", href("rose-gold"), swatch("#fdb2a1")),
+  item("White Gold", href("white-gold"), swatch("#e3e5cb")),
 ];
 
-const SHAPES = (base: string): MenuLink[] =>
+/** The Diamonds and Gemstones menus' ten shapes. The stone list has no Elongated Cushion, so that item has no link. */
+const SHAPES = (href: (shape: string) => string): MenuLink[] =>
   (
     [
       ["Round", "round"],
@@ -148,7 +154,7 @@ const SHAPES = (base: string): MenuLink[] =>
       ["Marquise", "marquise"],
       ["Asscher", "asscher"],
     ] as const
-  ).map(([label, name]) => item(label, `${base}?shape=${slug(label)}`, icon(name)));
+  ).map(([label, name]) => item(label, label === "Elongated Cushion" ? null : href(slug(label)), icon(name)));
 
 const fineJewelryMenu: MegaMenu = {
   _type: "megaMenu",
@@ -209,7 +215,8 @@ const fineJewelryMenu: MegaMenu = {
       ],
     },
   ],
-  shopAll: { _key: "shop-all", label: "Shop All Fine Jewelry", href: "/fine-jewelry/shop/" },
+  // The prototype sends Shop All to the Fine Jewelry landing page (desktop 3565:97650, mobile 3587:124041).
+  shopAll: { _key: "shop-all", label: "Shop All Fine Jewelry", href: "/fine-jewelry/" },
 };
 
 const engagementRingsMenu: MegaMenu = {
@@ -244,8 +251,9 @@ const engagementRingsMenu: MegaMenu = {
           ["Heart", "heart"],
           ["Marquise", "marquise"],
         ] as const
-      ).map(([label, name]) => item(label, `/engagement-rings/?shape=${name}`, icon(name))),
-      footerLink: { _key: "top", label: "Shop Top Engagement Rings", href: "/engagement-rings/best-sellers/" },
+      ).map(([label, name]) => item(label, settingsList({ shape: name }), icon(name))),
+      // The mobile prototype sends this to Builder 1 - Setting (3587:125289): the settings list.
+      footerLink: { _key: "top", label: "Shop Top Engagement Rings", href: settingsList() },
     },
     {
       _key: "style",
@@ -264,10 +272,10 @@ const engagementRingsMenu: MegaMenu = {
           ["Tension", "tension"],
           ["Vintage", "vintage"],
         ] as const
-      ).map(([label, name]) => item(label, `/engagement-rings/?style=${slug(label)}`, icon(name))),
-      footerLink: { _key: "more", label: "Shop More Styles", href: "/engagement-rings/styles/" },
+      ).map(([label, name]) => item(label, settingsList({ style: slug(label) }), icon(name))),
+      footerLink: { _key: "more", label: "Shop More Styles", href: settingsList() },
     },
-    { _key: "metal", title: "Shop by Metal", columns: 1, links: METALS("/engagement-rings/") },
+    { _key: "metal", title: "Shop by Metal", columns: 1, links: METALS((metal) => settingsList({ metal })) },
   ],
   shopAll: { _key: "shop-all", label: "Shop All Engagement Rings", href: "/engagement-rings/" },
 };
@@ -290,7 +298,8 @@ const weddingBandsMenu: MegaMenu = {
           ["Anniversary", "band-anniversary"],
           ["Prong", "band-prong"],
         ] as const
-      ).map(([label, name]) => item(label, `/wedding-bands/women/?style=${slug(label)}`, icon(name))),
+      // No rings-list filter isolates the band products, so the style items lead to the rings list unfiltered.
+      ).map(([label, name]) => item(label, fineJewelryList("rings"), icon(name))),
     },
     {
       _key: "for-him",
@@ -306,9 +315,9 @@ const weddingBandsMenu: MegaMenu = {
           ["Diamond", "band-diamonds"],
           ["Alternative Metal", "pear"],
         ] as const
-      ).map(([label, name]) => item(label, `/wedding-bands/men/?style=${slug(label)}`, icon(name))),
+      ).map(([label, name]) => item(label, fineJewelryList("rings"), icon(name))),
     },
-    { _key: "metal", title: "Shop by Metal", columns: 1, links: METALS("/wedding-bands/") },
+    { _key: "metal", title: "Shop by Metal", columns: 1, links: METALS((metal) => fineJewelryList("rings", { metal })) },
   ],
   shopAll: { _key: "shop-all", label: "Shop All Wedding Bands", href: "/wedding-bands/" },
 };
@@ -325,10 +334,11 @@ const diamondsMenu: MegaMenu = {
         item("Start with a Natural Diamond", "/design-your-own/stone/?start=natural-diamond&first=stone", icon("natural-diamond")),
         item("Start with a Lab-Created Diamond", "/design-your-own/stone/?start=lab-diamond&first=stone", icon("lab-diamond")),
         item("Start with a Setting", "/design-your-own/?start=setting", icon("setting")),
-        item("Start with a Pendant", "/design-your-own/pendant/", icon("pendant-solitaire")),
+        // No pendant builder: drawn, not a link (Held for review).
+        item("Start with a Pendant", null, icon("pendant-solitaire")),
       ],
     },
-    { _key: "loose", title: "Loose Diamonds", columns: 2, links: SHAPES("/diamonds/") },
+    { _key: "loose", title: "Loose Diamonds", columns: 2, links: SHAPES((shape) => diamondList({ shape })) },
     {
       _key: "color",
       title: "Diamonds By Color",
@@ -344,20 +354,17 @@ const diamondsMenu: MegaMenu = {
           ["Blue", "#cdd5ee"],
           ["Black", "#939486"],
         ] as const
-      ).map(([label, color]) => item(label, `/diamonds/fancy-color/?color=${slug(label)}`, swatch(color))),
+        // No coloured diamonds in the stone list: drawn, not links (Held for review).
+      ).map(([label, color]) => item(label, null, swatch(color))),
     },
     {
       _key: "jewelry",
       title: "Diamond Jewelry",
       columns: 1,
       links: [
-        item("Eternity Rings", "/diamond-jewelry/?type=eternity-rings", icon("eternity-ring")),
-        item("Anniversary Rings", "/diamond-jewelry/?type=anniversary-rings", icon("band-anniversary")),
-        item("Diamond Studs", "/diamond-jewelry/?type=studs", icon("diamond-stud")),
-        item("Diamond Pendants", "/diamond-jewelry/?type=pendants", icon("pendant-solitaire")),
-        item("Tennis Bracelets", "/diamond-jewelry/?type=tennis-bracelets", icon("tennis-bracelet")),
+        ...DIAMOND_JEWELRY.map(({ label, href, icon: name }) => item(label, href, icon(name))),
       ],
-      footerLink: { _key: "all", label: "All Diamond Jewelry", href: "/diamond-jewelry/" },
+      footerLink: { _key: "all", label: "All Diamond Jewelry", href: fineJewelryList(null, { type: "diamond" }) },
     },
   ],
   shopAll: { _key: "shop-all", label: "Shop All Diamonds", href: "/diamonds/" },
@@ -379,34 +386,34 @@ const gemstonesMenu: MegaMenu = {
         item("Start with an Emerald", "/design-your-own/stone/?start=emerald&first=stone", icon("emerald")),
       ],
     },
-    { _key: "shape", title: "Gemstones By Shape", columns: 2, links: SHAPES("/gemstones/") },
+    { _key: "shape", title: "Gemstones By Shape", columns: 2, links: SHAPES((shape) => gemstoneList({ shape })) },
     {
       _key: "color",
       title: "Gemstones By Color",
       columns: 2,
       links: (
         [
-          ["Blue Sapphire", "#cdd5ee"],
-          ["Pink Sapphire", "#f4c8c8"],
-          ["Yellow Sapphire", "#e0d06b"],
-          ["Green Sapphire", "#ccf0cc"],
-          ["Red Ruby", "#f7a59d"],
-          ["Green Emerald", "#6dd995"],
-          ["Moissanite", "#939486"],
+          ["Blue Sapphire", "#cdd5ee", gemstoneList({ start: "sapphire", gemcolor: "blue" })],
+          ["Pink Sapphire", "#f4c8c8", gemstoneList({ start: "sapphire", gemcolor: "pink" })],
+          ["Yellow Sapphire", "#e0d06b", gemstoneList({ start: "sapphire", gemcolor: "yellow" })],
+          ["Green Sapphire", "#ccf0cc", gemstoneList({ start: "sapphire", gemcolor: "green" })],
+          ["Red Ruby", "#f7a59d", gemstoneList({ gem: "ruby" })],
+          ["Green Emerald", "#6dd995", gemstoneList({ start: "emerald" })],
+          ["Moissanite", "#939486", gemstoneList({ start: "moissanite" })],
         ] as const
-      ).map(([label, color]) => item(label, `/gemstones/?stone=${slug(label)}`, swatch(color))),
+      ).map(([label, color, href]) => item(label, href, swatch(color))),
     },
     {
       _key: "jewelry",
       title: "Gemstone Jewelry",
       columns: 1,
       links: [
-        item("Gemstone Earrings", "/gemstone-jewelry/?type=earrings", icon("gemstone-earrings")),
-        item("Gemstone Necklaces", "/gemstone-jewelry/?type=necklaces", icon("gemstone-necklace")),
-        item("Gemstone Bracelets", "/gemstone-jewelry/?type=bracelets", icon("gemstone-bracelet")),
-        item("Gemstone Rings", "/gemstone-jewelry/?type=rings", icon("gemstone-ring")),
+        item("Gemstone Earrings", fineJewelryList("earrings", { type: "gemstone" }), icon("gemstone-earrings")),
+        item("Gemstone Necklaces", fineJewelryList("necklaces", { type: "gemstone" }), icon("gemstone-necklace")),
+        item("Gemstone Bracelets", fineJewelryList("bracelets", { type: "gemstone" }), icon("gemstone-bracelet")),
+        item("Gemstone Rings", fineJewelryList("rings", { type: "gemstone" }), icon("gemstone-ring")),
       ],
-      footerLink: { _key: "all", label: "All Gemstone Jewelry", href: "/gemstone-jewelry/" },
+      footerLink: { _key: "all", label: "All Gemstone Jewelry", href: fineJewelryList(null, { type: "gemstone" }) },
     },
   ],
   shopAll: { _key: "shop-all", label: "Shop All Gemstones", href: "/gemstones/" },
@@ -466,7 +473,7 @@ const educationMenu: MegaMenu = {
 export const siteHeader: HeaderContent = {
   _type: "siteHeader",
   utility: [
-    { _key: "locations", label: "Locations", href: "/locations/" },
+    { _key: "locations", label: "Locations", href: SUPPORT },
     { _key: "our-story", label: "Our Story", href: "/our-story/" },
     // The support and guarantee page serves Support, The Sky Guarantee and FAQs (one drawn page, Deviations).
     { _key: "support", label: "Support", href: "/the-sky-guarantee/" },
@@ -492,9 +499,9 @@ export const siteHeader: HeaderContent = {
     label: "Menu",
     backLabel: "Back to menu",
     utility: [
-      { _key: "locations", label: "Locations", href: "/locations/" },
+      { _key: "locations", label: "Locations", href: SUPPORT },
       { _key: "our-story", label: "Our Story", href: "/our-story/" },
-      { _key: "contact", label: "Contact", href: "/contact/" },
+      { _key: "contact", label: "Contact", href: CONTACT },
     ],
   },
 };
@@ -516,7 +523,8 @@ export const siteFooter: FooterContent = {
     before: "View our ",
     privacy: { _key: "privacy", label: "Privacy Policy", href: "/privacy-policy/" },
     middle: " or ",
-    contact: { _key: "contact", label: "Contact Us", href: "/contact/" },
+    // One link at both sizes: the support page (its Contact section is mobile only, so #contact would leave desktop mid-page).
+    contact: { _key: "contact", label: "Contact Us", href: SUPPORT },
     after: ".",
   },
   // Figma has Latin filler here; replaced with one neutral sentence.
@@ -538,7 +546,7 @@ export const siteFooter: FooterContent = {
       title: "Information",
       links: [
         { _key: "guarantee", label: "The Sky Guarantee", href: "/the-sky-guarantee/" },
-        { _key: "contact", label: "Contact Us", href: "/contact/" },
+        { _key: "contact", label: "Contact Us", href: SUPPORT },
         { _key: "shipping", label: "Shipping Info", href: "/shipping/" },
         { _key: "faqs", label: "FAQs", href: "/the-sky-guarantee/#faqs" },
         { _key: "blog", label: "Blog", href: "/blog/" },

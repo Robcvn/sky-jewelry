@@ -5,8 +5,10 @@
 import { em, span } from "@/components/ui/RichText";
 import { consultModule, couplePhoto, ctaCallout, customerStories, designYourOwn, diamondShapes, faqs, guaranteeModule, homeSection, menCard, metalRow, reviews } from "./shared";
 import type { LandingPage } from "./types";
+import { diamondList, fineJewelryList, settingsList } from "../links";
 
-const SHOP = "/engagement-rings/shop/";
+// No Engagement Rings list page: its shop links lead to the ring builder's settings list, filtered (src/content/links.ts).
+const SHOP = settingsList();
 const hero = homeSection("homeHero", "hero");
 
 export const engagementRingsPage: LandingPage = {
@@ -23,7 +25,7 @@ export const engagementRingsPage: LandingPage = {
       // Figma's desktop label is misspelt ("Engagment"); the mobile frame spells it correctly.
       links: [{ _key: "shop", icon: "setting", mobileIcon: "setting-empty", label: "Shop Engagement Rings", mobileLabel: "Shop Engagement Rings", href: SHOP }],
     },
-    ctaCallout("promo", "Up to 20% Off Natural Diamonds", "/diamonds/shop/?type=natural"),
+    ctaCallout("promo", "Up to 20% Off Natural Diamonds", diamondList({ origin: "natural" })),
     designYourOwn(),
     {
       _type: "tileCarousel",
@@ -39,9 +41,9 @@ export const engagementRingsPage: LandingPage = {
           ["side-stone", "Side-Stone", "Accent stones beside the center stone.", "product-ring-side-stone-white-gold", "Side-stone ring in white gold"],
           ["pave", "Pavé", "Small stones set along the band.", "product-ring-pave-emerald-yellow-gold", "Pavé ring with an emerald-cut diamond"],
         ] as const
-      ).map(([slug, title, body, image, alt]) => ({ _key: slug, title, body, priceLabel: "starting at $999", href: `${SHOP}?style=${slug}`, image: { desktop: image, alt } })),
+      ).map(([slug, title, body, image, alt]) => ({ _key: slug, title, body, priceLabel: "starting at $999", href: settingsList({ style: slug }), image: { desktop: image, alt } })),
     },
-    metalRow("metals", SHOP),
+    metalRow("metals", (metal) => settingsList({ metal })),
     consultModule("consult"),
     {
       _type: "tileCarousel",
@@ -49,7 +51,7 @@ export const engagementRingsPage: LandingPage = {
       layout: "carousel",
       overline: "Cut to Perfection",
       heading: [span("Shop "), em("by"), span(" Diamond Shape")],
-      items: diamondShapes(SHOP),
+      items: diamondShapes((shape) => settingsList({ shape })),
     },
     {
       _type: "buttonCardPair",
@@ -58,7 +60,7 @@ export const engagementRingsPage: LandingPage = {
       heading: [span("Rings "), em("for"), span(" men & women")],
       cards: [
         { _key: "womens", title: "Women’s Engagement Rings", body: "Settings and stones, chosen your way.", cta: { label: "Shop Now", href: SHOP }, image: couplePhoto("card-women-er-m") },
-        { ...menCard, title: "Men’s Wedding Bands", body: "Classic and diamond bands for him.", cta: { label: "Shop Now", href: "/wedding-bands/men/" } },
+        { ...menCard, title: "Men’s Wedding Bands", body: "Classic and diamond bands for him.", cta: { label: "Shop Now", href: fineJewelryList("rings") } },
       ],
     },
     customerStories(),

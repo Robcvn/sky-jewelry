@@ -3,9 +3,8 @@
  * Customer Stories, Reviews, the Sky Guarantee module, FAQs) reuse Home's content, which already replaces
  * Figma's placeholders.
  *
- * Routes: the landing pages own /engagement-rings/, /diamonds/ and /gemstones/, so their product lists are
- * planned at /<category>/shop/ (with the filters in the query). Wedding bands keep the planned
- * /wedding-bands/women/ and /wedding-bands/men/; fine jewelry uses its existing list pages.
+ * Links: the landing pages' shop links lead to the lists that exist, with the filter in the address
+ * (src/content/links.ts): the ring builder's settings list, the stone-first stone list, and the Fine Jewelry lists.
  */
 import { CLAIMS } from "../support";
 import { em, span } from "@/components/ui/RichText";
@@ -63,23 +62,23 @@ export const ctaCallout = (key: string, title: string, href: string): CtaCallout
 });
 
 /** "Shop by Metal Type": identical on Engagement Rings, Wedding Bands and Fine Jewelry; links to `base?metal=`. */
-export const metalRow = (key: string, base: string): TileCarousel => ({
+export const metalRow = (key: string, href: (metal: string) => string): TileCarousel => ({
   _type: "tileCarousel",
   _key: key,
   layout: "grid",
   overline: "Shine in Your Style",
   heading: [span("Shop "), em("by"), span(" Metal Type")],
   items: [
-    { _key: "white-gold", title: "White Gold", href: `${base}?metal=white-gold`, image: { desktop: "product-ring-vine-white-gold", alt: "Vine ring in white gold" } },
-    { _key: "yellow-gold", title: "Yellow Gold", href: `${base}?metal=yellow-gold`, image: { desktop: "product-ring-vine-yellow-gold", alt: "Vine ring in yellow gold" } },
-    { _key: "rose-gold", title: "Rose Gold", href: `${base}?metal=rose-gold`, image: { desktop: "product-ring-vine-rose-gold", alt: "Vine ring in rose gold" } },
+    { _key: "white-gold", title: "White Gold", href: href("white-gold"), image: { desktop: "product-ring-vine-white-gold", alt: "Vine ring in white gold" } },
+    { _key: "yellow-gold", title: "Yellow Gold", href: href("yellow-gold"), image: { desktop: "product-ring-vine-yellow-gold", alt: "Vine ring in yellow gold" } },
+    { _key: "rose-gold", title: "Rose Gold", href: href("rose-gold"), image: { desktop: "product-ring-vine-rose-gold", alt: "Vine ring in rose gold" } },
     // Figma reuses the white gold photo for Platinum (no platinum photo exists).
-    { _key: "platinum", title: "Platinum", href: `${base}?metal=platinum`, image: { desktop: "product-ring-vine-white-gold", alt: "Vine ring in a white metal" } },
+    { _key: "platinum", title: "Platinum", href: href("platinum"), image: { desktop: "product-ring-vine-white-gold", alt: "Vine ring in a white metal" } },
   ],
 });
 
 /** Loose diamond shape tiles (Figma has photos of five shapes). */
-export const diamondShapes = (base: string): TileCarousel["items"] =>
+export const diamondShapes = (href: (shape: string) => string): TileCarousel["items"] =>
   (
     [
       ["round", "Round", "A circular brilliant cut."],
@@ -92,12 +91,12 @@ export const diamondShapes = (base: string): TileCarousel["items"] =>
     _key: slug,
     title,
     body,
-    href: `${base}?shape=${slug}`,
+    href: href(slug),
     image: { desktop: `shape-${slug}-sq` as const, alt: `${title} diamond` },
   }));
 
-/** Coloured diamond tiles (also used, as Figma does, for gemstone colours). */
-export const colorTiles = (base: string, noun: string): TileCarousel["items"] =>
+/** Coloured diamond tiles (also used, as Figma does, for gemstone colours). A null href draws the tile without a link. */
+export const colorTiles = (href: (color: string) => string | null, noun: string): TileCarousel["items"] =>
   (
     [
       ["yellow", "Yellow", "Yellow cushion-cut stone"],
@@ -110,7 +109,7 @@ export const colorTiles = (base: string, noun: string): TileCarousel["items"] =>
     _key: slug,
     title,
     body: `${title} ${noun}.`,
-    href: `${base}?color=${slug}`,
+    ...(href(slug) ? { href: href(slug)! } : {}),
     image: { desktop: `color-${slug}-sq` as const, alt },
   }));
 

@@ -1610,6 +1610,33 @@ export default async function ComponentsPage() {
             <li>Task 21, View More on mobile Search Results: the mobile frame draws none. Each section has the desktop frame&rsquo;s View More (Button, MD, Secondary, 200 wide), 24 under its cards, so every result can be reached on a phone (Rob&rsquo;s decision, Nov 21).</li>
             <li>Task 21, mobile Filters sheet (an inference): the mobile frame draws &ldquo;Filters (2)&rdquo; and the chosen types as removable tags, but not the sheet. Built as a bottom sheet like the product list&rsquo;s Filters sheet: Type (Products, Education, Stories, FAQs) and Sort by, then Clear Filters and Apply. Approved (Rob, Nov 21).</li>
             <li>Task 21, Search Results empty states (no query, and nothing found): no frame draws them. Built from the product list&rsquo;s empty state (4045:50390) with a search message and the mobile search screen&rsquo;s five popular searches (4979:47688) as links. Approved (Rob, Nov 21).</li>
+            <li>
+              Task 22, link destinations (inferred, approved Nov 21; the full table of old and new addresses is in the Task 22
+              report). The prototype links only each menu&rsquo;s Shop All (its landing page, followed, Shop All Fine Jewelry
+              included) and the Fine Jewelry rows; every other shop link now leads
+              to a list that exists, with the filter in the address. Engagement Rings (menu and landing page): the ring builder&rsquo;s
+              settings list with the style, shape (&ldquo;Set with&rdquo;) or metal; Shop Top Engagement Rings and Shop More Styles:
+              the list unfiltered (the mobile prototype sends Shop Top there). Diamonds: the stone-first stone list with the shape or
+              origin. Gemstones: that list in gemstone mode with the shape, gem or colour, and birthstones with their gem where the
+              list has it. Diamond and Gemstone Jewelry: each category&rsquo;s diamond or gemstone list (Eternity and Anniversary
+              Rings show the rings list&rsquo;s empty state; All &hellip; Jewelry: the all-products list with that filter). Wedding
+              Bands: the Fine Jewelry rings list, unfiltered (no filter isolates the band products), with the metal for Shop by
+              Metal. The Fine Jewelry landing page&rsquo;s women&rsquo;s and men&rsquo;s tiles: the all-products list. Contact and
+              Locations: the support page; the mobile-only Contact links (the mobile menu, the announcement bar&rsquo;s message icon)
+              open its Contact section. Two small list changes: the settings list accepts the menu&rsquo;s Tension and Vintage (no
+              setting has them, so its empty state), and the product list names the Eternity and Anniversary types on its tag.
+            </li>
+            <li>
+              Task 22, Wedding Bands: every style item (the menu&rsquo;s For Her and For Him, the landing page&rsquo;s Women&rsquo;s and
+              Men&rsquo;s Styles) and both Shop buttons open the rings list unfiltered: no rings filter isolates the five bands the
+              landing page shows (Stackable misses the Classic 4mm; Gold has only the two Classic bands). Approved as built (Rob, Nov 21); tagging the
+              bands in Shopify (a &ldquo;band&rdquo; style) would let the list filter them.
+            </li>
+            <li>
+              Task 22, the footer&rsquo;s Contact Us is one link at both sizes, so it opens the support page at its top: a #contact
+              link would leave desktop part-way down the page, as the Contact section is mobile only. On mobile, Contact is the
+              page&rsquo;s first section. Approved (Rob, Nov 21).
+            </li>
           </ul>
         </Section>
 
@@ -1800,7 +1827,7 @@ export default async function ComponentsPage() {
             <li>Task 20, Our Story: Figma draws two identical &ldquo;Read More&rdquo; buttons side by side, neither with a destination. The duplicate is dropped; one is kept, inert (Held for review).</li>
             <li>Task 20, support contact section (mobile): the frame repeats one address and its hours (a placeholder); shown once. Figma&rsquo;s real email, phone and address are replaced with the footer&rsquo;s sample values, as in the footer.</li>
             <li>Task 20 filler: the support cards&rsquo; Latin lines, the support page&rsquo;s hero line, section intros and FAQ, and Our Story&rsquo;s &ldquo;What sets us apart&rdquo; paragraph are replaced with sourced or neutral text that adds no claim about the business.</li>
-            <li>Task 21, Search Results&rsquo; two &ldquo;Promotional Headline&rdquo; cards are placeholders: built with the builder&rsquo;s Promo Cards (the same Design System card, MD and LG), &ldquo;Learn the 4Cs&rdquo; in the single slot and &ldquo;The Sky Guarantee&rdquo; in the wide one. &ldquo;Not Sure Where to Start?&rdquo; is not used: its link has no page yet. Approved (Rob, Nov 21).</li>
+            <li>Task 21, Search Results&rsquo; two &ldquo;Promotional Headline&rdquo; cards are placeholders: built with the builder&rsquo;s Promo Cards (the same Design System card, MD and LG), &ldquo;Learn the 4Cs&rdquo; in the single slot and &ldquo;The Sky Guarantee&rdquo; in the wide one. &ldquo;Not Sure Where to Start?&rdquo; is not used: its link had no page then (since Task 22 it opens the support page). Approved (Rob, Nov 21).</li>
             <li>Task 21, popular searches: two of the mobile search screen&rsquo;s sample terms found nothing in the mock catalogue, so they are matched to it: &ldquo;Moissanite Engagement Rings&rdquo; is &ldquo;Moissanite&rdquo; and &ldquo;Gemstone Bracelet&rdquo; is &ldquo;Bracelets&rdquo;, on the search screen and in the results&rsquo; empty states. Every popular search finds at least one result (search.mjs checks it).</li>
             <li>Task 21 filler: the results count, &ldquo;Topic Name&rdquo;, &ldquo;Post Title&rdquo;, &ldquo;John &amp; Maria Smith&rdquo; and the Latin FAQs are real results from the index.</li>
           </ul>
@@ -1902,11 +1929,14 @@ export default async function ComponentsPage() {
             <li>Center Stone Shape picker (desktop) and the mobile Stone picker: each product has one fixed shape, so there is nothing to pick. Not shown.</li>
             <li>Product page motion: the Animations page only has the ring builder&rsquo;s add-to-bag loaders. Gallery swipes are smooth (instant under reduced motion); the 360° viewer&rsquo;s hint (switched off for now) fades after the first turn.</li>
             <li>
-              Product list routes for the landing pages: the menus link /engagement-rings/, /diamonds/ and /gemstones/ with filters, but
-              those are now the landing pages. The landing tiles link to planned lists at /&lt;category&gt;/shop/?&hellip;; the menus
-              should move there when the lists are built.
+              Task 22, the Fine Jewelry landing page&rsquo;s Shop by Occasion cards all open the all-products list unfiltered (no product
+              has an occasion). Not changed: they are not in a menu or in this task&rsquo;s list. Recommendation: occasion tags in
+              Shopify, or draw the cards without links like the coloured diamonds.
             </li>
-            <li>Fine Jewelry: the occasion, women&rsquo;s and men&rsquo;s tiles link to planned routes with no matching filter yet.</li>
+            <li>
+              Task 22, prototype: the desktop Support link opens a &ldquo;contact drop down&rdquo; overlay (6725:45688), which is not
+              built; Support opens the support page.
+            </li>
             <li>Landing photos: the band rows use engagement-ring photos; best sellers use the catalogue&rsquo;s bands (there are no wedding bands); Gemstones carousels use coloured-diamond photos; Platinum reuses the white gold photo; the Wedding Bands and Gemstones heroes, the guarantee photo and the men&rsquo;s card photo are below 2x for their slots.</li>
             <li>
               Filters sheet and desktop Metal panel: the badge is at 15px on both Yellow Gold tiles and 8px on the other five. Which is
@@ -2002,6 +2032,13 @@ export default async function ComponentsPage() {
             <li>Task 20, Our Story: Visit Our Store (Hero Button - Overlay) and the one Read More button: inert. Stories: the &ldquo;Meet the Couple&rdquo; eyebrow is a label, not a link.</li>
             <li>Task 20, hidden layers not built: the support page&rsquo;s desktop Contact section, Our Story&rsquo;s hidden row of hero buttons (5110:36304) and the Stories frame&rsquo;s hidden scrollbar (6287:176503).</li>
             <li>Task 21, hidden layer not built: the &ldquo;Sky Jewelry&rsquo;s best selling&rdquo; overline above Customer Stories (4931:77720).</li>
+            <li>
+              Task 22, drawn but not links (nothing built matches; no pointer, no hover): the Diamonds menu&rsquo;s Diamonds By Color
+              (Yellow, Green, Pink, Orange, Purple, Brown, Blue, Black) and Start with a Pendant; Elongated Cushion in the Diamonds and
+              Gemstones menus (the stone list has no such shape); the Diamonds landing page&rsquo;s five colour tiles; the Gemstones
+              landing page&rsquo;s eight birthstones with no stone in the list (Garnet, Amethyst, Aquamarine, Pearl, Peridot, Opal,
+              Citrine, Topaz). Approved (Rob, Nov 21).
+            </li>
           </ul>
         </Section>
       </main>

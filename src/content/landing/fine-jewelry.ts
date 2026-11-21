@@ -5,8 +5,8 @@
 import { em, mobileOnlySpan, span } from "@/components/ui/RichText";
 import { closingCards, consultModule, couplePhoto, ctaCallout, faqs, menCard, metalRow, reviews } from "./shared";
 import type { LandingPage } from "./types";
+import { fineJewelryList } from "../links";
 
-const RINGS = "/fine-jewelry/rings/";
 /** Every Fine Jewelry product, with all filters (/fine-jewelry/shop/). */
 const ALL = "/fine-jewelry/shop/";
 
@@ -47,8 +47,8 @@ export const fineJewelryPage: LandingPage = {
       overline: "For Him, For Her, Forever in Style",
       heading: [span("Fine Jewelry "), em("for"), span(" men & women")],
       cards: [
-        { _key: "womens", title: "Women’s Fine Jewelry", body: "Rings, necklaces, earrings and bracelets.", cta: { label: "Shop for her", href: "/fine-jewelry/women/" }, image: couplePhoto("card-women-fj-m") },
-        { ...menCard, title: "Men’s Fine Jewelry", body: "Bands and pieces for him.", cta: { label: "Shop for him", href: "/fine-jewelry/men/" } },
+        { _key: "womens", title: "Women’s Fine Jewelry", body: "Rings, necklaces, earrings and bracelets.", cta: { label: "Shop for her", href: fineJewelryList(null) }, image: couplePhoto("card-women-fj-m") },
+        { ...menCard, title: "Men’s Fine Jewelry", body: "Bands and pieces for him.", cta: { label: "Shop for him", href: fineJewelryList(null) } },
       ],
     },
     {
@@ -106,7 +106,7 @@ export const fineJewelryPage: LandingPage = {
         { _key: "5000", title: "Under $5,000", href: `${ALL}?price=0-5000`, image: { desktop: "fc-hero-hands-fc", alt: "Two hands passing a pair of gold rings" } },
       ],
     },
-    metalRow("metals", RINGS),
+    metalRow("metals", (metal) => fineJewelryList("rings", { metal })),
     {
       _type: "bestSellers",
       _key: "best-sellers",

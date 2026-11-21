@@ -16,6 +16,7 @@ import { span, type RichSpan } from "@/components/ui/RichText";
 import type { ImageRef } from "@/components/ui/Picture";
 import type { DiamondType } from "./catalog-seed";
 import type { MetalId } from "./metals";
+import { SUPPORT } from "./links";
 
 export type CompositionPart = { label: string; percent: number; swatch: string };
 
@@ -224,7 +225,7 @@ export const productDetailContent = {
       title: "Have Questions?",
       body: "Ask us about sizing, metals or stones before you order.",
       // Nothing to connect a text message to yet: shown as designed, inert.
-      cta: { label: "Send us a text", href: "/contact/", inert: true },
+      cta: { label: "Send us a text", href: SUPPORT, inert: true },
       image: { desktop: "card-questions-d", mobile: "card-questions-m", alt: "Two hands held together, one wearing an engagement ring" },
     },
     {

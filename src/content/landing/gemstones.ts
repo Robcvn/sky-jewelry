@@ -5,8 +5,20 @@
 import { br, em, perBreakpoint, span } from "@/components/ui/RichText";
 import { colorTiles, ctaCallout, designYourOwn, faqs, guaranteeIcons, reviews } from "./shared";
 import type { LandingPage } from "./types";
+import { diamondList, gemstoneList } from "../links";
 
-const SHOP = "/gemstones/shop/";
+// No Gemstones list page: its shop links lead to the stone list in gemstone mode, filtered (src/content/links.ts).
+const SHOP = gemstoneList();
+/**
+ * A birthstone's link: its gem where the stone list has it (diamond, emerald, ruby, sapphire). The other eight have no
+ * stone in the list: drawn, not links (Held for review).
+ */
+const BIRTHSTONE_HREF: Record<string, string> = {
+  diamond: diamondList(),
+  emerald: gemstoneList({ start: "emerald" }),
+  ruby: gemstoneList({ gem: "ruby" }),
+  sapphire: gemstoneList({ start: "sapphire" }),
+};
 
 /** Figma reuses the coloured-diamond photos for every gemstone carousel; built as designed (flagged). */
 const PHOTOS = ["color-yellow-sq", "color-pink-sq", "color-purple-sq", "color-blue-sq", "color-red-sq"] as const;
@@ -43,7 +55,7 @@ export const gemstonesPage: LandingPage = {
       links: [{ _key: "shop", icon: "emerald", mobileIcon: "gemstone", label: "Shop All Gemstones", mobileLabel: "Shop All Gemstones", href: SHOP }],
     },
     // Mobile only in Figma (the desktop copy is hidden). Figma's title reads "Fine Jewelry": built for gemstones.
-    { ...ctaCallout("promo", "Up to 20% Off Gemstones", `${SHOP}?sale=true`), only: "mobile" },
+    { ...ctaCallout("promo", "Up to 20% Off Gemstones", SHOP), only: "mobile" },
     {
       _type: "tileCarousel",
       _key: "shapes",
@@ -59,7 +71,7 @@ export const gemstonesPage: LandingPage = {
           ["pear", "Pear", "A teardrop shape.", 2],
           ["oval", "Oval", "An elongated round shape.", 3],
         ] as const
-      ).map(([slug, title, body, photo]) => ({ _key: slug, title, body, href: `${SHOP}?shape=${slug}`, image: { desktop: PHOTOS[photo], alt: `${title} gemstone` } })),
+      ).map(([slug, title, body, photo]) => ({ _key: slug, title, body, href: gemstoneList({ shape: slug }), image: { desktop: PHOTOS[photo], alt: `${title} gemstone` } })),
     },
     {
       _type: "tileCarousel",
@@ -67,7 +79,7 @@ export const gemstonesPage: LandingPage = {
       layout: "carousel",
       overline: "A Spectrum of Sparkle",
       heading: [span("Shop Gemstones "), br(true), em("by"), span(" Color")],
-      items: colorTiles(SHOP, "gemstones"),
+      items: colorTiles((color) => gemstoneList({ gemcolor: color }), "gemstones"),
     },
     {
       _type: "tileCarousel",
@@ -80,7 +92,7 @@ export const gemstonesPage: LandingPage = {
         _key: title.slice(0, 3).toLowerCase(),
         title,
         body: `The ${MONTHS[index]} birthstone.`,
-        href: `${SHOP}?birthstone=${title.split(" - ")[1].toLowerCase()}`,
+        ...(BIRTHSTONE_HREF[title.split(" - ")[1].toLowerCase()] ? { href: BIRTHSTONE_HREF[title.split(" - ")[1].toLowerCase()] } : {}),
         image: { desktop: PHOTOS[BIRTHSTONE_PHOTO[index]], alt: "" },
       })),
     },
@@ -108,7 +120,7 @@ export const gemstonesPage: LandingPage = {
       landing: true,
       heading: [span("Explore Moissanite Stones")],
       body: "Moissanite center stones for your ring.",
-      cta: { label: "Shop Now", href: `${SHOP}?stone=moissanite`, context: "moissanite stones" },
+      cta: { label: "Shop Now", href: gemstoneList({ start: "moissanite" }), context: "moissanite stones" },
       image: { desktop: "module-moissanite-d", mobile: "module-moissanite-m", alt: "A rose gold band set with pink stones" },
     },
     guaranteeIcons("guarantee"),

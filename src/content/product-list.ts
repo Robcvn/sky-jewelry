@@ -61,6 +61,9 @@ export const productListContent = {
     cross: "Cross",
     "cuban-chain": "Cuban Chain",
     chain: "Chain",
+    // The Diamonds menu's Eternity Rings and Anniversary Rings (no product has these types yet: the empty state).
+    eternity: "Eternity",
+    anniversary: "Anniversary",
   } as Record<string, string>,
   filters: {
     title: "Filters",

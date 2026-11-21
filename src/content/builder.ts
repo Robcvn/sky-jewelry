@@ -8,6 +8,7 @@
 import type { IconName } from "@/components/ui/Icon";
 import type { ImageRef } from "@/components/ui/Picture";
 import { br, em, span, type RichSpan } from "@/components/ui/RichText";
+import { SUPPORT } from "./links";
 
 export type Option<T extends string = string> = { value: T; label: string };
 
@@ -24,6 +25,16 @@ export const SETTING_STYLES = [
   { value: "natural", label: "Natural", icon: "natural" },
 ] as const satisfies ReadonlyArray<Option & { icon: IconName }>;
 export type SettingStyle = (typeof SETTING_STYLES)[number]["value"];
+
+/**
+ * Styles the Engagement Rings menu names that no setting has (Shop by Style, 3565:99988). The settings list accepts
+ * them from the address so those menu items show its empty state; they get no tile, as no setting has them.
+ */
+export const MENU_ONLY_STYLES = [
+  { value: "tension", label: "Tension", icon: "tension" },
+  { value: "vintage", label: "Vintage", icon: "vintage" },
+] as const satisfies ReadonlyArray<Option & { icon: IconName }>;
+export type FilterStyle = SettingStyle | (typeof MENU_ONLY_STYLES)[number]["value"];
 
 /** The mobile Filters / Setting sheet (3587:126356) draws eight style tiles: the desktop nine without Natural. */
 export const SHEET_SETTING_STYLES = SETTING_STYLES.filter((style) => style.value !== "natural");
@@ -51,8 +62,9 @@ export const SETTING_SHAPE_ORDER: StoneShape[] = ["round", "oval", "princess", "
 
 export const shapeLabel = (shape: string) => STONE_SHAPES.find((item) => item.value === shape)?.label ?? shape;
 export const shapeIcon = (shape: string): IconName => STONE_SHAPES.find((item) => item.value === shape)?.icon ?? "round";
-export const styleLabel = (style: string) => SETTING_STYLES.find((item) => item.value === style)?.label ?? style;
-export const styleIcon = (style: string): IconName => SETTING_STYLES.find((item) => item.value === style)?.icon ?? "setting";
+const ALL_STYLES = [...SETTING_STYLES, ...MENU_ONLY_STYLES];
+export const styleLabel = (style: string) => ALL_STYLES.find((item) => item.value === style)?.label ?? style;
+export const styleIcon = (style: string): IconName => ALL_STYLES.find((item) => item.value === style)?.icon ?? "setting";
 
 export type StoneOrigin = "natural" | "lab-grown";
 export type StoneKind = "diamond" | "gemstone";
@@ -191,7 +203,7 @@ export const builderContent = {
         width: { desktop: "single", mobile: "single" },
         title: "Not Sure Where to Start?",
         body: "Talk to us about settings, stones and sizing before you choose.",
-        cta: { label: "Learn More", href: "/contact/" },
+        cta: { label: "Learn More", href: SUPPORT },
         image: { desktop: "builder-promo-hands-d", mobile: "builder-promo-hands-m", alt: "A hand wearing a pear-shaped halo ring resting on another hand" },
       },
       {

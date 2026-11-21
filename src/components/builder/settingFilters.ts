@@ -3,7 +3,7 @@
  * settings fetched at build time, like the product list's (src/components/plp/filters.ts).
  *
  * URL query (all optional):
- *   style=solitaire          setting style (one)
+ *   style=solitaire          setting style (one); also the menu's Tension and Vintage, which no setting has
  *   shape=round              "Set with": the centre stone shape the ring is being built for
  *   metal=14k-yellow-gold    metal ids (comma-separated), or a colour family from the menu
  *   price=500-3000           price range in USD
@@ -12,7 +12,7 @@
  *   page=2                   how many View More pages are open
  *   start=lab-diamond        carried from the menu link to Step 2 (see ring.ts)
  */
-import { SETTING_STYLES, type SettingStyle, type StoneShape } from "@/content/builder";
+import { MENU_ONLY_STYLES, SETTING_STYLES, type FilterStyle, type StoneShape } from "@/content/builder";
 import { metalsForParam, type MetalId } from "@/content/metals";
 import type { ProductVariant } from "@/content/products";
 import type { RingSetting } from "@/lib/builder";
@@ -21,7 +21,7 @@ import { parseShape } from "./ring";
 export type Range = [number, number];
 
 export type SettingFilterState = {
-  style: SettingStyle | null;
+  style: FilterStyle | null;
   shape: StoneShape | null;
   metals: MetalId[];
   price: Range | null;
@@ -47,7 +47,7 @@ export function parseSettingFilters(params: URLSearchParams): SettingFilterState
   const page = Number(params.get("page"));
   const sort = params.get("sort");
   return {
-    style: SETTING_STYLES.find((item) => item.value === params.get("style"))?.value ?? null,
+    style: [...SETTING_STYLES, ...MENU_ONLY_STYLES].find((item) => item.value === params.get("style"))?.value ?? null,
     shape: parseShape(params.get("shape")),
     metals: [...new Set(list(params.get("metal")).flatMap(metalsForParam))],
     price: range(params.get("price")),

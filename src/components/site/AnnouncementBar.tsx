@@ -92,7 +92,7 @@ export function AnnouncementBar({ content = announcementBar, mode, breakpoint, l
       className="type-overline-xs-medium relative flex min-h-[1.875rem] items-center bg-primary-leather text-secondary-skin"
     >
       <Link
-        href={content.contact.href}
+        href={content.contact.mobileHref}
         className="ui-focus:outline-base-white absolute top-0 left-space-3 flex size-[1.875rem] items-center justify-center text-secondary-skin ui-desktop:hidden"
       >
         <Icon name="text-message" size={20} />

@@ -26,7 +26,8 @@ export type TileCarousel = {
   heading: RichSpan[];
   /** "carousel": arrows on desktop, swipe on mobile. "grid": a static 4-up row on desktop (the metal rows). */
   layout: "carousel" | "grid";
-  items: Array<{ _key: string; title: string; body?: string; priceLabel?: string; href: string; image: ImageRef }>;
+  /** An item with no href is drawn but not a link (no page matches it yet; Held for review). */
+  items: Array<{ _key: string; title: string; body?: string; priceLabel?: string; href?: string; image: ImageRef }>;
 };
 
 /** "Sky Jewelry Guarantee": a heading and five Icon Blocks with a title and a line of text. */

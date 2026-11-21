@@ -8,6 +8,7 @@ import type { ImageRef } from "@/components/ui/Picture";
 import { br, em, span, type RichSpan } from "@/components/ui/RichText";
 import type { IconName } from "@/icons/icon-data";
 import { homePostIds } from "./blog";
+import { fineJewelryList } from "./links";
 
 export type Cta = { label: string; href: string };
 
@@ -209,7 +210,7 @@ export const homePage: HomePage = {
         {
           _key: "womens-wedding-rings",
           label: "Women’s wedding rings",
-          href: "/wedding-bands/women/",
+          href: fineJewelryList("rings"),
           image: { desktop: "cat-womens-wedding-rings-d", mobile: "cat-womens-wedding-rings-m", alt: "" },
         },
         {
@@ -221,13 +222,13 @@ export const homePage: HomePage = {
         {
           _key: "mens-wedding-rings",
           label: "men’s wedding rings",
-          href: "/wedding-bands/men/",
+          href: fineJewelryList("rings"),
           image: { desktop: "cat-mens-wedding-rings-d", mobile: "cat-mens-wedding-rings-m", alt: "" },
         },
         {
           _key: "gemstone-rings",
           label: "gemstone rings",
-          href: "/gemstone-jewelry/?type=rings",
+          href: fineJewelryList("rings", { type: "gemstone" }),
           image: { desktop: "cat-gemstone-rings-d", mobile: "cat-gemstone-rings-m", alt: "" },
         },
       ],
