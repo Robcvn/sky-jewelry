@@ -32,6 +32,7 @@ import { gradeScales, metalComposition, productDetailContent } from "@/content/p
 import { ResourceCardLarge, ResourceCardSmall } from "@/components/ui/ResourceCard";
 import { ReviewCard } from "@/components/ui/ReviewCard";
 import { SearchPanel } from "@/components/site/SearchPanel";
+import { ContactDropdown } from "@/components/site/ContactDropdown";
 import { siteHeader } from "@/content/site";
 import { NavItem } from "@/components/site/NavItem";
 import { Newsletter } from "@/components/site/Newsletter";
@@ -1277,6 +1278,11 @@ export default async function ComponentsPage() {
                   </div>
                 </div>
               </Item>
+              <Item label="contact drop down (opened by Support)">
+                <div data-breakpoint="desktop">
+                  <ContactDropdown content={siteHeader.contactDropdown} open />
+                </div>
+              </Item>
             </div>
           </Group>
           <Group title="Footer newsletter states" overlay>
@@ -1637,6 +1643,15 @@ export default async function ComponentsPage() {
               link would leave desktop part-way down the page, as the Contact section is mobile only. On mobile, Contact is the
               page&rsquo;s first section. Approved (Rob, Nov 21).
             </li>
+            <li>
+              Task 22, header contact dropdown (Figma &ldquo;contact drop down&rdquo;, Desktop - Approved 6725:45688): on desktop,
+              Support opens it as the prototype does (a click; the page dims to 25% black with the design system&rsquo;s black, and
+              a click outside or Escape closes it); Support no longer goes straight to the support page, its &ldquo;more contact
+              options&rdquo; row does (the prototype&rsquo;s Sky Guarantee). Position: the prototype&rsquo;s manual offset is 0, 0,
+              which would cover the Support link, so it opens under the utility row, left-aligned with Support (inference). The
+              phone and email are the site&rsquo;s sample details (&ldquo;Call +1 (212) 555-0142&rdquo;, info@example.com), not
+              Figma&rsquo;s. No mobile version is drawn, so none is built.
+            </li>
           </ul>
         </Section>
 
@@ -1933,10 +1948,6 @@ export default async function ComponentsPage() {
               has an occasion). Not changed: they are not in a menu or in this task&rsquo;s list. Recommendation: occasion tags in
               Shopify, or draw the cards without links like the coloured diamonds.
             </li>
-            <li>
-              Task 22, prototype: the desktop Support link opens a &ldquo;contact drop down&rdquo; overlay (6725:45688), which is not
-              built; Support opens the support page.
-            </li>
             <li>Landing photos: the band rows use engagement-ring photos; best sellers use the catalogue&rsquo;s bands (there are no wedding bands); Gemstones carousels use coloured-diamond photos; Platinum reuses the white gold photo; the Wedding Bands and Gemstones heroes, the guarantee photo and the men&rsquo;s card photo are below 2x for their slots.</li>
             <li>
               Filters sheet and desktop Metal panel: the badge is at 15px on both Yellow Gold tiles and 8px on the other five. Which is
@@ -2038,6 +2049,10 @@ export default async function ComponentsPage() {
               Gemstones menus (the stone list has no such shape); the Diamonds landing page&rsquo;s five colour tiles; the Gemstones
               landing page&rsquo;s eight birthstones with no stone in the list (Garnet, Amethyst, Aquamarine, Pearl, Peridot, Opal,
               Citrine, Topaz). Approved (Rob, Nov 21).
+            </li>
+            <li>
+              Task 22, contact dropdown: &ldquo;Let&rsquo;s Chat!&rdquo; (Text Us) has no destination, as the site has no chat or
+              text service: drawn, not a link (like the product page&rsquo;s &ldquo;Send us a text&rdquo;).
             </li>
           </ul>
         </Section>

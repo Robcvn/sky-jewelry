@@ -64,9 +64,20 @@ export type MegaMenu = {
 
 export type PrimaryNavLink = NavLink & { menu: MegaMenu };
 
+/** Figma "contact drop down" (6725:45688): the panel the header's Support link opens on desktop. */
+export type ContactDropdownContent = {
+  label: string;
+  heading: string;
+  /** A row's call to action with no href is drawn but is not a link (no destination yet; Held for review). */
+  items: Array<{ _key: string; icon: IconName; title: string; body: string; cta: { label: string; href?: string } }>;
+  footerLink: NavLink;
+};
+
 export type HeaderContent = {
   _type: "siteHeader";
   utility: NavLink[];
+  /** The utility link that opens the contact dropdown instead of navigating (the prototype's Support). */
+  contactDropdown: ContactDropdownContent & { trigger: string };
   primary: PrimaryNavLink[];
   account: NavLink;
   bag: NavLink;
@@ -470,14 +481,35 @@ const educationMenu: MegaMenu = {
   shopAll: { _key: "shop-all", label: "All Education", href: "/education/" },
 };
 
+/** Mock contact details: this is a public demo, so the store's own address, phone and email (in Figma) are not shown. */
+const SAMPLE_CONTACT = {
+  address: "123 Sample Ave, New York NY 10001",
+  phone: "+1 (212) 555-0142",
+  email: "info@example.com",
+};
+
 export const siteHeader: HeaderContent = {
   _type: "siteHeader",
   utility: [
     { _key: "locations", label: "Locations", href: SUPPORT },
     { _key: "our-story", label: "Our Story", href: "/our-story/" },
-    // The support and guarantee page serves Support, The Sky Guarantee and FAQs (one drawn page, Deviations).
-    { _key: "support", label: "Support", href: "/the-sky-guarantee/" },
+    // On desktop Support opens the contact dropdown (the prototype's overlay); its "more contact options" opens the page.
+    { _key: "support", label: "Support", href: SUPPORT },
   ],
+  contactDropdown: {
+    trigger: "support",
+    label: "Contact",
+    heading: "We’re here to help.",
+    items: [
+      // No chat or text service: drawn, not a link (Held for review).
+      { _key: "text", icon: "text-message", title: "Text Us", body: "Get an instant response", cta: { label: "Let’s Chat!" } },
+      // Figma's number is the store's own: the site's sample number instead (Deviations).
+      { _key: "call", icon: "phone", title: "Give Us a Call", body: "Chat with one of our experts.", cta: { label: `Call ${SAMPLE_CONTACT.phone}`, href: `tel:${SAMPLE_CONTACT.phone.replace(/[^+\d]/g, "")}` } },
+      { _key: "email", icon: "mail", title: "Have an Inquiry?", body: "Email us at anytime.", cta: { label: "Send an email", href: `mailto:${SAMPLE_CONTACT.email}` } },
+    ],
+    // The prototype sends this row to the Sky Guarantee page (3565:101916).
+    footerLink: { _key: "more", label: "more contact options", href: SUPPORT },
+  },
   primary: [
     { _key: "fine-jewelry", label: "Fine Jewelry", href: "/fine-jewelry/", menu: fineJewelryMenu },
     { _key: "engagement-rings", label: "Engagement Rings", href: "/engagement-rings/", menu: engagementRingsMenu },
@@ -529,12 +561,7 @@ export const siteFooter: FooterContent = {
   },
   // Figma has Latin filler here; replaced with one neutral sentence.
   description: "Engagement rings, wedding bands and fine jewelry from Sky Jewelry in New York.",
-  // Mock contact details: this is a public demo, so the store's own address, phone and email (in Figma) are not shown.
-  contact: {
-    address: "123 Sample Ave, New York NY 10001",
-    phone: "+1 (212) 555-0142",
-    email: "info@example.com",
-  },
+  contact: SAMPLE_CONTACT,
   social: [
     { _key: "instagram", label: "Sky Jewelry on Instagram", href: "https://www.instagram.com/", icon: "instagram" },
     { _key: "facebook", label: "Sky Jewelry on Facebook", href: "https://www.facebook.com/", icon: "facebook" },

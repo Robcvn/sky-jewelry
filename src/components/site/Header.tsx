@@ -17,7 +17,8 @@ import {
 import { Icon } from "@/components/ui/Icon";
 import { cx } from "@/components/ui/shared";
 import { useIsDesktop } from "@/components/ui/useIsDesktop";
-import { siteHeader, type HeaderContent, type NavLink } from "@/content/site";
+import { siteHeader, type HeaderContent } from "@/content/site";
+import { ContactDropdown } from "./ContactDropdown";
 import { headerIconButtonClasses, IconLink, MobileBar } from "./HeaderParts";
 import { Logo } from "./Logo";
 import { MegaMenuPanel } from "./MegaMenu";
@@ -26,24 +27,12 @@ import { NavItem, navItemButtonClasses } from "./NavItem";
 import { SearchPanel } from "./SearchPanel";
 
 const SEARCH = "search";
+/** The utility link that opens the contact dropdown. */
+const CONTACT = siteHeader.contactDropdown.trigger;
 /** Hover intent: a short wait before opening, so sweeping the pointer across the nav does not flash panels. */
 const OPEN_DELAY = 120;
 /** Grace period after the pointer leaves the header and panel. */
 const CLOSE_DELAY = 250;
-
-function NavList({ label, links }: { label: string; links: NavLink[] }) {
-  return (
-    <nav aria-label={label}>
-      <ul className="flex items-center gap-space-10">
-        {links.map((link) => (
-          <li key={link._key}>
-            <NavItem href={link.href}>{link.label}</NavItem>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
 
 /** Ties a control in one desktop bar to the same control in the other, so focus can follow when the bars swap. */
 const KEY = "data-header-key";
@@ -184,7 +173,8 @@ function DesktopBar({ content, layout, labelSuffix, pathname, bagCount, bagLabel
   };
 
   const onBarPointerLeave = (event: PointerEvent) => {
-    if (event.pointerType !== "mouse" || !openPanel) {
+    // The contact dropdown opens on click and closes on a click outside, as the prototype's overlay does.
+    if (event.pointerType !== "mouse" || !openPanel || openPanel === CONTACT) {
       window.clearTimeout(openTimer.current);
       return;
     }
@@ -222,6 +212,43 @@ function DesktopBar({ content, layout, labelSuffix, pathname, bagCount, bagLabel
         </div>
       ) : null}
     </div>
+  );
+
+  // Figma's prototype: Support opens the "contact drop down" (6725:45688) over the page, dimmed to 25% black, and a click
+  // outside closes it. It opens under the utility row, left-aligned with Support (the prototype's offset is not usable):
+  // Support is centred in the 64px row (63 inside its bottom border), so the row's bottom edge is 32.5px below its centre.
+  const utilityNav = (
+    <nav aria-label={`Utility${labelSuffix}`}>
+      <ul className="flex items-center gap-space-10">
+        {content.utility.map((link) =>
+          link._key === CONTACT ? (
+            <li key={link._key} data-header-key={link._key} className="relative">
+              <button
+                id={triggerId(CONTACT)}
+                type="button"
+                aria-expanded={openPanel === CONTACT}
+                aria-controls={panels ? panelId(CONTACT) : undefined}
+                onClick={() => onTriggerClick(CONTACT)}
+                onKeyDown={(event) => onTriggerKeyDown(event, CONTACT)}
+                className={navItemButtonClasses}
+              >
+                {link.label}
+              </button>
+              {panels ? (
+                <div onClick={onPanelClick} className="contents">
+                  {openPanel === CONTACT ? <div aria-hidden="true" data-contact-scrim="" onPointerDown={() => close()} className="fixed inset-0 z-10 bg-black-alpha-25" /> : null}
+                  <ContactDropdown id={panelId(CONTACT)} content={content.contactDropdown} open={openPanel === CONTACT} className="absolute top-[calc(50%+32.5px)] left-0 z-20" />
+                </div>
+              ) : null}
+            </li>
+          ) : (
+            <li key={link._key}>
+              <NavItem href={link.href}>{link.label}</NavItem>
+            </li>
+          ),
+        )}
+      </ul>
+    </nav>
   );
 
   const logo = (
@@ -290,7 +317,7 @@ function DesktopBar({ content, layout, labelSuffix, pathname, bagCount, bagLabel
       {layout === "two-row" ? (
         <>
           <div className="grid min-h-space-13 grid-cols-[1fr_auto_1fr] items-center border-b border-primary-leather px-space-6 py-space-2">
-            <NavList label={`Utility${labelSuffix}`} links={content.utility} />
+            {utilityNav}
             {logo}
             <div className="flex items-center justify-end gap-space-6">
               {search}
