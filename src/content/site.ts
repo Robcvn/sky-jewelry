@@ -468,7 +468,8 @@ export const siteHeader: HeaderContent = {
   utility: [
     { _key: "locations", label: "Locations", href: "/locations/" },
     { _key: "our-story", label: "Our Story", href: "/our-story/" },
-    { _key: "support", label: "Support", href: "/support/" },
+    // The support and guarantee page serves Support, The Sky Guarantee and FAQs (one drawn page, Deviations).
+    { _key: "support", label: "Support", href: "/the-sky-guarantee/" },
   ],
   primary: [
     { _key: "fine-jewelry", label: "Fine Jewelry", href: "/fine-jewelry/", menu: fineJewelryMenu },
@@ -539,7 +540,7 @@ export const siteFooter: FooterContent = {
         { _key: "guarantee", label: "The Sky Guarantee", href: "/the-sky-guarantee/" },
         { _key: "contact", label: "Contact Us", href: "/contact/" },
         { _key: "shipping", label: "Shipping Info", href: "/shipping/" },
-        { _key: "faqs", label: "FAQs", href: "/faqs/" },
+        { _key: "faqs", label: "FAQs", href: "/the-sky-guarantee/#faqs" },
         { _key: "blog", label: "Blog", href: "/blog/" },
         { _key: "terms", label: "Terms of Use", href: "/terms-of-use/" },
         { _key: "privacy", label: "Privacy Policy", href: "/privacy-policy/" },

@@ -185,7 +185,9 @@ export const productDetailContent = {
   shipping: (days: number) => [
     `This piece ships in ${days} ${days === 1 ? "day" : "days"}, with overnight shipping.`,
   ],
-  returns: ["Returns are free within 30 days.", "Every piece comes with a lifetime warranty, and a certificate and appraisal."],
+  // As the icon row draws it ("30 Days Free Return", "Lifetime Warranty", 3565:98309), with Modal - Insurance's wording
+  // (5029:82247). "A certificate and appraisal" is not stated anywhere in the design, so it is not claimed.
+  returns: ["Returns are free within 30 days.", "Sky offers a lifetime warranty."],
   qualitiesHeading: [span("Your Diamond’s Qualities")] as RichSpan[],
   box: {
     heading: [span("What’s in "), span("the", true), span(" Box")] as RichSpan[],

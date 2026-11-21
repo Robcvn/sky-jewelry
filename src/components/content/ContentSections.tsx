@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { Picture, type ImageRef } from "@/components/ui/Picture";
-import { TextButtonLink } from "@/components/ui/TextButton";
+import { RichText, type RichSpan } from "@/components/ui/RichText";
+import { TextButtonLink, TextButtonText } from "@/components/ui/TextButton";
 
 const DATE = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 export const formatDate = (iso: string) => DATE.format(new Date(iso));
@@ -65,21 +66,31 @@ export function ResourceHero({ title, body, topic, image, back }: { title: strin
  * Post Detail top (3565:102017, mobile 3587:130026): "All Posts" (Text Button, caps, Arrow Left), the topic, the title
  * (caps-2xl, 820 wide; mobile caps-lg), the date and read time, then the 1034 x 581 photo (mobile 4:3, full width).
  */
-export function PostHeader({ title, topic, date, readTime, image, back }: { title: string; topic: { label: string; href: string }; date: string; readTime: string; image: ImageRef; back: { label: string; href: string } }) {
+export function PostHeader({ title, topic, date, readTime, image, back }: { title: string; topic: { label: string; href?: string }; date?: string; readTime?: string; image: ImageRef; back: { label: string; href: string } }) {
+  // A story (Figma "Post Detail / Stories" 6287:176402) has an eyebrow with no destination ("Meet the Couple", inert)
+  // and no date line: the photo sits 48px under the title, as the date line's photo does.
   return (
     <header className="site-container flex flex-col items-center pt-space-11 text-center text-primary-leather ui-desktop:pt-space-15">
       <TextButtonLink href={back.href} size="sm" variant="caps" leadingIcon="arrow-left">
         {back.label}
       </TextButtonLink>
-      <TextButtonLink href={topic.href} size="sm" variant="caps" className="mt-space-8 ui-desktop:mt-space-11">
-        {topic.label}
-      </TextButtonLink>
+      {topic.href ? (
+        <TextButtonLink href={topic.href} size="sm" variant="caps" className="mt-space-8 ui-desktop:mt-space-11">
+          {topic.label}
+        </TextButtonLink>
+      ) : (
+        <TextButtonText size="sm" variant="caps" className="mt-space-8 ui-desktop:mt-space-11">
+          {topic.label}
+        </TextButtonText>
+      )}
       <h1 className="type-heading-caps-lg mt-space-4 max-w-[51.25rem] ui-desktop:type-heading-caps-2xl">{title}</h1>
-      <p className="type-overline-xs-medium mt-space-4 flex items-center gap-space-4">
-        <time dateTime={date}>{formatDate(date)}</time>
-        <span aria-hidden="true" className="h-3.5 w-px bg-black-alpha-20" />
-        <span>{readTime}</span>
-      </p>
+      {date ? (
+        <p className="type-overline-xs-medium mt-space-4 flex items-center gap-space-4">
+          <time dateTime={date}>{formatDate(date)}</time>
+          <span aria-hidden="true" className="h-3.5 w-px bg-black-alpha-20" />
+          <span>{readTime}</span>
+        </p>
+      ) : null}
       <div className="relative mt-space-8 aspect-[4/3] w-full overflow-hidden rounded-4 bg-secondary-ivory ui-desktop:mt-space-11 ui-desktop:aspect-[1034/581] ui-desktop:w-[82.85%]">
         <Picture image={image} sizes={{ desktop: "(width >= 90rem) 64.625rem, 72vw", mobile: "calc(100vw - 40px)" }} priority className="absolute inset-0 size-full object-cover" />
       </div>
@@ -142,5 +153,28 @@ export function FeaturedPost({ title, excerpt, topic, date, readTime, href, imag
         </ButtonLink>
       </div>
     </article>
+  );
+}
+
+/**
+ * A photo hero with the page's title and a line, centred on the photo (Sky Guarantee 3565:101916: 1440 x 756, caps-3xl
+ * with an italic word, body-lg; mobile 3587:129907: 390 x 480, caps-xl, body-sm). `title` may differ per breakpoint.
+ */
+export function TitleHero({ title, body, image }: { title: { desktop: RichSpan[]; mobile: RichSpan[] }; body: string; image: ImageRef }) {
+  return (
+    <header className="relative isolate flex aspect-[390/480] items-center justify-center overflow-hidden px-space-5 text-center ui-desktop:aspect-[1440/756]">
+      <HeroPhoto image={image} />
+      <div className="flex max-w-[51.25rem] flex-col items-center gap-space-4 ui-desktop:gap-space-10">
+        <h1 className="type-heading-caps-xl text-base-white ui-desktop:type-heading-caps-3xl">
+          <span className="ui-desktop:hidden">
+            <RichText value={title.mobile} emClassName="type-heading-italic-xl" />
+          </span>
+          <span className="hidden ui-desktop:inline">
+            <RichText value={title.desktop} emClassName="type-heading-italic-3xl" />
+          </span>
+        </h1>
+        <p className="type-body-sm-regular max-w-[25rem] text-secondary-ivory ui-desktop:type-body-lg-regular">{body}</p>
+      </div>
+    </header>
   );
 }

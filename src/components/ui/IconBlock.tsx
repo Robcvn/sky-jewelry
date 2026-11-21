@@ -1,5 +1,6 @@
 import { Icon, type IconName } from "./Icon";
 import { cx } from "./shared";
+import { TextButtonText } from "./TextButton";
 
 type IconBlockProps = {
   icon: IconName;
@@ -53,6 +54,32 @@ export function IconBlock({ icon, label, lines, body, layout = "stacked", asHead
         </Label>
         {body ? <p className={row ? "type-ui-2xs-regular ui-desktop:type-ui-xs-regular" : "type-ui-xs-regular"}>{body}</p> : null}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Figma "Icon Block", Type=Card (Sky Guarantee 3565:101916 / 3587:129907): a skin card with a gold 1px border and 8px
+ * corners, the 48px icon, the title and one line, centred. MD from 1024px (24 / 16 padding, 8 gap, ui-sm title, ui-xs
+ * body); SM below it (16 / 12 padding, 4 gap, ui-xs title, ui-2xs body). `action` is a Text Button with nothing to
+ * connect to yet: drawn, but inert (Held for review).
+ */
+export function IconCard({ icon, title, body, action, headingLevel = 3 }: { icon: IconName; title: string; body: string; action?: string; headingLevel?: 3 | 4 }) {
+  const Heading = `h${headingLevel}` as "h3" | "h4";
+  return (
+    <div className="flex h-full flex-col items-center gap-space-1 rounded-8 border border-secondary-gold bg-secondary-skin px-space-3 py-space-4 text-center text-primary-leather ui-desktop:gap-space-2 ui-desktop:px-space-4 ui-desktop:py-space-6">
+      <Icon name={icon} size={48} />
+      <Heading className="type-ui-xs-medium ui-desktop:type-ui-sm-medium">{title}</Heading>
+      <p className="type-ui-2xs-regular break-words ui-desktop:type-ui-xs-regular">{body}</p>
+      {action ? (
+        // Desktop draws a Chevron Right after the label; mobile none.
+        <span className="mt-space-1 inline-flex items-center gap-space-1 text-primary-leather ui-desktop:mt-space-2">
+          <TextButtonText size="sm" variant="caps">
+            {action}
+          </TextButtonText>
+          <Icon name="chevron-right" size={16} className="hidden ui-desktop:block" />
+        </span>
+      ) : null}
     </div>
   );
 }

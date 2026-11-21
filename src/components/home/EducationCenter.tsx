@@ -9,7 +9,11 @@ import { SECTION_HEADING, SECTION_HEADING_EM, SECTION_Y } from "./styles";
  * "Featured Education" (3565:101629, mobile 3587:129570) is the same block with `page`: a larger heading (caps-2xl) and
  * body (body-lg), left-aligned on mobile, 24px above the cards on mobile, and no "view all" button.
  */
-export function EducationCenter({ content, page = false }: { content: EducationCenterContent; page?: boolean }) {
+export function EducationCenter({ content, variant = "home" }: { content: EducationCenterContent; variant?: "home" | "page" | "support" }) {
+  // "support": the support page's Education block (Sky Guarantee 3565:101916 / 3587:129907): Home's block with the
+  // default heading (heading-lg / heading-xl, not caps), left-aligned on mobile, 24px above the cards there.
+  const page = variant === "page";
+  const compact = variant !== "home";
   const headingId = `${content._key}-heading`;
   const viewAll = page ? null : (
     <ButtonLink href={content.cta.href} variant="secondary" size="sm">
@@ -18,12 +22,12 @@ export function EducationCenter({ content, page = false }: { content: EducationC
   );
 
   return (
-    <section aria-labelledby={headingId} className={`site-container flex flex-col ui-desktop:gap-space-11 ${page ? "gap-space-6" : `gap-space-8 ${SECTION_Y}`}`}>
+    <section aria-labelledby={headingId} className={`site-container flex flex-col ui-desktop:gap-space-11 ${page ? "gap-space-6" : compact ? `gap-space-6 ${SECTION_Y}` : `gap-space-8 ${SECTION_Y}`}`}>
       <div
-        className={`flex flex-col gap-space-3 border-b border-secondary-gold pb-space-6 text-primary-leather ui-desktop:flex-row ui-desktop:items-end ui-desktop:justify-between ui-desktop:gap-space-2 ui-desktop:pb-space-10 ui-desktop:text-left ${page ? "" : "items-center text-center"}`}
+        className={`flex flex-col gap-space-3 border-b border-secondary-gold pb-space-6 text-primary-leather ui-desktop:flex-row ui-desktop:items-end ui-desktop:justify-between ui-desktop:gap-space-2 ui-desktop:pb-space-10 ui-desktop:text-left ${compact ? "" : "items-center text-center"}`}
       >
         <div className="flex flex-col gap-space-3 ui-desktop:gap-space-4">
-          <h2 id={headingId} className={page ? "type-heading-caps-lg ui-desktop:type-heading-caps-2xl" : SECTION_HEADING}>
+          <h2 id={headingId} className={page ? "type-heading-caps-lg ui-desktop:type-heading-caps-2xl" : variant === "support" ? "type-heading-lg ui-desktop:type-heading-xl" : SECTION_HEADING}>
             <RichText value={content.heading} emClassName={SECTION_HEADING_EM} />
           </h2>
           <p className={page ? "type-body-sm-regular ui-desktop:type-body-lg-regular" : "type-body-sm-regular ui-desktop:type-body-md-regular"}>{content.body}</p>

@@ -172,7 +172,7 @@ export type ArticleSection = { id: string; label: string; nav: string };
  * under the header, the one being read marked Active. Mobile (4142:57639, menu 4142:72011): a Dropdown floating at
  * the bottom right ("The 4C's: Diamond Cut") that opens the same list above it.
  */
-export function SectionNav({ label, sections }: { label: string; sections: ArticleSection[] }) {
+export function SectionNav({ label, sections, floating = true }: { label: string; sections: ArticleSection[]; floating?: boolean }) {
   const [active, setActive] = useState(sections[0]?.id ?? "");
   const [open, setOpen] = useState(false);
   const menuId = useId();
@@ -234,7 +234,7 @@ export function SectionNav({ label, sections }: { label: string; sections: Artic
         <p className="type-overline-xs-medium px-space-4 text-primary-hazel">{label}</p>
         <ul className="flex flex-col gap-space-2">{sections.map((section) => item(section, false))}</ul>
       </nav>
-      <div data-section-nav className="fixed right-space-4 bottom-space-4 z-30 ui-desktop:hidden">
+      <div data-section-nav className={cx("fixed right-space-4 bottom-space-4 z-30 ui-desktop:hidden", !floating && "hidden")}>
         {open ? (
           <div id={menuId} className="absolute right-0 bottom-full mb-space-2 w-70 rounded-4 border border-secondary-gold bg-secondary-skin p-space-2 shadow-lg">
             <p className="type-overline-xs-medium px-space-3 py-space-2 text-primary-hazel">{label}</p>

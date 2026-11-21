@@ -37,7 +37,7 @@ export default function EducationCenterPage() {
       </section>
       <div className="pt-space-17 pb-space-11 ui-desktop:pt-space-19 ui-desktop:pb-space-15">
         <EducationCenter
-          page
+          variant="page"
           content={{
             _type: "educationCenter",
             _key: "featured-education",

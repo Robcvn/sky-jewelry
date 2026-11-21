@@ -11,6 +11,8 @@ import { readTime, type ArticleBlock } from "./article";
 export type BlogPost = {
   _id: string;
   _type: "post";
+  /** "story": a customer story (topic "Stories"), at /stories/<slug>/ with the Stories frame's header (6287:176402). */
+  kind?: "story";
   title: string;
   slug: string;
   topic: string;
@@ -45,6 +47,60 @@ const post = (input: PostInput): BlogPost => ({
   readTime: readTime(input.body).replace("min read", "Min Read"),
   featuredImage: input.featuredImage ?? { ...input.hero, desktop: input.hero.mobile ?? input.hero.desktop, mobile: undefined },
 });
+
+
+type StoryInput = {
+  _id: string;
+  title: string;
+  slug: string;
+  date: string;
+  excerpt: string;
+  photo: "face" | "arms" | "hand";
+  products: string[];
+  love: [string, string];
+  choosingHeading: string;
+  choosing: string;
+  rows: Array<[string, string, string]>;
+  thoughts: string;
+};
+
+const PHOTOS = {
+  face: { card: "story-face-post", wide: "edu-face-wide", four3: "edu-face-43", thumb: "/images/education/blog-thumb-1.jpg", alt: "A woman with her hand over one eye, wearing a pear-shaped diamond ring" },
+  arms: { card: "story-arms-post", wide: "edu-arms-wide", four3: "edu-arms-43", thumb: "/images/education/blog-thumb-2.jpg", alt: "Crossed arms, one hand wearing a pear-shaped diamond ring" },
+  hand: { card: "story-hand-post", wide: "edu-hand-wide", four3: "edu-hand-43", thumb: "/images/education/blog-thumb-3.jpg", alt: "A hand wearing several stacked gold rings" },
+} as const;
+
+/** A customer story on the Stories frame's template: the story, a photo with Featured Products, the ring at a glance, a photo with Customize this ring, Our Thoughts. */
+const story = (input: StoryInput): BlogPost => {
+  const own = PHOTOS[input.photo];
+  const [first, second] = (["face", "arms", "hand"] as const).filter((key) => key !== input.photo).map((key) => PHOTOS[key]);
+  return post({
+    _id: input._id,
+    kind: "story",
+    title: input.title,
+    slug: input.slug,
+    topic: "Stories",
+    date: input.date,
+    excerpt: input.excerpt,
+    thumbnail: { src: own.thumb, alt: "" },
+    image: { desktop: own.card, alt: own.alt },
+    hero: { desktop: own.wide, mobile: own.four3, alt: own.alt },
+    body: [
+      h2("love", "The Love Story"),
+      p("love-1", input.love[0]),
+      p("love-2", input.love[1]),
+      h3("choosing", input.choosingHeading),
+      p("choosing-1", input.choosing),
+      { _type: "figure", _key: "products", image: { desktop: first.four3, alt: first.alt }, products: { label: "Featured Products", handles: input.products } },
+      h2("ring", "The Ring"),
+      p("ring-1", "Their pieces, at a glance."),
+      { _type: "table", _key: "ring-table", caption: `${input.title}: their pieces`, columns: ["Piece", "Style", "Metal"], rows: input.rows },
+      { _type: "figure", _key: "customize", image: { desktop: second.four3, alt: second.alt }, action: { label: "Customize this ring", icon: "sparkle", href: "/design-your-own/" } },
+      h2("thoughts", "Our Thoughts"),
+      p("thoughts-1", input.thoughts),
+    ],
+  });
+};
 
 export const blogPosts: BlogPost[] = [
   post({
@@ -289,9 +345,123 @@ export const blogPosts: BlogPost[] = [
       p("thoughts-1", "If you love color, a sapphire is a durable way to wear it every day."),
     ],
   }),
+  // Customer stories (Figma "Post Detail / Stories" 6287:176402): Home's six invented couples and their blurbs, with the
+  // "Stories" topic. They live at /stories/<slug>/ (the addresses Home already links to). The frame's couple, their
+  // photo and their story are not used; each story opens with its Home card photo and says nothing about the business.
+  story({
+    _id: "story-amara-james",
+    title: "Amara & James",
+    slug: "amara-and-james",
+    date: "2026-10-30",
+    excerpt: "A pear-cut diamond on a slim band, chosen together.",
+    photo: "face",
+    products: ["petite-solitaire-engagement-ring-setting", "classic-2mm-band"],
+    love: [
+      "Amara and James decided early on that they would choose the ring together. They spent a few weekends trying shapes on, and kept coming back to the pear.",
+      "Its outline looked longer and slimmer on Amara’s hand, and it suited the simple jewelry she wears every day.",
+    ],
+    choosingHeading: "Choosing the Ring",
+    choosing: "They set the pear on a slim band, so the stone leads and nothing competes with it. A prong over the point protects it from knocks, which mattered for a ring worn every day.",
+    rows: [["Engagement ring", "Pear-cut diamond on a slim band", "Yellow gold"]],
+    thoughts: "A pear-cut diamond on a slim band is a quiet, lasting choice. If you choose a pear, look for even brightness from the point to the rounded end, and a prong that guards the point.",
+  }),
+  story({
+    _id: "story-sofia-daniel",
+    title: "Sofia & Daniel",
+    slug: "sofia-and-daniel",
+    date: "2026-10-09",
+    excerpt: "A cushion-cut diamond with a hidden halo.",
+    photo: "arms",
+    products: ["round-halo-engagement-ring-setting", "classic-2mm-band"],
+    love: [
+      "Sofia wanted a ring with a soft, rounded outline, and Daniel wanted a little sparkle that only she would notice. A cushion cut with a hidden halo gave them both.",
+      "The cushion’s rounded corners and broad facets have a gentle, old-fashioned glow that Sofia loved from the start.",
+    ],
+    choosingHeading: "A Halo Only She Sees",
+    choosing: "A hidden halo sets a row of small diamonds under the center stone, where it shows from the side rather than from above. Face up, the cushion stands alone; from the side, the halo catches the light.",
+    rows: [["Engagement ring", "Cushion-cut diamond with a hidden halo", "White gold"]],
+    thoughts: "A hidden halo adds sparkle without changing the look of the center stone from above. It suits anyone who wants a classic solitaire with a detail of their own.",
+  }),
+  story({
+    _id: "story-nia-marcus",
+    title: "Nia & Marcus",
+    slug: "nia-and-marcus",
+    date: "2026-09-25",
+    excerpt: "Stacked bands in yellow gold, one for every year.",
+    photo: "hand",
+    products: ["classic-2mm-band", "twig-diamond-stackable-band"],
+    love: [
+      "Nia and Marcus started with a plain yellow gold wedding band. On each anniversary since, they have added another band to the stack.",
+      "Each one is a little different, a plain band one year and a band with small diamonds the next, so the stack tells their story as it grows.",
+    ],
+    choosingHeading: "Building the Stack",
+    choosing: "Keeping every band in yellow gold holds the stack together, while the changes in width and texture make each year easy to pick out.",
+    rows: [
+      ["Wedding band", "Plain band", "Yellow gold"],
+      ["Anniversary bands", "Plain and diamond bands, added one at a time", "Yellow gold"],
+    ],
+    thoughts: "A stack that grows over the years works best when the bands share one metal. Slim bands leave room to add more, and a mix of plain and diamond bands keeps it interesting.",
+  }),
+  story({
+    _id: "story-lena-omar",
+    title: "Lena & Omar",
+    slug: "lena-and-omar",
+    date: "2026-09-02",
+    excerpt: "A surprise proposal with a ring designed in secret.",
+    photo: "face",
+    products: ["vine-engagement-ring-setting", "classic-solitaire-engagement-ring-setting"],
+    love: [
+      "Omar wanted the proposal to be a complete surprise, so he designed Lena’s ring without her knowing, starting from the jewelry she already wore and loved.",
+      "He borrowed a ring she wore on the same finger to get the size right, and returned it before she noticed it was gone.",
+    ],
+    choosingHeading: "Designing in Secret",
+    choosing: "He chose a setting first, then the center stone, keeping the style close to Lena’s everyday pieces so the ring would feel like hers from the first day.",
+    rows: [["Engagement ring", "A setting and center stone chosen separately", "White gold"]],
+    thoughts: "If you design a ring as a surprise, start from the jewelry they already wear: it tells you their metal, their style and, with a borrowed ring, their size.",
+  }),
+  story({
+    _id: "story-grace-tom",
+    title: "Grace & Tom",
+    slug: "grace-and-tom",
+    date: "2026-08-19",
+    excerpt: "Matching wedding bands in white gold.",
+    photo: "arms",
+    products: ["classic-2mm-band", "classic-4mm-band"],
+    love: [
+      "Grace and Tom wanted wedding bands that looked like a pair, even though their hands and tastes are different.",
+      "They chose the same white gold and the same polished finish, in two widths: a slimmer band for Grace and a wider one for Tom.",
+    ],
+    choosingHeading: "A Matching Pair",
+    choosing: "Matching the metal and finish made the two bands read as a set, while choosing each width separately let each band suit the hand that wears it.",
+    rows: [
+      ["Wedding band", "Slim, polished", "White gold"],
+      ["Wedding band", "Wide, polished", "White gold"],
+    ],
+    thoughts: "Matching bands don’t have to be identical. The same metal and finish make a pair; the width can follow each hand.",
+  }),
+  story({
+    _id: "story-priya-sam",
+    title: "Priya & Sam",
+    slug: "priya-and-sam",
+    date: "2026-07-28",
+    excerpt: "An emerald and diamond stack for their anniversary.",
+    photo: "hand",
+    products: ["twig-diamond-stackable-band", "flush-set-natural-diamond-band"],
+    love: [
+      "For their anniversary, Priya and Sam added color to Priya’s rings: an emerald band to sit between her diamond bands.",
+      "Green has always been Priya’s favorite color, and the emerald brings it into the rings she wears every day.",
+    ],
+    choosingHeading: "Adding Color to the Stack",
+    choosing: "The emerald sits between two diamond bands, which frame its color and protect it from knocks, since emerald is softer than diamond.",
+    rows: [
+      ["Anniversary band", "Emerald band", "Yellow gold"],
+      ["Diamond bands", "One on either side of the emerald", "Yellow gold"],
+    ],
+    thoughts: "A colored stone between diamond bands is a simple way to wear color every day. With softer stones such as emerald, bands on either side help protect it.",
+  }),
 ];
 
-export const postHref = (post: Pick<BlogPost, "slug">) => `/blog/${post.slug}/`;
+export const postHref = (post: Pick<BlogPost, "slug" | "kind">) => (post.kind === "story" ? `/stories/${post.slug}/` : `/blog/${post.slug}/`);
 /** A topic's id in the Blog List's URL (?topic=style). */
 export const postTopicId = (topic: string) => topic.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 export const postBySlug = (slug: string) => blogPosts.find((item) => item.slug === slug) ?? null;
@@ -308,6 +478,9 @@ export const blogPage = {
   body: "Style notes, buying advice and care tips for the jewelry you wear every day.",
   pageSize: 12,
   readMore: "Read More",
+  /** The Stories frame's header: "All Stories" (to the Blog with the Stories topic) and the eyebrow "Meet the Couple". */
+  storyBack: "All Stories",
+  storyEyebrow: "Meet the Couple",
   allTopics: "All Topics",
   back: "All Posts",
   alsoRead: "You Should also Read",

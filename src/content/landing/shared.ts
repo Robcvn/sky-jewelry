@@ -7,6 +7,7 @@
  * planned at /<category>/shop/ (with the filters in the query). Wedding bands keep the planned
  * /wedding-bands/women/ and /wedding-bands/men/; fine jewelry uses its existing list pages.
  */
+import { CLAIMS } from "../support";
 import { em, span } from "@/components/ui/RichText";
 import { homePage, type HeroModule, type HomeSection } from "@/content/home";
 import { productDetailContent } from "@/content/product-detail";
@@ -113,18 +114,21 @@ export const colorTiles = (base: string, noun: string): TileCarousel["items"] =>
     image: { desktop: `color-${slug}-sq` as const, alt },
   }));
 
-/** "Sky Jewelry Guarantee" (Wedding Bands, Diamonds, Gemstones). Bodies restate each title; Figma's are Latin. */
+/**
+ * "Sky Jewelry Guarantee" (Wedding Bands, Diamonds, Gemstones, Education Center, Blog). Figma's bodies are Latin: each
+ * line repeats a claim the design states elsewhere, or is neutral (sources in src/content/support.ts CLAIMS).
+ */
 export const guaranteeIcons = (key: string): GuaranteeIcons => ({
   _type: "guaranteeIcons",
   _key: key,
   overline: "Our Promise of Perfection",
   heading: [span("Sky Jewelry Guarantee")],
   items: [
-    { _key: "warranty", icon: "warranty", title: "Lifetime Warranty", body: "Every piece is covered for life." },
-    { _key: "shipping", icon: "truck", title: "Free Shipping", body: "Shipping is free on every order." },
-    { _key: "money-back", icon: "money-back-guarantee", title: "Money Back Guarantee", body: "Returns are free within 30 days." },
-    { _key: "experts", icon: "diamond-experts", title: "Diamond Experts", body: "Ask our specialists before you choose." },
-    { _key: "conflict-free", icon: "natural-diamond", title: "Certified Conflict-Free", body: "Every diamond is certified conflict-free." },
+    { _key: "warranty", icon: "warranty", title: "Lifetime Warranty", body: CLAIMS.lifetimeWarranty.text },
+    { _key: "shipping", icon: "truck", title: "Free Shipping", body: CLAIMS.freeShipping.text },
+    { _key: "money-back", icon: "money-back-guarantee", title: "Money Back Guarantee", body: CLAIMS.freeReturns.text },
+    { _key: "experts", icon: "diamond-experts", title: "Diamond Experts", body: CLAIMS.experts.text },
+    { _key: "conflict-free", icon: "natural-diamond", title: "Certified Conflict-Free", body: CLAIMS.guarantee.text },
   ],
 });
 

@@ -332,7 +332,8 @@ export const homePage: HomePage = {
       _type: "customerStories",
       _key: "stories",
       heading: [span("Customer Stories")],
-      cta: { label: "View All Stories", href: "/stories/" },
+      // No stories index is drawn: the stories are blog posts with the "Stories" topic (an inference, Deviations).
+      cta: { label: "View All Stories", href: "/blog/?topic=stories" },
       storyCtaLabel: "Read Story",
       stories: [
         {
@@ -466,7 +467,8 @@ export const homePage: HomePage = {
       _type: "about",
       _key: "about",
       heading: [span("About Sky Jewelry")],
-      body: "Sky Jewelry makes engagement rings, wedding bands and fine jewelry, from rings you design yourself to pieces for every day. Every piece comes with our lifetime warranty.",
+      // The warranty line says only what the design states (Modal - Insurance 5029:82247: "Sky offers a lifetime warranty").
+      body: "Sky Jewelry makes engagement rings, wedding bands and fine jewelry, from rings you design yourself to pieces for every day. Sky offers a lifetime warranty.",
       cta: { label: "Read More", href: "/our-story/", context: "about Sky Jewelry" },
       image: { desktop: "about-d", mobile: "about-m", alt: "Diamond rings arranged on a soft fabric" },
     },
@@ -474,7 +476,9 @@ export const homePage: HomePage = {
       _type: "heroModule",
       _key: "guarantee",
       heading: [em("the"), span(" Sky guarantee")],
-      body: "A lifetime warranty, free shipping worldwide and 30 days of free returns on every piece.",
+      // Each claim as the design states it: Lifetime Warranty (the guarantee strip; Modal - Insurance 5029:82247), "Free shipping
+      // worldwide" and "30 days free returns" (Top Bar 3565:101512).
+      body: "A lifetime warranty, free shipping worldwide and 30 days free returns.",
       cta: { label: "Read More", href: "/the-sky-guarantee/", context: "the Sky guarantee" },
       image: {
         desktop: "guarantee-d",
@@ -487,7 +491,8 @@ export const homePage: HomePage = {
       _key: "faqs",
       heading: [span("Sky Jewelry FAQs")],
       body: "Quick answers about ordering, sizing and caring for your jewelry.",
-      cta: { label: "view all faqs", href: "/faqs/" },
+      // No FAQ page is drawn: the support page's Sky FAQs section serves it (the same inference as the footer's FAQs).
+      cta: { label: "view all faqs", href: "/the-sky-guarantee/#faqs" },
       openOnDesktop: 1,
       items: [
         {
@@ -513,7 +518,7 @@ export const homePage: HomePage = {
         {
           _key: "warranty",
           question: "Is my jewelry covered by a warranty?",
-          answer: ["Yes. Every piece comes with a lifetime warranty."],
+          answer: ["Yes. Sky offers a lifetime warranty."],
         },
       ],
     },

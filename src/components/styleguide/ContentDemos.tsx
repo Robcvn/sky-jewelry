@@ -5,6 +5,7 @@ import { FigureAction, Gallery, GradeScale as ArticleGradeScale, Qualities } fro
 import { TopicTile } from "@/components/content/ContentList";
 import { FeaturedPost, NextResource } from "@/components/content/ContentSections";
 import { Dropdown } from "@/components/ui/Dropdown";
+import { IconCard } from "@/components/ui/IconBlock";
 import { PaginationRow } from "@/components/ui/PaginationRow";
 import { Picture } from "@/components/ui/Picture";
 import { PostCard } from "@/components/ui/PostCard";
@@ -89,6 +90,12 @@ export function ContentDemos({ bp }: { bp: "desktop" | "mobile" }) {
           </div>
         </Demo>
       </div>
+      <Demo label="Icon Block, Type=Card (support page): MD from 1024px (264 wide), SM below (167); with an inert Text Button">
+        <div className={`grid gap-space-4 ${D ? "w-[51.5rem] grid-cols-3" : "w-[21.875rem] grid-cols-2"}`}>
+          <IconCard icon="warranty" title="Lifetime Warranty" body="Sky offers a lifetime warranty." />
+          <IconCard icon="repair" title="Product Repair" body="Request it through Sky Repairs." action="Request" />
+        </div>
+      </Demo>
       <Demo label="Pagination row (Prev / numbers / Next; Prev and Next disabled at the ends)">
         <div className={D ? "w-[78rem] max-w-full" : "w-[21.875rem]"}>
           <PaginationRow pageCount={2} currentPage={page} onPageChange={setPage} label={`Pagination demo, ${bp}`} />

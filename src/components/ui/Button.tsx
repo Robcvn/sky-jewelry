@@ -210,3 +210,23 @@ export function HeroButton({
     </Link>
   );
 }
+
+/**
+ * Figma "Hero Button - Overlay" with no destination yet (Held for review): drawn as HeroButton overlay draws it, but plain
+ * text: it takes no focus, screen readers read it as text, and the hover shade and chevron don't apply.
+ */
+export function HeroButtonText({ icon = "setting", size = "lg", className, children }: { icon?: IconName; size?: "lg" | "sm"; className?: string; children: ReactNode }) {
+  const compact = size === "sm";
+  return (
+    <span
+      className={cx(
+        "relative isolate flex w-full flex-col items-center justify-center overflow-hidden text-base-white",
+        compact ? "gap-space-1 px-space-2 pt-space-6 pb-space-8" : "gap-space-2 px-space-17 py-space-11",
+        className,
+      )}
+    >
+      <Icon name={icon} size={compact ? 40 : 48} className="text-base-white" />
+      <span className="type-heading-sm">{children}</span>
+    </span>
+  );
+}
