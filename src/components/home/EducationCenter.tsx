@@ -4,25 +4,31 @@ import { RichText } from "@/components/ui/RichText";
 import type { EducationCenter as EducationCenterContent } from "@/content/home";
 import { SECTION_HEADING, SECTION_HEADING_EM, SECTION_Y } from "./styles";
 
-/** Figma Home section 8: Education Center, one large Resource Card beside four small ones. */
-export function EducationCenter({ content }: { content: EducationCenterContent }) {
+/**
+ * Figma Home section 8: Education Center, one large Resource Card beside four small ones. The Education Center page's
+ * "Featured Education" (3565:101629, mobile 3587:129570) is the same block with `page`: a larger heading (caps-2xl) and
+ * body (body-lg), left-aligned on mobile, 24px above the cards on mobile, and no "view all" button.
+ */
+export function EducationCenter({ content, page = false }: { content: EducationCenterContent; page?: boolean }) {
   const headingId = `${content._key}-heading`;
-  const viewAll = (
+  const viewAll = page ? null : (
     <ButtonLink href={content.cta.href} variant="secondary" size="sm">
       {content.cta.label}
     </ButtonLink>
   );
 
   return (
-    <section aria-labelledby={headingId} className={`site-container flex flex-col gap-space-8 ui-desktop:gap-space-11 ${SECTION_Y}`}>
-      <div className="flex flex-col items-center gap-space-3 border-b border-secondary-gold pb-space-6 text-center text-primary-leather ui-desktop:flex-row ui-desktop:items-end ui-desktop:justify-between ui-desktop:gap-space-2 ui-desktop:pb-space-10 ui-desktop:text-left">
+    <section aria-labelledby={headingId} className={`site-container flex flex-col ui-desktop:gap-space-11 ${page ? "gap-space-6" : `gap-space-8 ${SECTION_Y}`}`}>
+      <div
+        className={`flex flex-col gap-space-3 border-b border-secondary-gold pb-space-6 text-primary-leather ui-desktop:flex-row ui-desktop:items-end ui-desktop:justify-between ui-desktop:gap-space-2 ui-desktop:pb-space-10 ui-desktop:text-left ${page ? "" : "items-center text-center"}`}
+      >
         <div className="flex flex-col gap-space-3 ui-desktop:gap-space-4">
-          <h2 id={headingId} className={SECTION_HEADING}>
+          <h2 id={headingId} className={page ? "type-heading-caps-lg ui-desktop:type-heading-caps-2xl" : SECTION_HEADING}>
             <RichText value={content.heading} emClassName={SECTION_HEADING_EM} />
           </h2>
-          <p className="type-body-sm-regular ui-desktop:type-body-md-regular">{content.body}</p>
+          <p className={page ? "type-body-sm-regular ui-desktop:type-body-lg-regular" : "type-body-sm-regular ui-desktop:type-body-md-regular"}>{content.body}</p>
         </div>
-        <div className="hidden shrink-0 ui-desktop:block">{viewAll}</div>
+        {viewAll ? <div className="hidden shrink-0 ui-desktop:block">{viewAll}</div> : null}
       </div>
 
       <div className="flex flex-col gap-space-8 ui-desktop:grid ui-desktop:grid-cols-[718fr_506fr] ui-desktop:items-start ui-desktop:gap-space-6">
@@ -39,7 +45,7 @@ export function EducationCenter({ content }: { content: EducationCenterContent }
         </ul>
       </div>
 
-      <div className="flex justify-center pt-space-2 ui-desktop:hidden">{viewAll}</div>
+      {viewAll ? <div className="flex justify-center pt-space-2 ui-desktop:hidden">{viewAll}</div> : null}
     </section>
   );
 }

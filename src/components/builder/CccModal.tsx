@@ -29,7 +29,7 @@ const TABS: Record<CccTab, { label: string; scale: Option[]; initial: string; gr
  * One grade at a time on Figma's "Slider Option" row: a radio group drawn as the slider, with the 20px thumb over the
  * chosen grade. Arrow keys move between grades (native radios).
  */
-function GradePicker({ name, legend, scale, value, onChange }: { name: string; legend: string; scale: Option[]; value: string; onChange: (value: string) => void }) {
+export function GradePicker({ name, legend, scale, value, onChange }: { name: string; legend: string; scale: Option[]; value: string; onChange: (value: string) => void }) {
   return (
     <fieldset className="relative flex h-[2.75rem] min-w-0 items-start gap-0.5 pt-space-2">
       <legend className="sr-only">{legend}</legend>
@@ -71,8 +71,6 @@ type CccModalProps = {
  */
 export function CccModal({ open, onClose, tab, onTabChange }: CccModalProps) {
   const id = useId();
-  const [grade, setGrade] = useState<Record<CccTab, string>>({ cut: TABS.cut.initial, color: TABS.color.initial, clarity: TABS.clarity.initial });
-  const current = TABS[tab];
   return (
     <DialogShell open={open} onClose={onClose} labelledBy={`${id}-title`}>
       {({ visible }) => (
@@ -82,37 +80,52 @@ export function CccModal({ open, onClose, tab, onTabChange }: CccModalProps) {
           className={`flex max-h-[calc(100dvh-var(--spacing-space-4))] w-full max-w-[24.375rem] flex-col gap-space-4 overflow-y-auto overscroll-contain rounded-8 border border-black-alpha-15 bg-base-white p-[calc(var(--spacing-space-5)-1px)] text-primary-leather shadow-lg ui-desktop:max-w-[30rem] ui-desktop:gap-space-6 ui-desktop:p-[calc(var(--spacing-space-8)-1px)] ${dialogPanelMotion(visible)}`}
         >
           <h2 id={`${id}-title`} className="sr-only">
-            Diamond {current.label.toLowerCase()} explained
+            Diamond {TABS[tab].label.toLowerCase()} explained
           </h2>
-          <Tabs
-            label="Cut, color and clarity"
-            value={tab}
-            onChange={(next) => onTabChange(next as CccTab)}
-            items={(Object.keys(TABS) as CccTab[]).map((key) => ({ id: key, label: TABS[key].label }))}
-            size="sm"
-            // Three equal 32px tabs across the row (40 with the pill's padding); -my-px takes up the border the shared Tabs add outside.
-            className="-my-px [&_[role=tab]]:flex-1 [&>[role=tablist]]:w-full"
-          />
-          <p className="type-p-xs-regular ui-desktop:type-p-sm-regular">{copy.help[tab]}</p>
-          <div className="flex aspect-video shrink-0 items-center justify-center overflow-hidden rounded-4 border border-black-alpha-5 bg-secondary-ivory">
-            {/* eslint-disable-next-line @next/next/no-img-element -- a static SVG diagram exported from Figma */}
-            <img
-              src={withBasePath(current.illustration.src)}
-              alt=""
-              width={267}
-              height={198}
-              className="h-(--drawing) w-auto max-w-none"
-              style={{ "--drawing": `${current.illustration.height}%` } as CSSProperties}
-            />
-          </div>
-          <div className="flex flex-col gap-space-2 ui-desktop:gap-space-4">
-            <GradePicker name={`${id}-${tab}`} legend={`${current.label} grade`} scale={current.scale} value={grade[tab]} onChange={(value) => setGrade((all) => ({ ...all, [tab]: value }))} />
-            <p aria-live="polite" className="type-p-xs-regular">
-              {current.grades[grade[tab]]?.description}
-            </p>
-          </div>
+          <CccPanel tab={tab} onTabChange={onTabChange} />
         </div>
       )}
     </DialogShell>
+  );
+}
+
+/**
+ * The explainer itself: the pill tabs, what the grade measures, the drawing, the grade scale and what the chosen grade
+ * means. The modal above shows it; Resource Detail shows it inline as "Your Diamond's Qualities" (3565:101773).
+ */
+export function CccPanel({ tab, onTabChange }: { tab: CccTab; onTabChange: (tab: CccTab) => void }) {
+  const id = useId();
+  const [grade, setGrade] = useState<Record<CccTab, string>>({ cut: TABS.cut.initial, color: TABS.color.initial, clarity: TABS.clarity.initial });
+  const current = TABS[tab];
+  return (
+    <>
+      <Tabs
+        label="Cut, color and clarity"
+        value={tab}
+        onChange={(next) => onTabChange(next as CccTab)}
+        items={(Object.keys(TABS) as CccTab[]).map((key) => ({ id: key, label: TABS[key].label }))}
+        size="sm"
+        // Three equal 32px tabs across the row (40 with the pill's padding); -my-px takes up the border the shared Tabs add outside.
+        className="-my-px [&_[role=tab]]:flex-1 [&>[role=tablist]]:w-full"
+      />
+      <p className="type-p-xs-regular ui-desktop:type-p-sm-regular">{copy.help[tab]}</p>
+      <div className="flex aspect-video shrink-0 items-center justify-center overflow-hidden rounded-4 border border-black-alpha-5 bg-secondary-ivory">
+        {/* eslint-disable-next-line @next/next/no-img-element -- a static SVG diagram exported from Figma */}
+        <img
+          src={withBasePath(current.illustration.src)}
+          alt=""
+          width={267}
+          height={198}
+          className="h-(--drawing) w-auto max-w-none"
+          style={{ "--drawing": `${current.illustration.height}%` } as CSSProperties}
+        />
+      </div>
+      <div className="flex flex-col gap-space-2 ui-desktop:gap-space-4">
+        <GradePicker name={`${id}-${tab}`} legend={`${current.label} grade`} scale={current.scale} value={grade[tab]} onChange={(value) => setGrade((all) => ({ ...all, [tab]: value }))} />
+        <p aria-live="polite" className="type-p-xs-regular">
+          {current.grades[grade[tab]]?.description}
+        </p>
+      </div>
+    </>
   );
 }

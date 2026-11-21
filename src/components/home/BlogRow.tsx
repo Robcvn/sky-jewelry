@@ -20,7 +20,7 @@ export function BlogRow({ content }: { content: BlogRowContent }) {
     <section aria-labelledby={headingId} className={`flex flex-col gap-space-6 ui-desktop:gap-space-11 ${SECTION_Y}`}>
       <div className="site-container flex items-end justify-between gap-space-6 text-primary-leather">
         <div className="flex flex-col gap-space-2">
-          <p className="type-overline-sm-medium">{content.overline}</p>
+          {content.overline ? <p className="type-overline-sm-medium">{content.overline}</p> : null}
           <h2 id={headingId} className={SECTION_HEADING}>
             <RichText value={content.heading} emClassName={SECTION_HEADING_EM} />
           </h2>

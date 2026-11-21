@@ -4,7 +4,8 @@ import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent, ty
 import { Icon, type IconName } from "./Icon";
 import { cx, type PreviewState } from "./shared";
 
-export type DropdownOption = { value: string; label: string; icon?: IconName };
+/** `group`: options that share one are listed under it (Figma "Menu Group Label"), in their order of first appearance. */
+export type DropdownOption = { value: string; label: string; icon?: IconName; group?: string };
 
 type DropdownSize = "md" | "sm" | "xs";
 
@@ -241,6 +242,25 @@ export function Dropdown({
         onKeyDown: onListKeyDown,
       };
 
+  const renderOption = (option: DropdownOption, index: number, Tag: "li" | "div") => (
+    <Tag
+      key={option.value}
+      id={optionId(index)}
+      role="option"
+      aria-selected={option.value === selectedValue}
+      onPointerMove={() => setActiveIndex(index)}
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={() => choose(index)}
+      className={cx(
+        "ui-transition type-ui-sm-medium flex cursor-pointer items-center gap-0.5 rounded-4 py-space-2 pr-space-4 pl-space-2 text-primary-leather",
+        (index === activeIndex || option.value === selectedValue) && "bg-secondary-ivory",
+      )}
+    >
+      {option.icon ? <Icon name={option.icon} size={20} /> : null}
+      <span className="min-w-0 flex-1 px-space-1">{option.label}</span>
+    </Tag>
+  );
+
   return (
     <div
       ref={rootRef}
@@ -345,33 +365,30 @@ export function Dropdown({
             panelWidth ? cx(panelWidth, panelAlign === "end" ? "right-0" : "left-0") : "inset-x-0",
           )}
         >
-          <div className="border-b border-black-alpha-10 p-space-2">
-            {groupLabel ? (
-              <p id={`${id}-group`} className="type-overline-xs-medium px-space-3 py-space-2 text-primary-hazel">
-                {groupLabel}
-              </p>
-            ) : null}
-            <ul id={panelId} role="listbox" aria-labelledby={groupLabel ? `${labelId} ${id}-group` : labelId}>
-              {options.map((option, index) => (
-                <li
-                  key={option.value}
-                  id={optionId(index)}
-                  role="option"
-                  aria-selected={option.value === selectedValue}
-                  onPointerMove={() => setActiveIndex(index)}
-                  onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => choose(index)}
-                  className={cx(
-                    "ui-transition type-ui-sm-medium flex cursor-pointer items-center gap-0.5 rounded-4 py-space-2 pr-space-4 pl-space-2 text-primary-leather",
-                    (index === activeIndex || option.value === selectedValue) && "bg-secondary-ivory",
-                  )}
-                >
-                  {option.icon ? <Icon name={option.icon} size={20} /> : null}
-                  <span className="min-w-0 flex-1 px-space-1">{option.label}</span>
-                </li>
+          {options.some((option) => option.group) ? (
+            // Grouped (Figma Education Center - Dropdown 6963:54748): one listbox, a labelled group per heading, a rule between groups.
+            <div id={panelId} role="listbox" aria-labelledby={labelId}>
+              {[...new Set(options.map((option) => option.group ?? ""))].map((group, groupIndex) => (
+                <div key={group} role="group" aria-labelledby={`${id}-group-${groupIndex}`} className="border-b border-black-alpha-10 p-space-2 last:border-b-0">
+                  <p id={`${id}-group-${groupIndex}`} className="type-overline-xs-medium px-space-3 py-space-2 text-primary-hazel">
+                    {group}
+                  </p>
+                  {options.map((option, index) => ((option.group ?? "") === group ? renderOption(option, index, "div") : null))}
+                </div>
               ))}
-            </ul>
-          </div>
+            </div>
+          ) : (
+            <div className="border-b border-black-alpha-10 p-space-2">
+              {groupLabel ? (
+                <p id={`${id}-group`} className="type-overline-xs-medium px-space-3 py-space-2 text-primary-hazel">
+                  {groupLabel}
+                </p>
+              ) : null}
+              <ul id={panelId} role="listbox" aria-labelledby={groupLabel ? `${labelId} ${id}-group` : labelId}>
+                {options.map((option, index) => renderOption(option, index, "li"))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>

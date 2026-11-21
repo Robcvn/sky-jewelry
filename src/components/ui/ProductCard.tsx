@@ -115,8 +115,10 @@ type ProductCardProps = {
   labels: ProductCardLabels;
   /** Not used by the ring builder's cards, whose main action is a link. */
   onAddToBag?: (product: Product, variant: ProductVariant) => void;
-  /** Mobile: tapping the card opens the quick-view sheet. */
-  onQuickView: (product: Product, variant: ProductVariant) => void;
+  /** Mobile: tapping the card opens the quick-view sheet. Without it the card links to the product page at every width. */
+  onQuickView?: (product: Product, variant: ProductVariant) => void;
+  /** No hover shell or actions: the Featured Products flyout (4142:56821 / 4142:71912) draws the plain card. */
+  plain?: boolean;
   busy?: boolean;
   /** "grid": the product list (smaller text below 1024px). "carousel": landing page rows (desktop text sizes throughout). */
   size?: "grid" | "carousel";
@@ -131,7 +133,7 @@ type ProductCardProps = {
  * the installments line show below. The swatches switch the photo, title and price to that metal's variant.
  * Mobile: no hover; tapping the photo or title opens the quick view.
  */
-export function ProductCard({ product, initialVariant, labels, onAddToBag, onQuickView, busy = false, size = "grid", builder }: ProductCardProps) {
+export function ProductCard({ product, initialVariant, labels, onAddToBag, onQuickView, busy = false, size = "grid", builder, plain = false }: ProductCardProps) {
   const carousel = size === "carousel";
   const [variant, setVariant] = useState(initialVariant);
   const [view, setView] = useState(0);
@@ -147,12 +149,14 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
   };
 
   return (
-    <article className="group/card relative flex flex-col text-primary-leather focus-within:z-20 ui-desktop:hover:z-20">
+    <article className={cx("relative flex flex-col text-primary-leather", !plain && "group/card focus-within:z-20 ui-desktop:hover:z-20")}>
       {/* Desktop hover shell: the top part sits behind the card, the bottom part holds the actions. */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -inset-x-space-2 -top-space-2 bottom-0 hidden rounded-t-8 border-x border-t border-black-alpha-5 bg-base-white shadow-lg ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block"
-      />
+      {plain ? null : (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -inset-x-space-2 -top-space-2 bottom-0 hidden rounded-t-8 border-x border-t border-black-alpha-5 bg-base-white shadow-lg ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block"
+        />
+      )}
 
       <div className="relative flex flex-col">
         <div className="relative aspect-square overflow-hidden rounded-4 bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]">
@@ -193,19 +197,21 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
         </div>
 
         {/* Desktop: the photo and title open the product page. Mobile: they open the quick view. */}
-        <Link href={href} aria-label={name} className="absolute inset-0 z-0 hidden rounded-4 ui-desktop:block" />
-        <button
-          type="button"
-          aria-label={`Quick view: ${name}`}
-          aria-haspopup="dialog"
-          onClick={() => onQuickView(product, variant)}
-          className="absolute inset-0 z-0 cursor-pointer rounded-4 ui-desktop:hidden"
-        />
+        <Link href={href} aria-label={name} className={cx("absolute inset-0 z-0 rounded-4", onQuickView && "hidden ui-desktop:block")} />
+        {onQuickView ? (
+          <button
+            type="button"
+            aria-label={`Quick view: ${name}`}
+            aria-haspopup="dialog"
+            onClick={() => onQuickView(product, variant)}
+            className="absolute inset-0 z-0 cursor-pointer rounded-4 ui-desktop:hidden"
+          />
+        ) : null}
       </div>
 
       <MetalSwatches product={product} variant={variant} onChange={chooseVariant} className={cx("relative", carousel ? "mt-space-3 pb-space-3" : "mt-space-2 pb-space-2 ui-desktop:mt-space-3 ui-desktop:pb-space-3")} />
 
-      <div className="absolute inset-x-0 top-full z-10 hidden ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block">
+      <div className={cx("absolute inset-x-0 top-full z-10 hidden", !plain && "ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block")}>
         <div className="-mx-space-2 flex flex-col gap-space-4 rounded-b-8 border-x border-b border-black-alpha-5 bg-base-white px-space-4 pt-space-1 pb-space-4 shadow-lg">
           <div className="flex gap-space-2">
             <ButtonLink href={href} size="sm" variant="secondary" className="w-19 shrink-0">

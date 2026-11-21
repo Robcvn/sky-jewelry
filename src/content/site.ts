@@ -4,7 +4,7 @@
  * Copy is from the Figma Header and Footer pages. Hrefs point at routes that later tasks will build.
  */
 import type { IconName } from "@/icons/icon-data";
-import { blogPosts, postHref } from "./blog";
+import { homePosts, postHref } from "./blog";
 
 export type NavLink = { _key: string; label: string; href: string };
 
@@ -450,7 +450,7 @@ const educationMenu: MegaMenu = {
   ],
   blog: {
     title: "Explore Our Blog",
-    posts: blogPosts.map((post) => ({
+    posts: homePosts.map((post) => ({
       _key: post._id,
       title: post.title,
       topic: post.topic,

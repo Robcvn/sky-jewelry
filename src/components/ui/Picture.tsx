@@ -1,4 +1,5 @@
 import { builderImageManifest } from "@/content/builder-image-manifest";
+import { educationImageManifest } from "@/content/education-image-manifest";
 import { imageManifest as homeManifest } from "@/content/image-manifest";
 import { landingImageManifest } from "@/content/landing-image-manifest";
 import { pdpImageManifest } from "@/content/pdp-image-manifest";
@@ -8,7 +9,7 @@ import { withBasePath } from "./shared";
 
 // The PDP manifest comes after the product gallery one, so a crop made from Figma's original (the pendant's mobile
 // gallery photo) wins over the one generated from the Shopify source.
-const imageManifest = { ...homeManifest, ...productImageManifest, ...productGalleryManifest, ...pdpImageManifest, ...landingImageManifest, ...builderImageManifest };
+const imageManifest = { ...homeManifest, ...productImageManifest, ...productGalleryManifest, ...pdpImageManifest, ...landingImageManifest, ...builderImageManifest, ...educationImageManifest };
 export type ImageKey = keyof typeof imageManifest;
 
 /**

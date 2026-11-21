@@ -7,7 +7,7 @@
 import type { ImageRef } from "@/components/ui/Picture";
 import { br, em, span, type RichSpan } from "@/components/ui/RichText";
 import type { IconName } from "@/icons/icon-data";
-import { blogPosts } from "./blog";
+import { homePostIds } from "./blog";
 
 export type Cta = { label: string; href: string };
 
@@ -118,7 +118,8 @@ export type Reviews = {
 export type BlogRow = {
   _type: "blogRow";
   _key: string;
-  overline: string;
+  /** Home's "Sky Jewelry Blog"; Post Detail's "You Should also Read" has none. */
+  overline?: string;
   heading: RichSpan[];
   cta: Cta;
   postIds: string[];
@@ -459,7 +460,7 @@ export const homePage: HomePage = {
       overline: "Sky Jewelry Blog",
       heading: [span("Latest From "), em("the"), span(" blog")],
       cta: { label: "view all posts", href: "/blog/" },
-      postIds: blogPosts.map((post) => post._id),
+      postIds: homePostIds,
     },
     {
       _type: "about",

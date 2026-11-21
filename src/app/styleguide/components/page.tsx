@@ -10,6 +10,7 @@ import { CompleteDemos } from "@/components/styleguide/CompleteDemos";
 import { getBuilderCatalog } from "@/lib/builder";
 import { getEarringsCatalog } from "@/lib/earrings";
 import { EarringsDemos } from "@/components/styleguide/EarringsDemos";
+import { ContentDemos } from "@/components/styleguide/ContentDemos";
 import { MegaMenuPanel } from "@/components/site/MegaMenu";
 import { CategoryCard } from "@/components/ui/CategoryCard";
 import { DyoCard } from "@/components/ui/DyoCard";
@@ -121,6 +122,7 @@ const SECTIONS = [
   ["account", "Account"],
   ["ring-builder", "Ring builder"],
   ["earrings-builder", "Earrings builder"],
+  ["content-pages", "Education and Blog"],
   ["icons", "Icons"],
   ["deviations", "Deviations from Figma"],
   ["corrected-oversights", "Corrected design oversights"],
@@ -1301,6 +1303,25 @@ export default async function ComponentsPage() {
           <EarringsDemos setting={earringSetting} pair={earringPair} />
         </Section>
 
+        <Section id="content-pages" title="Education and Blog">
+          <p className="type-body-sm-regular max-w-[48rem]">
+            The Education Center (<Link href="/education/" className="underline">/education/</Link>), a resource (
+            <Link href="/education/the-4cs-of-diamonds/" className="underline">The 4Cs of Diamonds</Link>), the Blog (
+            <Link href="/blog/" className="underline">/blog/</Link>) and a post (
+            <Link href="/blog/how-to-layer-necklaces/" className="underline">How to Layer Necklaces</Link>, with the Featured Product Flyout
+            and, on the resource, the section list and its mobile floating menu). Reused as they are: Post Card, Resource Cards, Badge,
+            Dropdown, Pagination Number, Scrollbar, Button - Overlay, Text Button, the builder&rsquo;s grade picker and cut / color / clarity
+            explainer, Product Card, best sellers, the guarantee strip, Home&rsquo;s blog row and Education Center block, newsletter and footer.
+          </p>
+          {(["desktop", "mobile"] as const).map((bp) => (
+            <Group key={bp} title={`Breakpoint=${bp === "desktop" ? "Desktop" : "Mobile"}`}>
+              <div role="region" aria-label={`Education and Blog preview, ${bp}`} tabIndex={0} className="relative overflow-x-auto pb-space-2">
+                <ContentDemos bp={bp} />
+              </div>
+            </Group>
+          ))}
+        </Section>
+
         <Section id="icons" title="Icons">
           <ul className="flex flex-wrap gap-space-5">
             {(Object.keys(iconData) as IconName[]).map((name) => (
@@ -1557,6 +1578,17 @@ export default async function ComponentsPage() {
             <li>Stone first, the setting page: Figma draws every shape under Center Stone Shape and, on desktop, both tiles under &ldquo;Stone&rdquo; (Lab Grown Diamond, Natural Diamond). The chosen stone fixes both, so each shows only the stone&rsquo;s own value, and the mobile Stone tile only shows it, as Style does. The Stone picker is drawn for diamonds only: a gemstone has none. Meet With Our Consultant is left out, as both stone-first frames do; Choose This Setting goes to Step 3.</li>
             <li>Stone first, Step 3: desktop lists the stone&rsquo;s row before the setting&rsquo;s, as Builder Stone First - Complete does; mobile keeps the setting first, as its frame does. The stone-first Complete frame is a copy of the older Step 3 (no ring size or care plan); the page is the built Step 3 with only the order changed. Edit goes to the setting page and Remove to Step 2, keeping the stone; View goes to the stone&rsquo;s page and Remove to Step 1 with nothing chosen; Select New Stone goes to Step 1, keeping the setting.</li>
             <li>Built rings in the bag remember the flow they were built in (a hidden &ldquo;_first&rdquo; line attribute), so the bag&rsquo;s Edit and the ring&rsquo;s name return to Step 3 in that flow, and Select New Stone to that flow&rsquo;s stone list.</li>
+            <li>Education Center: 18 resources, not 12. The Education menu links 18 addresses and every one needs a page, so the first page of the grid is full (12, as drawn) and page 2 holds 6; the pagination shows 1 and 2, not Figma&rsquo;s 1 to 16. Approved (Rob, Nov 21).</li>
+            <li>Education Center topics and subtopics come from the content: five topic tiles (Diamonds, Engagement Rings, Wedding Bands, Gemstones, Fine Jewelry) after All Topics; &ldquo;More Styles&rdquo; and the repeated tiles past the frame&rsquo;s edge are not built. Subtopic badges show once a topic is chosen (as the Subtopics frames draw them), without counts. The Topic menu groups each topic&rsquo;s subtopics under its name, as drawn; Figma&rsquo;s sample subtopics (&ldquo;Anatomy of a Diamond&rdquo;, &ldquo;Diamond Symmetry&rdquo;) have no content and are not listed.</li>
+            <li>Sort: Figma draws the closed &ldquo;Sort by: Latest&rdquo; only. Its menu offers Latest and Oldest. Approved (Rob, Nov 21).</li>
+            <li>The 4Cs, Diamond Color: Figma shows the same three photos under Colorless and again under Near Colorless. Built once, after Colorless, captioned Colorless D to F, Near colorless G to J and Faint color K to M.</li>
+            <li>The 4Cs grade scales: the line under the clarity slider describes the chosen grade (Figma: one static caption). The carat slider has a line too (the approximate diameter of a well-cut round diamond at that weight); Figma draws none there.</li>
+            <li>Post Detail, mobile: the frame leaves out the H4, the labelled list and the table that desktop draws. They are part of the same article, so they show on mobile too (the table scrolls sideways). Approved (Rob, Nov 21).</li>
+            <li>Blog List: the grid lists the six posts other than the featured one, so it has no pagination; &ldquo;You Should also Read&rdquo; shows the three newest other posts. Home&rsquo;s blog row and the Education menu keep their three posts.</li>
+            <li>Education Center hero: one line under the title (&ldquo;Guides to diamonds, rings and caring for fine jewelry.&rdquo;), as the 548px text box draws it. Every resource shares Figma&rsquo;s Resource Detail hero photos (desktop: the hands; mobile: the rings and chains); each post&rsquo;s hero is a wide crop of its card photo.</li>
+            <li>Post Detail &ldquo;Customize this ring&rdquo; (Button - Overlay with Sparkle) links to the ring builder&rsquo;s first step, /design-your-own/. Figma&rsquo;s prototype gives it no destination, so the link is an inference (Rob&rsquo;s decision, Nov 21).</li>
+            <li>The guarantee strip on the Education Center and Blog has no link. The brief said it links to /the-sky-guarantee/, but the frames draw no link or button in it; built as drawn and approved (Rob, Nov 21). The footer&rsquo;s &ldquo;The Sky Guarantee&rdquo; links there (it 404s until part 2).</li>
+            <li>Featured Education (Education Center) is Home&rsquo;s Education Center block with the page frame&rsquo;s larger heading and body, no &ldquo;view all&rdquo; button, and 24px to the cards on mobile.</li>
             <li>Fine Jewelry menu and mobile Fine Jewelry screen: &ldquo;Design Your Own Earrings&rdquo; (to /design-your-own/earrings/) is added as the last row of the Earrings column. It is not in the approved menu; the wording is from the TO DOS menu rebuild (7970:215029), and the icon is the Assets &ldquo;Band&rdquo; that frame uses for &ldquo;Start with an Earring Setting&rdquo;. The desktop panel keeps its height (Rings has more rows).</li>
           </ul>
         </Section>
@@ -1738,6 +1770,10 @@ export default async function ComponentsPage() {
             <li>Earrings Step 2, mobile heading: the mobile frame (3587:126869) repeats Step 1&rsquo;s &ldquo;Design your own Earrings / Select your Perfect Piece&rdquo;, a leftover. Built with the desktop frame&rsquo;s &ldquo;Select your stone shape and Quality&rdquo; (broken before &ldquo;and&rdquo;, as the ring builder&rsquo;s mobile Step 2).</li>
             <li>Stone first, Step 1&rsquo;s stone cards draw &ldquo;with setting: $1,800&rdquo; before any setting is chosen (Builder Stone First - Stone 5440:31393): the line shows only once a setting is in the ring.</li>
             <li>Stone first, the mobile stone sheet (6683:69132) keeps the setting-first sheet&rsquo;s &ldquo;Complete Ring&rdquo;: built &ldquo;Select Stone&rdquo;, as the desktop hover card, since no setting is chosen yet.</li>
+            <li>Education and Blog filler: &ldquo;Resource Title&rdquo;, &ldquo;Featured Resource Title&rdquo;, &ldquo;Post Title&rdquo;, &ldquo;Featured Post Title&rdquo;, &ldquo;Topic Name&rdquo;, &ldquo;Image Caption&rdquo;, &ldquo;The 4C&rsquo;s&rdquo;, &ldquo;Best Engagement Ring Style&rdquo;, the Latin headings, paragraphs, list, captions and table cells, the placeholder chips &ldquo;Buying Guides (6)&rdquo;, &ldquo;Showing 12 of 32&rdquo;, the 1 to 16 pagination and the sample dates are replaced with real copy and real counts (18 resources, 7 posts).</li>
+            <li>Post Detail: &ldquo;Products in this image&rdquo; is built as &ldquo;Featured Products&rdquo;, the flyout&rsquo;s own title. The photographed choker is not in the catalogue, so the flyout shows the catalogue&rsquo;s paperclip chain and solitaire pendant, and the original label would claim they are in the photo. Approved (Rob, Nov 21).</li>
+            <li>Post Detail, mobile: the frame puts both overlay buttons on the necklace photo. &ldquo;Customize this ring&rdquo; is built on the ring photo, as on desktop.</li>
+            <li>Resource Detail: Diamond Clarity&rsquo;s first paragraph is set in 20/165, one size above every other paragraph (p-lg, 18/165). Built in p-lg.</li>
           </ul>
         </Section>
 
@@ -1890,6 +1926,8 @@ export default async function ComponentsPage() {
             <li>Photos needed for Step 3&rsquo;s fourth gallery tile: a second photo of each setting in each metal. Only Classic Solitaire in yellow gold has one; Vine (all metals), Classic Solitaire in white gold and platinum, Petite Solitaire, Pav&eacute;, Round Halo and Marquise Side-Stone show the worn photo with &ldquo;Shown with 2.50 ct&rdquo; there for now. Figma&rsquo;s own tile (6579:194578) is not a second view: it is Vine&rsquo;s white gold photo (the same image, 1c5a2a97) flipped left to right, so it was not added (the engraving would read backwards).</li>
             <li>Earrings builder: one setting. Figma&rsquo;s only earring setting photos are the yellow gold four prong studs (front, with backs, worn), the same three photos the Fine Jewelry four prong studs use; the Assets page has none. A photo of each further setting (and of the studs in white and rose gold) is needed before more settings or metals can be listed.</li>
             <li>Earrings builder: &ldquo;Choose your Stones&rdquo; (Add Diamonds / Add Gemstones) is in the prototype, but no gemstone earrings step is drawn and Add Gemstones links nowhere. Not built; Select These Earrings goes to the diamonds. Recommendation: draw the gemstone pair step, or drop the modal.</li>
+            <li>Photos for the Education Center and Blog: these frames and the Assets page hold 10 distinct photos, so the 25 cards and pages repeat them (as Figma does). Wanted: a photo for each resource and post, a wider hand photo for the post hero (the source is 603px wide and is stretched to 1034), and a necklace photo showing catalogue pieces for &ldquo;Featured Products&rdquo;. Recommendation: one landscape (4:3) and one wide (16:9) photo per article.</li>
+            <li>Blog Topic menu: it lists the six topics the posts use (Engagement, Diamonds, Weddings, Style, Care, Gemstones); Figma shows only &ldquo;Topic: All Topics&rdquo;. Recommendation: keep it derived from the posts, so a new topic appears when a post uses it.</li>
             <li>Earrings Step 3 desktop draws a gold rule and then the Setting Info row&rsquo;s own rule 32px below it (two rules); built as drawn. Mobile draws Setting Info as a section above the diamonds; desktop as an accordion row after them; each built as drawn.</li>
           </ul>
         </Section>
@@ -1926,6 +1964,7 @@ export default async function ComponentsPage() {
             </li>
             <li>Stone list: the question marks Figma draws on Carat, the gemstone Color and Certificate are left out (nothing is drawn for them to open). &ldquo;Learn more&rdquo; on the stone hover card is inert, as on the product card; in the mobile sheet it opens Modal - Credit.</li>
             <li>Earrings builder, drawn without a result: &ldquo;View Certificate&rdquo; (plain text) and &ldquo;Learn more&rdquo; on the pair hover card (inert, as on the stone card). Drop a Hint sends nothing, as on the ring builder.</li>
+            <li>Not built (hidden or off the frame): the Education Center&rsquo;s hidden section (3565:101644), the &ldquo;More Styles&rdquo; tile and the repeated tiles beyond the content width, the &ldquo;Buying Guides (6)&rdquo; chips (Figma&rsquo;s base frame; the Dropdown and Subtopics frames replace them), and the hidden Text Button beside mobile Featured Education.</li>
           </ul>
         </Section>
       </main>
