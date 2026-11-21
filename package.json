@@ -11,6 +11,7 @@
     "icons": "node scripts/build-icons.mjs",
     "shopify:seed": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-shopify-seed.mjs",
     "shopify:builder": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-builder-import.mjs",
+    "shopify:earrings": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-earrings-import.mjs",
     "images:products": "node scripts/build-product-images.mjs",
     "images:gallery": "node scripts/build-product-images.mjs --gallery"
   },

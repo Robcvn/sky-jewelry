@@ -10,7 +10,8 @@
  */
 import type { MetalId } from "./metals";
 
-export type ProductTypeName = "Rings" | "Necklaces" | "Earrings" | "Bracelets" | "Engagement Rings";
+/** "Earring Settings": the earrings builder's settings (src/content/earrings-seed.ts), kept out of the Fine Jewelry collections. */
+export type ProductTypeName = "Rings" | "Necklaces" | "Earrings" | "Bracelets" | "Engagement Rings" | "Earring Settings";
 export type DiamondType = "natural" | "lab-grown";
 
 /** Product photos (shopify/images/<name>.jpg). Extra views of a photo share its name as a prefix. */
@@ -589,7 +590,7 @@ export const METAL_PRICE_FACTOR: Record<MetalId, number> = {
   platinum: 1.3,
 };
 
-const TYPE_CODE: Record<ProductTypeName, string> = { Rings: "R", Necklaces: "N", Earrings: "E", Bracelets: "B", "Engagement Rings": "G" };
+const TYPE_CODE: Record<ProductTypeName, string> = { Rings: "R", Necklaces: "N", Earrings: "E", Bracelets: "B", "Engagement Rings": "G", "Earring Settings": "S" };
 const METAL_CODE: Record<MetalId, string> = {
   "14k-white-gold": "14WG",
   "14k-yellow-gold": "14YG",
@@ -638,7 +639,8 @@ export function expandSeed(seed: SeedProduct, metalLabel: (id: MetalId) => strin
   const photos = [...new Set(metals.flatMap((metal) => seed.metals[metal]!))];
   const first = variants[0];
   const tags = [
-    ...(seed.type === "Engagement Rings" ? [] : ["fine-jewelry"]),
+    // The builders' settings are not Fine Jewelry.
+    ...(seed.type === "Engagement Rings" || seed.type === "Earring Settings" ? [] : ["fine-jewelry"]),
     ...seed.styles.map((style) => `style:${style}`),
     ...(seed.diamondType ? [`diamond:${seed.diamondType}`] : []),
     ...(seed.shape ? [`shape:${seed.shape}`] : []),

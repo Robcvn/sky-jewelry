@@ -225,16 +225,16 @@ const GEM_CLARITY_FACTOR: Record<string, number> = { EC: 1.2, EC1: 1.1, EC2: 1, 
 export const gemPrice = (origin: "natural" | "lab-grown", gem: string, carat: number, clarity: string) =>
   round10(GEM_BASE[gem] * carat ** 1.4 * GEM_CLARITY_FACTOR[clarity] * (origin === "natural" ? 1 : 0.35));
 
-const cap = (text: string) => text.replace(/(^|[\s-])([a-z])/g, (_, lead: string, letter: string) => lead + letter.toUpperCase());
-const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+export const cap = (text: string) => text.replace(/(^|[\s-])([a-z])/g, (_, lead: string, letter: string) => lead + letter.toUpperCase());
+export const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 /** A repeatable value between 0 and 1 for stone `n` and a salt: no Math.random, so every build makes the same catalogue. */
-const fraction = (n: number, salt: number) => {
+export const fraction = (n: number, salt: number) => {
   const x = Math.sin(n * 12.9898 + salt * 78.233) * 43758.5453;
   return x - Math.floor(x);
 };
 const between = ([min, max]: [number, number], t: number, decimals: number) => Number((min + (max - min) * t).toFixed(decimals));
 
-function measurements(shape: string, carat: number, n: number) {
+export function measurements(shape: string, carat: number, n: number) {
   const spec = SHAPE[shape];
   const ratio = between(spec.ratio, fraction(n, 1), 2);
   const depth = between(spec.depth, fraction(n, 2), 1);
@@ -250,13 +250,13 @@ const DIAMOND_SHAPES = [
   "oval", "round", "cushion", "radiant", "princess", "round", "heart", "marquise", "oval", "round", "pear", "emerald", "cushion", "round", "asscher", "radiant",
 ];
 const DIAMOND_CARATS = [1, 0.5, 1.5, 0.7, 2, 0.63, 1.2, 0.9, 2.5, 1.01, 0.8, 3, 1.7, 0.55, 1.31, 4, 0.75, 2.2, 1.1, 5, 0.6, 1.8, 6];
-const COLORS = ["J", "I", "H", "G", "F", "E", "D"];
-const CLARITIES = ["SI1", "VS2", "VS1", "VVS2", "VVS1", "IF", "FL"];
-const CUTS = ["excellent", "excellent", "very-good", "excellent", "good", "very-good"];
-const FINISH = ["excellent", "very-good", "excellent", "good", "excellent", "very-good", "excellent"];
-const FLUORESCENCE = ["none", "none", "faint", "none", "medium", "faint", "strong", "none"];
-const CERTS = { natural: ["GIA", "GIA", "AGS", "GIA", "IGI"], "lab-grown": ["IGI", "IGI", "GIA", "IGI", "AGS"] };
-const DIAMOND_PHOTO: Record<string, StonePhoto> = {
+export const COLORS = ["J", "I", "H", "G", "F", "E", "D"];
+export const CLARITIES = ["SI1", "VS2", "VS1", "VVS2", "VVS1", "IF", "FL"];
+export const CUTS = ["excellent", "excellent", "very-good", "excellent", "good", "very-good"];
+export const FINISH = ["excellent", "very-good", "excellent", "good", "excellent", "very-good", "excellent"];
+export const FLUORESCENCE = ["none", "none", "faint", "none", "medium", "faint", "strong", "none"];
+export const CERTS = { natural: ["GIA", "GIA", "AGS", "GIA", "IGI"], "lab-grown": ["IGI", "IGI", "GIA", "IGI", "AGS"] };
+export const DIAMOND_PHOTO: Record<string, StonePhoto> = {
   round: "stone-diamond-round",
   cushion: "stone-diamond-cushion",
   emerald: "stone-diamond-emerald",
