@@ -74,6 +74,17 @@ jobs:
             echo "::error::The build fell back to the local catalogue for some pages (lines above)."
             fail=1
           fi
+          # Every page must have read the same catalogue: the "[catalog] N products from Shopify." lines must agree.
+          # Right after an import, some build workers can still get the store's previous answer.
+          counts="$(grep -oE '\[catalog\] [0-9]+ products from Shopify\.' build.log | sort -u || true)"
+          if [ -z "$counts" ]; then
+            echo "::error::The build log has no [catalog] product count from Shopify."
+            fail=1
+          elif [ "$(printf '%s\n' "$counts" | grep -c .)" -ne 1 ]; then
+            printf '%s\n' "$counts"
+            echo "::error::The [catalog] product counts disagree (lines above): pages were built from different reads of the store. Run the deploy again in a minute."
+            fail=1
+          fi
           # src/lib/builder.ts: every [builder] line must report no local settings and all 132 stones from Shopify.
           builder="$(grep -F '[builder]' build.log || true)"
           if [ -z "$builder" ]; then
@@ -84,7 +95,7 @@ jobs:
             echo "::error::The ring builder did not read all its settings and stones from Shopify (lines above)."
             fail=1
           fi
-          # src/lib/earrings.ts: every [earrings] line must report no local settings and all 60 pairs from Shopify.
+          # src/lib/earrings.ts: every [earrings] line must report no local settings and read "60 pairs from Shopify".
           earrings="$(grep -F '[earrings]' build.log || true)"
           if [ -z "$earrings" ]; then
             echo "::error::The build log has no [earrings] line."
@@ -96,6 +107,7 @@ jobs:
           fi
           if [ "$fail" -ne 0 ]; then exit 1; fi
           echo "Catalogue check passed:"
+          printf '%s\n' "$counts"
           printf '%s\n' "$builder" | sort -u
           printf '%s\n' "$earrings" | sort -u
 
