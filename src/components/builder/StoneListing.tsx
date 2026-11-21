@@ -10,13 +10,14 @@ import { Tabs } from "@/components/ui/Tabs";
 import { Tag } from "@/components/ui/Tag";
 import { TextButton } from "@/components/ui/TextButton";
 import { cx } from "@/components/ui/shared";
+import { useIsDesktop } from "@/components/ui/useIsDesktop";
 import { shipDateLabel } from "@/components/plp/filters";
 import { builderContent, GEM_COLORS, GEM_TREATMENTS, GEM_TYPES, shapeIcon, shapeLabel, STONE_SHAPES, type StoneKind, type StoneOrigin } from "@/content/builder";
 import { productListContent } from "@/content/product-list";
 import type { Product } from "@/content/products";
 import type { Stone } from "@/lib/builder";
 import { CccModal, type CccTab } from "./CccModal";
-import { completeHref, parseRing, settingVariant, startDefaults, stoneHref } from "./ring";
+import { completeHref, parseRing, settingVariant, startDefaults, stoneHref, type Ring } from "./ring";
 import { StoneCard } from "./StoneCard";
 import {
   AdvancedPanel,
@@ -109,11 +110,31 @@ function GemColorDropdown({ value, onChange }: { value: string | null; onChange:
   );
 }
 
+/** What the earrings builder's Step 2 changes: its page size, cards and quick view (diamonds only). */
+export type StoneListingVariant = {
+  /** Replaces the heading; without it the ring's heading is used ("Select your stone shape and Quality"). */
+  header?: ReactNode;
+  pageSize: { desktop: number; mobile: number };
+  gridClassName: string;
+  resultsLabel: string;
+  emptyText: string;
+  card: (stone: Stone, context: { ring: Ring; settingPrice: number | null; onQuickView: (stone: Stone) => void }) => ReactNode;
+  /** The earrings frame draws Advanced Filters open, and pads the page 48px top and bottom on desktop too. */
+  advancedOpen: boolean;
+  containerClassName: string;
+  /** Its open Advanced Filters row sits 16px under the toggle, and the grid 24px under the results row (the ring's frame: 24 and 40). */
+  advancedClassName: string;
+  resultsClassName: string;
+  quickView: (stone: Stone, context: { ring: Ring; settingPrice: number | null; open: boolean; onClose: () => void }) => ReactNode;
+};
+
 type StoneListingProps = {
   /** Every loose stone, in catalogue order, fetched at build time. */
   stones: Stone[];
   /** The settings' products, to price "with setting" for the one the URL names. */
   settings: Product[];
+  /** The earrings builder's Step 2 (its pairs are passed as stones: see src/lib/earrings.ts). */
+  variant?: StoneListingVariant;
 };
 
 /**
@@ -122,9 +143,10 @@ type StoneListingProps = {
  * over the stones fetched at build time; their state lives in the URL next to the ring's (see stoneFilters.ts).
  * Diamonds or gemstones comes from the menu link the shopper started with (?start=): Figma draws no switch between them.
  */
-export function StoneListing({ stones, settings }: StoneListingProps) {
+export function StoneListing({ stones, settings, variant }: StoneListingProps) {
   const id = useId();
   const isClient = useIsClient();
+  const isDesktop = useIsDesktop();
   const [search, setQuery] = useQuery();
   const params = new URLSearchParams(search);
   const ring = parseRing(params);
@@ -142,7 +164,7 @@ export function StoneListing({ stones, settings }: StoneListingProps) {
   const set = (patch: Partial<StoneFilterState>) => setState({ ...state, ...patch, page: 1 });
 
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(variant?.advancedOpen ?? false);
   const [help, setHelp] = useState<{ open: boolean; tab: CccTab }>({ open: false, tab: "cut" });
   const [quickView, setQuickView] = useState<{ stone: Stone; open: boolean } | null>(null);
   const gridRef = useRef<HTMLUListElement>(null);
@@ -150,7 +172,8 @@ export function StoneListing({ stones, settings }: StoneListingProps) {
 
   const bounds = stoneBounds(pool);
   const matches = applyStoneFilters(pool, state, kind, bounds);
-  const shown = matches.slice(0, builderContent.pageSize * state.page);
+  const pageSize = variant ? (isDesktop ? variant.pageSize.desktop : variant.pageSize.mobile) : builderContent.pageSize;
+  const shown = matches.slice(0, pageSize * state.page);
   const scales = scalesFor(kind);
   const gem = kind === "gemstone";
 
@@ -283,11 +306,13 @@ export function StoneListing({ stones, settings }: StoneListingProps) {
   };
 
   return (
-    <div className="site-container flex flex-col gap-space-5 pt-space-11 pb-space-11 text-primary-leather ui-desktop:gap-space-10 ui-desktop:pt-space-15 ui-desktop:pb-space-15">
+    <div className={cx("site-container flex flex-col gap-space-5 text-primary-leather ui-desktop:gap-space-10", variant ? variant.containerClassName : "pt-space-11 pb-space-11 ui-desktop:pt-space-15 ui-desktop:pb-space-15")}>
       <header className="flex flex-col items-center gap-space-5 ui-desktop:gap-space-6">
-        <h1 className="type-heading-caps-md text-center ui-desktop:type-heading-caps-lg">
-          <RichText value={HEADING} emClassName="type-heading-italic-md ui-desktop:type-heading-italic-lg" />
-        </h1>
+        {variant?.header ?? (
+          <h1 className="type-heading-caps-md text-center ui-desktop:type-heading-caps-lg">
+            <RichText value={HEADING} emClassName="type-heading-italic-md ui-desktop:type-heading-italic-lg" />
+          </h1>
+        )}
 
         {/* Natural / Lab-Grown: Figma "Tabs" (pill), 40px tabs on desktop and 32px on mobile. */}
         {(["md", "sm"] as const).map((size) => (
@@ -404,7 +429,7 @@ export function StoneListing({ stones, settings }: StoneListingProps) {
         </div>
 
         {/* Figma "Advanced Filters": a centred toggle between two gold rules; open, it shows a count and a close mark. */}
-        <div className="flex flex-col gap-space-6">
+        <div className={cx("flex flex-col", variant ? variant.advancedClassName : "gap-space-6")}>
           <div className="flex items-center gap-space-2">
             <span aria-hidden="true" className="h-px flex-1 bg-secondary-gold" />
             <button
@@ -466,28 +491,32 @@ export function StoneListing({ stones, settings }: StoneListingProps) {
         </div>
       </div>
 
-      <div className="flex flex-col">
-        <h2 className="sr-only">{gem ? "Gemstones" : "Diamonds"}</h2>
+      <div className={cx("flex flex-col", variant?.resultsClassName)}>
+        <h2 className="sr-only">{variant ? variant.resultsLabel : gem ? "Gemstones" : "Diamonds"}</h2>
         <p role="status" className="sr-only">
-          {isClient ? `Showing ${shown.length} of ${matches.length} ${matches.length === 1 ? "stone" : "stones"}.` : ""}
+          {isClient ? `Showing ${shown.length} of ${matches.length} ${variant ? variant.resultsLabel.toLowerCase() : matches.length === 1 ? "stone" : "stones"}.` : ""}
         </p>
         {shown.length ? (
-          <ul ref={gridRef} className="grid grid-cols-2 gap-x-space-2 gap-y-space-4 ui-desktop:grid-cols-4 ui-desktop:gap-space-4">
+          <ul ref={gridRef} className={variant ? variant.gridClassName : "grid grid-cols-2 gap-x-space-2 gap-y-space-4 ui-desktop:grid-cols-4 ui-desktop:gap-space-4"}>
             {shown.map((stone) => (
               <li key={stone.handle}>
-                <StoneCard
-                  stone={stone}
-                  href={stoneHref(stone.handle, ring)}
-                  completeHref={completeHref({ ...ring, stone: stone.handle })}
-                  settingPrice={settingPrice}
-                  onQuickView={(item) => setQuickView({ stone: item, open: true })}
-                />
+                {variant ? (
+                  variant.card(stone, { ring, settingPrice, onQuickView: (item) => setQuickView({ stone: item, open: true }) })
+                ) : (
+                  <StoneCard
+                    stone={stone}
+                    href={stoneHref(stone.handle, ring)}
+                    completeHref={completeHref({ ...ring, stone: stone.handle })}
+                    settingPrice={settingPrice}
+                    onQuickView={(item) => setQuickView({ stone: item, open: true })}
+                  />
+                )}
               </li>
             ))}
           </ul>
         ) : (
           <div className="flex flex-col items-center gap-space-5 rounded-4 border border-secondary-gold px-space-8 py-space-10 text-center ui-desktop:gap-space-8 ui-desktop:px-space-15 ui-desktop:py-space-13">
-            <p className="type-heading-sm max-w-[24.875rem] ui-desktop:type-heading-md">{copy.empty}</p>
+            <p className="type-heading-sm max-w-[24.875rem] ui-desktop:type-heading-md">{variant ? variant.emptyText : copy.empty}</p>
             <Button size="sm" variant="secondary" leftIcon="arrow-counter-clockwise" onClick={clearAll}>
               {listCopy.clearFilters}
             </Button>
@@ -524,7 +553,10 @@ export function StoneListing({ stones, settings }: StoneListingProps) {
         onHelp={openHelp}
       />
       <CccModal open={help.open} onClose={() => setHelp((current) => ({ ...current, open: false }))} tab={help.tab} onTabChange={(tab) => setHelp({ open: true, tab })} />
-      {quickView ? (
+      {quickView && variant
+        ? variant.quickView(quickView.stone, { ring, settingPrice, open: quickView.open, onClose: () => setQuickView({ ...quickView, open: false }) })
+        : null}
+      {quickView && !variant ? (
         <StoneQuickView
           key={quickView.stone.handle}
           stone={quickView.stone}

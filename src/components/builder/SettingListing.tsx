@@ -306,6 +306,7 @@ export function SettingListing({ settings, stoneFrom }: SettingListingProps) {
                       href: infoHref(setting),
                       priceNote: withStone,
                       action: { label: text.chooseSetting, href: chooseHref(setting) },
+                      hint360: true,
                     }}
                   />
                 </li>

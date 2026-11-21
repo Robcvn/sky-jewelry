@@ -1,7 +1,9 @@
 /**
  * Build-time product catalogue. Reads from Shopify; falls back to the mock catalogue only when Shopify isn't
  * configured, can't be reached, or returns nothing, and says so in the build log. The site never breaks
- * because the store is unavailable.
+ * because the store is unavailable. One thing does stop the build: a catalogue request that comes back full
+ * (CATALOG_PAGE items), since the store may hold more than one request reads and the site would deploy with
+ * products silently missing.
  */
 import type { Product } from "@/content/products";
 import { getCollectionProductHandles, getProducts, shopifyConfig, type ShopifyProduct } from "@/lib/shopify";
@@ -12,6 +14,25 @@ import { getMockProducts } from "./mockCatalog";
 export type Catalog = { products: Product[]; source: "shopify" | "mock"; raw: ShopifyProduct[] };
 
 let catalog: Promise<Catalog> | undefined;
+
+/** The most products (or collection members) one catalogue request reads: the Storefront API's page limit. */
+export const CATALOG_PAGE = 250;
+
+/** Thrown when a catalogue request returns a full page. Never caught into the mock fallback: the build stops. */
+export class CatalogLimitError extends Error {
+  constructor(what: string, count: number) {
+    super(
+      `[catalog] ERROR: ${what} returned ${count} items, the most one request reads (${CATALOG_PAGE}), so the catalogue may be ` +
+        "truncated. Page through the results (src/lib/shopify/index.ts) before the store grows past this; the build stops so " +
+        "an incomplete catalogue can't deploy.",
+    );
+    this.name = "CatalogLimitError";
+  }
+}
+
+function checkPage(what: string, count: number) {
+  if (count >= CATALOG_PAGE) throw new CatalogLimitError(what, count);
+}
 
 function fallback(reason: string): Catalog {
   console.warn(
@@ -24,12 +45,14 @@ function fallback(reason: string): Catalog {
 async function loadCatalog(): Promise<Catalog> {
   if (!shopifyConfig()) return fallback("Shopify is not configured");
   try {
-    const raw = await getProducts({ first: 250 });
+    const raw = await getProducts({ first: CATALOG_PAGE });
+    checkPage("The Shopify products request", raw.length);
     const products = raw.map(mapShopifyProduct).filter((product): product is Product => product !== null);
     if (!products.length) return fallback("Shopify returned no products");
     console.info(`[catalog] ${products.length} products from Shopify.`);
     return { products, source: "shopify", raw };
   } catch (error) {
+    if (error instanceof CatalogLimitError) throw error;
     return fallback(`Shopify failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
@@ -59,13 +82,15 @@ export async function getCategoryProducts(category: string): Promise<{ products:
   const { products, source } = await getCatalog();
   if (source === "shopify") {
     try {
-      const handles = await getCollectionProductHandles(category);
+      const handles = await getCollectionProductHandles(category, CATALOG_PAGE);
+      checkPage(`The "${category}" collection request`, handles?.length ?? 0);
       if (handles?.length) {
         const inCollection = products.filter((product) => handles.includes(product.slug)).sort(byRank);
         console.info(`[catalog] ${category}: ${inCollection.length} products from the "${category}" collection.`);
         return { products: inCollection, from: "collection" };
       }
     } catch (error) {
+      if (error instanceof CatalogLimitError) throw error;
       console.warn(`[catalog] ${category}: collection lookup failed (${error instanceof Error ? error.message : String(error)}).`);
     }
   }

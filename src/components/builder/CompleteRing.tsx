@@ -13,6 +13,7 @@ import { Modal } from "@/components/ui/Modal";
 import { PaginationDots } from "@/components/ui/Pagination";
 import { Picture, slotImage, type ImageRef } from "@/components/ui/Picture";
 import { cx } from "@/components/ui/shared";
+import { DOTS_ABOVE_HINT, Hint360 } from "@/components/ui/Viewer360";
 import { useIsDesktop } from "@/components/ui/useIsDesktop";
 import { builderContent, RING_SIZES, ringSizeLabel, shapeIcon, shapeLabel, styleLabel } from "@/content/builder";
 import { metalById } from "@/content/metals";
@@ -77,20 +78,22 @@ export function TotalPrice({ total, struck }: { total: number; struck: boolean }
 /**
  * Desktop gallery (Figma 6579:194556): a 2 x 2 grid of 341px tiles. The setting's photo, the stone, the stone's
  * certificate, and a second ring photo: the setting's own when it has one, otherwise the setting page's photo of a
- * ring worn (with its "Shown with" badge). Figma's 360° marker and the stone tile's pagination dots are left out
- * (no 360° sequences, one stone photo), as on the setting and stone pages.
+ * ring worn (with its "Shown with" badge). Figma's 360° marker on the setting's photo (6579:194559) is drawn and
+ * inert (no 360° sequences; Held for review), as on the setting and stone pages. The stone tile's pagination dots
+ * are left out (one stone photo).
  */
 function DesktopGallery({ ring, stone }: { ring: Tile[]; stone: Stone }) {
   const second = ring[1] ?? { key: "worn", ...WORN[0] };
-  const photo = (tile: Tile, priority: boolean) => (
+  const photo = (tile: Tile, priority: boolean, hint360 = false) => (
     <div className={cx("relative aspect-square overflow-hidden rounded-4", TILE_BG)}>
       <Picture image={tile.image} priority={priority} sizes={{ desktop: "(width >= 90rem) 21.3rem, 24vw", mobile: "100vw" }} className={cx("size-full object-cover", !tile.carat && "mix-blend-multiply")} />
       {tile.carat ? <ShownWith carat={tile.carat} /> : null}
+      {hint360 ? <Hint360 className="bottom-space-4" /> : null}
     </div>
   );
   return (
     <div data-complete-gallery className="grid grid-cols-2 gap-space-3">
-      {photo(ring[0], true)}
+      {photo(ring[0], true, true)}
       <div data-stone-photo className={cx("relative aspect-square overflow-hidden rounded-4", stone.image ? STONE_TILE_BG : STONE_DRAWING_BG)}>
         <StonePicture stone={stone} sizes={{ desktop: "(width >= 90rem) 21.3rem, 24vw", mobile: "100vw" }} />
       </div>
@@ -103,7 +106,8 @@ function DesktopGallery({ ring, stone }: { ring: Tile[]; stone: Stone }) {
 /**
  * Mobile gallery (Figma "PDP - Asset Tabs" 6579:208207): the ring photo, full width, with a 64px thumbnail of the
  * stone that switches the view to the stone and back, as the setting page's thumbnail switches to the worn photos.
- * The 360° marker and the "360° View / Images" tabs are left out, as on the setting and stone pages.
+ * Figma's 360° marker (6579:208180) is drawn and inert, on the ring and on the stone, as on the earrings pages;
+ * with several ring photos the dots sit above it. The "360° View / Images" tabs are left out, as on every builder page.
  */
 function MobileGallery({ ring, stone, name }: { ring: Tile[]; stone: Stone; name: string }) {
   const [showStone, setShowStone] = useState(false);
@@ -135,8 +139,9 @@ function MobileGallery({ ring, stone, name }: { ring: Tile[]; stone: Stone; name
           ))}
         </div>
       )}
+      <Hint360 className="bottom-space-4" />
       {!showStone && ring.length > 1 ? (
-        <div className="pointer-events-none absolute inset-x-0 bottom-space-4 flex justify-center [&>*]:pointer-events-auto">
+        <div className={cx("pointer-events-none absolute inset-x-0 flex justify-center [&>*]:pointer-events-auto", DOTS_ABOVE_HINT)}>
           <PaginationDots count={ring.length} current={current} onSelect={goTo} label={`Photos of ${name}`} itemLabel={(index) => `Photo ${index + 1} of ${ring.length}`} />
         </div>
       ) : null}

@@ -8,6 +8,8 @@ import { BagDemos } from "@/components/styleguide/BagDemos";
 import { BuilderDemos } from "@/components/styleguide/BuilderDemos";
 import { CompleteDemos } from "@/components/styleguide/CompleteDemos";
 import { getBuilderCatalog } from "@/lib/builder";
+import { getEarringsCatalog } from "@/lib/earrings";
+import { EarringsDemos } from "@/components/styleguide/EarringsDemos";
 import { MegaMenuPanel } from "@/components/site/MegaMenu";
 import { CategoryCard } from "@/components/ui/CategoryCard";
 import { DyoCard } from "@/components/ui/DyoCard";
@@ -117,6 +119,7 @@ const SECTIONS = [
   ["bag", "Bag"],
   ["account", "Account"],
   ["ring-builder", "Ring builder"],
+  ["earrings-builder", "Earrings builder"],
   ["icons", "Icons"],
   ["deviations", "Deviations from Figma"],
   ["corrected-oversights", "Corrected design oversights"],
@@ -370,6 +373,10 @@ export default async function ComponentsPage() {
   const roundStone = builder.stones.find((stone) => stone.kind === "diamond" && stone.shape === "round" && stone.certificate === "GIA") ?? builder.stones[0];
   const drawnStone = builder.stones.find((stone) => !stone.image) ?? builder.stones[0];
   const otherLabStone = builder.stones.find((stone) => stone.kind === "diamond" && stone.certificate !== "GIA") ?? builder.stones[0];
+  // Catalogue samples for the Earrings builder section.
+  const earringsCatalog = await getEarringsCatalog();
+  const earringSetting = earringsCatalog.settings[0];
+  const earringPair = earringsCatalog.pairs.find((pair) => pair.shape === "round") ?? earringsCatalog.pairs[0];
   return (
     <>
       <main id="main-content" tabIndex={-1} className="site-container flex flex-col gap-space-15 py-space-13">
@@ -1280,6 +1287,10 @@ export default async function ComponentsPage() {
           <CompleteDemos setting={builderSetting} stone={roundStone} />
         </Section>
 
+        <Section id="earrings-builder" title="Earrings builder">
+          <EarringsDemos setting={earringSetting} pair={earringPair} />
+        </Section>
+
         <Section id="icons" title="Icons">
           <ul className="flex flex-wrap gap-space-5">
             {(Object.keys(iconData) as IconName[]).map((name) => (
@@ -1467,10 +1478,12 @@ export default async function ComponentsPage() {
             </li>
             <li>
               Ring builder setting cards and Modal / Setting Selection: the 360° View / Images / Video tabs are left out (no setting has a
-              360° sequence or a video); the hover card&rsquo;s photos use the product card&rsquo;s dots instead.
+              360° sequence or a video). The 360° marker on the photo is shown, drawn and inert (Held for review); a setting with
+              several photos keeps the product card&rsquo;s dots, placed just above the marker.
             </li>
             <li>
-              Setting page gallery: Figma&rsquo;s 360° tile and its video tile are left out, as are the dots and arrow on the first worn
+              Setting page gallery: Figma&rsquo;s mirrored second setting photo and its video tile are left out; the 360° marker it carries
+              is shown on the setting&rsquo;s first photo, as on Step 3&rsquo;s first tile (drawn and inert; Held for review). The dots and arrow on the first worn
               photo and the carat tabs on the second (there is one photo of each). That leaves three tiles, laid out by Product
               Detail&rsquo;s rule: the first spans the row.
             </li>
@@ -1499,15 +1512,15 @@ export default async function ComponentsPage() {
             <li>Stone list slider bounds come from the stones in the tab, as on the product list (Figma: 0.50 to 6.00 carats and $200 to $5,000,000).</li>
             <li>Stone list, desktop Advanced Filters for diamonds: Figma draws the open row for gemstones only (Treatment, L/W Ratio, Certificate dropdowns). Diamonds are built on that pattern with Polish, Symmetry, Fluorescence, Table, Depth and L/W Ratio, the filters the mobile sheet lists (inferred). The count badge shows the number of active advanced filters, and Clear Filters shows when a filter is active.</li>
             <li>Stone list question marks are leather (Figma: gold) to reach 3:1 against the page. Desktop number inputs have Product List&rsquo;s 24px stepper column (Figma: 20px), and the sheet&rsquo;s shape tiles are 80px squares (Figma&rsquo;s hug to about 72px tall).</li>
-            <li>Stone cards and Modal / Stone Selection: the 360° View / Images tabs are left out (no 360° sequences), so the hover card is 525px tall against 572 and the sheet 602 against 646. The card title is the shape, as Figma&rsquo;s &ldquo;Round&rdquo;; the stone&rsquo;s full name is its accessible name.</li>
+            <li>Stone cards and Modal / Stone Selection: the 360° View / Images tabs are left out (no 360° sequences), so the hover card is 525px tall against 572 and the sheet 602 against 646. The 360° marker on the photo is shown (on the card, on hover or focus), drawn and inert (Held for review). The card title is the shape, as Figma&rsquo;s &ldquo;Round&rdquo;; the stone&rsquo;s full name is its accessible name.</li>
             <li>Cut / Color / Clarity modal: choosing a grade changes the explanation only, not the filters. The Color and Clarity drawings reuse Product Detail&rsquo;s (the modal&rsquo;s Clarity drawing differs slightly). No close button is drawn: Escape and the backdrop close it.</li>
             <li>Ring builder Step 1 lists only settings tagged &ldquo;setting&rdquo;: the six new ones. The store&rsquo;s four engagement rings (Channel Set, Halo, Side-Stone, Eternity) are left out of the list and its filters, because their photos are the vine ring&rsquo;s. They keep their setting pages, which Home&rsquo;s best sellers link to.</li>
             <li>Ring builder style tiles: a style with no settings is left out, on desktop and in the mobile sheet. The Design System&rsquo;s Radio Button (Radio 588:1170) draws Inactive, Hover, Pressed and Active, and no disabled state. Desktop shows Solitaire, Pave, Side Stone, Halo and Natural of Figma&rsquo;s nine; the sheet shows Solitaire, Pave, Side Stone and Halo of its eight (it draws no Natural).</li>
             <li>Gemstone Type: a type with no stones in the tab is not offered (Moissanite is lab-grown only, so the Natural tab doesn&rsquo;t list it).</li>
             <li>Ring builder Step 3, ring size converter: Inches (drawn) and Centimetres. The US formula (inside diameter 11.63 + 0.8128 &times; size mm) gives 2 inches as size 5.5; Figma&rsquo;s example says 6. Built with the formula. Lengths outside sizes 3 to 13.5, or an empty field, show the Design System&rsquo;s input error message under the row (not drawn).</li>
-            <li>Mobile galleries of the setting page (3587:125842), the stone page (3587:125937) and Step 3 (6579:208207): Figma&rsquo;s &ldquo;PDP - Asset Tabs&rdquo; is 430px tall, the photo plus an 8px gap and the 32px &ldquo;360&deg; View | Images&rdquo; tab row. The tab row is left out (no 360&deg; sequences), so the block is 390px and everything below sits 40px higher than the frames. The 360&deg; marker on the photo is left out too. The thumbnail switches between the ring and its worn photos (setting page) or the ring and its stone (Step 3).</li>
+            <li>Mobile galleries of the setting page (3587:125842), the stone page (3587:125937) and Step 3 (6579:208207): Figma&rsquo;s &ldquo;PDP - Asset Tabs&rdquo; is 430px tall, the photo plus an 8px gap and the 32px &ldquo;360&deg; View | Images&rdquo; tab row. The tab row is left out (no 360&deg; sequences), so the block is 390px and everything below sits 40px higher than the frames. The 360&deg; marker on the photo is shown, drawn and inert (Held for review); where the photos have pagination dots, the dots sit just above it (the setting page shows the marker on the setting&rsquo;s photos, not on the worn ones). The thumbnail switches between the ring and its worn photos (setting page) or the ring and its stone (Step 3).</li>
             <li>Step 3 desktop gallery, stone tile: Figma&rsquo;s Pagination Dots (6579:194568) are left out. Each stone has one photo, so there is nothing to page through; they come back with more stone photos. (The product page&rsquo;s dots on one tile of its static grid are a corrected oversight; here they would page the stone&rsquo;s own photos.)</li>
-            <li>Step 3 desktop gallery, fourth tile (6579:194577): Figma draws a second photo of the ring, with its Badge hidden. Built with the setting&rsquo;s second photo and no badge. Only Classic Solitaire in yellow gold has one; every other setting and metal has one photo, so its tile keeps the setting page&rsquo;s worn photo with &ldquo;Shown with 2.50 ct&rdquo; (see Open questions). The 360&deg; marker on the first tile is left out.</li>
+            <li>Step 3 desktop gallery, fourth tile (6579:194577): Figma draws a second photo of the ring, with its Badge hidden. Built with the setting&rsquo;s second photo and no badge. Only Classic Solitaire in yellow gold has one; every other setting and metal has one photo, so its tile keeps the setting page&rsquo;s worn photo with &ldquo;Shown with 2.50 ct&rdquo; (see Open questions). The 360&deg; marker on the first tile is shown, drawn and inert (Held for review).</li>
             <li>Step 3 names, each place in its own frame&rsquo;s wording, from the setting&rsquo;s short name and the stone&rsquo;s title: desktop &ldquo;Vine 1.01 Carat H VVS2 Round Natural Diamond Engagement Ring&rdquo;, mobile &ldquo;The Vine with a &hellip;&rdquo;, the bag page &ldquo;Vine Ring with a &hellip;&rdquo; (without Figma&rsquo;s cut abbreviation &ldquo;VG&rdquo;: the stone&rsquo;s title has none) and the bag panel &ldquo;Vine Ring&rdquo;. The step bar&rsquo;s stone reads &ldquo;Round 1.01 Carat&rdquo; with its price once (Figma: &ldquo;Round 0.50 Carat - $1,040&rdquo; beside the price).</li>
             <li>Step 3 Total Price is the setting plus the stone; the ships line is the longer of the two lead times (&ldquo;Ships in 7 days&rdquo;; Figma: &ldquo;Ships in 2-3 weeks&rdquo;).</li>
             <li>Step 3 Ring Details: each breakpoint has its frame&rsquo;s tables (desktop Center Stone Details and Setting Details; mobile Details and Side Stones). Side Stones leaves out Shape and Origin (the catalogue has no data for them) and is left out for settings without accent stones. The mobile Your Setting Info shows Metal, Width and Approx. TCW only, as its frame draws them.</li>
@@ -1518,6 +1531,15 @@ export default async function ComponentsPage() {
             <li>Footer contact details are mock values (123 Sample Ave, New York NY 10001; +1 (212) 555-0142; info@example.com): Figma shows the store&rsquo;s own address, phone and email, which a public demo shouldn&rsquo;t publish. The demo notice says contact details are sample content.</li>
             <li>Product page &ldquo;Drop a hint&rdquo; opens Step 3&rsquo;s Modal - Drop a Hint with the product&rsquo;s photo and name in the preview (inferred: Figma draws the modal for the ring builder). The optional Ring Size field shows for rings only.</li>
             <li>Ring builder Step 2 list leaves out stones Shopify reports as unavailable when the site is built. Their stone pages stay, and Step 3 still shows a stone sold since the build as unavailable.</li>
+            <li>Earrings builder routes mirror the ring builder&rsquo;s under /design-your-own/earrings/ (setting/&lt;handle&gt;/, stone/, stone/&lt;handle&gt;/, complete/), with the earrings in the URL (setting, metal, shape, stone: the pair). Step 3 is noindex, follow, as the ring&rsquo;s.</li>
+            <li>Earrings builder, Select These Earrings goes straight to Step 2 (diamonds). Figma&rsquo;s prototype opens &ldquo;Choose your Stones&rdquo; (3565:99781, Add Diamonds / Add Gemstones) first; no gemstone step is drawn for earrings and Add Gemstones links nowhere, so the modal is not built (Open questions).</li>
+            <li>Earrings builder Step 1: Info and Customize on the hover card both open the setting&rsquo;s page, as the prototype links the card&rsquo;s button group. The mobile quick view reuses the ring builder&rsquo;s (Figma links the Fine Jewelry &ldquo;Product List / Modal&rdquo;, whose Carat Weight, Stone tile and Add to Bag don&rsquo;t apply to a setting): Metal tile, Info and Customize. Metal tiles and the Filters sheet offer only the metals the setting comes in (14K and 18K Yellow Gold).</li>
+            <li>Earrings builder Step 2 runs the ring builder&rsquo;s stone list: pairs are filtered as one, with carat the pair&rsquo;s total weight, price the pair&rsquo;s price, and Table, Depth and L/W Ratio the average of the two stones. Pages hold 14 cards on desktop and 12 on mobile, the counts the frames draw (Figma&rsquo;s &ldquo;Showing 1-16 of 2000&rdquo; is placeholder text; the count is real). Pairs Shopify reports as unavailable at build time are left out.</li>
+            <li>Earrings builder galleries: the model photo tile pages through the setting&rsquo;s three photos, worn first, with Figma&rsquo;s overlay dots and arrow (Figma draws five dots: there is one per photo). The third Setting Info tile shows the builder&rsquo;s round diamond photo with the 360 hint, as drawn. Mobile: the 360&deg; View | Images tab row is left out, as on the ring builder&rsquo;s pages (the block is 390px, not 430), and the thumbnail switches to a diamond. Stones Info thumbnails switch each diamond&rsquo;s tile between its photo, its specs drawing and its certificate.</li>
+            <li>Earrings builder Step 3: Secure Checkout and Add to Bag are enabled from the start (there is no size). Add to Bag sends the setting and the pair as two lines linked by an &ldquo;_earrings&rdquo; id in one cart call and opens the bag panel; Secure Checkout adds them and goes to the bag page. A pair already in the bag is not added again.</li>
+            <li>Built earrings in the bag follow the built ring&rsquo;s rows (inferred: the bag frames draw only a ring): the heading is Step 3&rsquo;s name, the setting row shows Metal (no size), the pair row &ldquo;Natural Round Diamonds&rdquo; with both weights, Color, Cut and Clarity; one care plan row; they count as one item and Remove takes out both lines. The panel shows &ldquo;14K Yellow Gold / 1.02ct&rdquo; (the pair&rsquo;s total).</li>
+            <li>Earrings builder, pair no longer available: the ring builder&rsquo;s drawn Stone Unavailable state, worded for a pair (&ldquo;These diamonds are no longer available.&rdquo;, &ldquo;Select New Diamonds&rdquo;, and the modal) (inferred: no earrings frame draws it). Step 3 reads the pair&rsquo;s availability from the Storefront API, the bag from the cart.</li>
+            <li>Earrings builder Diamond Info, Carat card: &ldquo;The weight of this diamond.&rdquo; (the ring builder&rsquo;s says &ldquo;the center stone&rdquo;). Drop a Hint on the earrings pages has no Ring Size field and says &ldquo;Let someone know about the earrings you&rsquo;ve designed.&rdquo;</li>
           </ul>
         </Section>
 
@@ -1689,6 +1711,13 @@ export default async function ComponentsPage() {
             <li>Modal - Drop a Hint draws a fifth &ldquo;Recipient Name *&rdquo; field after Your Email (desktop and mobile). Left out.</li>
             <li>Step 3 placeholders built from the ring&rsquo;s own data: the Ring Details text (Latin filler), the Setting Details table&rsquo;s copied values (SKU &ldquo;0.5ct&rdquo;, Width &ldquo;Diamond&rdquo;, Style &ldquo;Polished&rdquo;), the Center Stone Details grades (J, SI1, Oval, against an I VVS2 Round title), the stone row&rsquo;s &ldquo;0.50ct &bull; J &bull; VVS2&rdquo; and the installments&rsquo; $147.50 (not $2,290 / 12).</li>
             <li>Modal - Ring Size: the three steps&rsquo; Latin filler is replaced with plain instructions that match the photos. Modal - Drop a Hint&rsquo;s subheading (Latin filler) reads &ldquo;Let someone know about the ring you&rsquo;ve designed.&rdquo;</li>
+            <li>Earrings Step 1 cards: Figma&rsquo;s placeholder title and price (&ldquo;14K Yellow Gold Four Prong Solitaire 0.80ct Lab-Grown Pendant&rdquo;, $1,200) and the pendant photo on one card (7b59aede, the solitaire pendant&rsquo;s): built with the setting&rsquo;s own name, $720 price and photo. The desktop filter row draws Price twice: built once. The mobile chips &ldquo;Round&rdquo; and &ldquo;Cut: Excellent&rdquo; are stone filters: the chips show the setting filters actually applied.</li>
+            <li>Earrings pages, mobile step bar: the Setting Info, Stones Info and Complete frames say the ring builder&rsquo;s &ldquo;Setting / Stone / Ring&rdquo;; built with &ldquo;Earrings / Stones / Earrings&rdquo;, as the mobile Step 1 and Step 2 frames say.</li>
+            <li>Earrings Setting Info, mobile: &ldquo;Your Diamond&rsquo;s Qualities&rdquo; is visible on a page where no diamond is chosen yet (the desktop frame hides it): left out. The Metal card&rsquo;s &ldquo;14k White Gold&rdquo; and Latin note are built with the chosen metal and &ldquo;Percentages by weight.&rdquo;</li>
+            <li>Earrings Stones Info: the mobile title is the setting&rsquo;s name (&ldquo;Four Prong Custom Diamond Stud Earrings in 14K Yellow Gold&rdquo;) and the mobile first thumbnail the earrings photo: built with the pair&rsquo;s title and the diamond&rsquo;s photo, as the desktop frame. The desktop price $720 (the setting&rsquo;s) is the pair&rsquo;s price; &ldquo;Product Name&rdquo; is each diamond&rsquo;s shape; the Certification cards&rsquo; GIA under an IGI title is the pair&rsquo;s own lab; the Carat cards&rsquo; Latin note is &ldquo;The weight of this diamond.&rdquo;</li>
+            <li>Earrings Step 3: the pair row&rsquo;s &ldquo;J &bull; VVS2&rdquo; under a VVS1 card and the installments&rsquo; $147.50 are built from the earrings&rsquo; own data.</li>
+            <li>Earrings Step 3 model photo badge: Figma&rsquo;s &ldquo;Showing 1.61ct&rdquo; is built as &ldquo;Shown with 1.61 ct&rdquo;, the ring builder&rsquo;s badge wording. Beside a pair of another weight, &ldquo;Showing 1.61ct&rdquo; read as a contradiction.</li>
+            <li>Earrings Step 2, mobile heading: the mobile frame (3587:126869) repeats Step 1&rsquo;s &ldquo;Design your own Earrings / Select your Perfect Piece&rdquo;, a leftover. Built with the desktop frame&rsquo;s &ldquo;Select your stone shape and Quality&rdquo; (broken before &ldquo;and&rdquo;, as the ring builder&rsquo;s mobile Step 2).</li>
           </ul>
         </Section>
 
@@ -1734,6 +1763,7 @@ export default async function ComponentsPage() {
             </li>
             <li>Modal - Credit: the inactive Klarna tab label at black-alpha-20 (inert, as drawn).</li>
             <li>Stone unavailable (Step 3 and the bag): the struck stone summary, the stone&rsquo;s price, the Total Price and the bag stone row&rsquo;s attributes at 50%, as Figma draws them (about 2.8:1). Kept for the same reason as the Step Indicator&rsquo;s Unavailable name: the unavailable stone is meant to read as de-emphasised.</li>
+            <li>Pair unavailable (earrings Step 3 and the bag): the same struck values at 50%, as the ring&rsquo;s.</li>
           </ul>
         </Section>
 
@@ -1831,7 +1861,11 @@ export default async function ComponentsPage() {
             <li>Drop a Hint, mobile: three frames are visible (1 and 2 with Edit / Preview tabs, and v2, one long sheet). Built from v2, the newest. Right? Should the preview fill its blanks with the names typed, and should Ring Size start with the size chosen on the page?</li>
             <li>Ring size converter: should the result set the page&rsquo;s ring size? (No control for it is drawn.)</li>
             <li>Mobile Stone Summary and Setting Summary sheets (7327:32013, 7327:32090): no Step 3 frame opens them, so they are not built. Where do they belong?</li>
-            <li>Photos needed for Step 3&rsquo;s fourth gallery tile: a second photo of each setting in each metal. Only Classic Solitaire in yellow gold has one; Vine (all metals), Classic Solitaire in white gold and platinum, Petite Solitaire, Pav&eacute;, Round Halo and Marquise Side-Stone show the worn photo with &ldquo;Shown with 2.50 ct&rdquo; there for now. Figma&rsquo;s own tile (6579:194578) is a second view of the white gold vine ring and could be Vine&rsquo;s.</li>
+            <li>Photos needed for Step 3&rsquo;s fourth gallery tile: a second photo of each setting in each metal. Only Classic Solitaire in yellow gold has one; Vine (all metals), Classic Solitaire in white gold and platinum, Petite Solitaire, Pav&eacute;, Round Halo and Marquise Side-Stone show the worn photo with &ldquo;Shown with 2.50 ct&rdquo; there for now. Figma&rsquo;s own tile (6579:194578) is not a second view: it is Vine&rsquo;s white gold photo (the same image, 1c5a2a97) flipped left to right, so it was not added (the engraving would read backwards).</li>
+            <li>Earrings builder: one setting. Figma&rsquo;s only earring setting photos are the yellow gold four prong studs (front, with backs, worn), the same three photos the Fine Jewelry four prong studs use; the Assets page has none. A photo of each further setting (and of the studs in white and rose gold) is needed before more settings or metals can be listed.</li>
+            <li>Earrings builder: &ldquo;Choose your Stones&rdquo; (Add Diamonds / Add Gemstones) is in the prototype, but no gemstone earrings step is drawn and Add Gemstones links nowhere. Not built; Select These Earrings goes to the diamonds. Recommendation: draw the gemstone pair step, or drop the modal.</li>
+            <li>Builder &ldquo;360° View / Images (/ Video)&rdquo; tab rows, drawn with the 360° marker on the ring hover cards and sheets and on the mobile galleries of both builders: left out, since with no image sequence or video they would switch to nothing. Recommendation: bring them back with the 360° sequences, using Product Detail&rsquo;s viewer.</li>
+            <li>Earrings Step 3 desktop draws a gold rule and then the Setting Info row&rsquo;s own rule 32px below it (two rules); built as drawn. Mobile draws Setting Info as a section above the diamonds; desktop as an accordion row after them; each built as drawn.</li>
           </ul>
         </Section>
 
@@ -1848,14 +1882,13 @@ export default async function ComponentsPage() {
             </li>
             <li>Product card &ldquo;Learn more&rdquo; (hover state): stays inert; the product page, quick view and bag open Modal - Credit.</li>
             <li>
-              Ring builder Step 3 (/design-your-own/complete/), drawn without a result: the 360&deg; view, &ldquo;View Certificate&rdquo; (plain
-              text) and the add-to-bag loaders from the Animations page. The stone-first flow, the earrings builder and a mock order from
-              checkout are not part of it.
+              Ring builder Step 3 (/design-your-own/complete/), drawn without a result: &ldquo;View Certificate&rdquo; (plain text) and the
+              add-to-bag loaders from the Animations page. The stone-first flow and a mock order from checkout are not part
+              of it.
             </li>
             <li>
               Ring builder, drawn without a result: Quick Checkout and Meet With Our Consultant&rsquo;s &ldquo;Book Now&rdquo; on the
-              setting page (shown as designed, inert); the 360° view, the video and the carat tabs on the gallery photos (left out or
-              inert); &ldquo;View Certificate&rdquo; on stones (plain text). The stone-first frames are not built.
+              setting page (shown as designed, inert); the video and the carat tabs on the gallery photos (left out); &ldquo;View Certificate&rdquo; on stones (plain text). The stone-first frames are not built.
             </li>
             <li>Quick Checkout&rsquo;s open states (on the Accordion page; unnamed variants Open3, Open4): the closed card is on the setting page, inert. Part 2 (Step 3) doesn&rsquo;t cover it.</li>
             <li>Landing page live chat and text actions (no chat or messaging service to connect to).</li>
@@ -1868,6 +1901,15 @@ export default async function ComponentsPage() {
               Address&rdquo;) and Remove might ask for confirmation; both wait for a design.
             </li>
             <li>Stone list: the question marks Figma draws on Carat, the gemstone Color and Certificate are left out (nothing is drawn for them to open). &ldquo;Learn more&rdquo; on the stone hover card is inert, as on the product card; in the mobile sheet it opens Modal - Credit.</li>
+            <li>
+              360° marker, every builder page: shown where Figma draws it, drawn and inert (aria-hidden; no product has an image sequence, so
+              it turns nothing). Ring builder: the setting and stone hover cards (on hover or focus) and mobile sheets, the setting page
+              (the setting&rsquo;s first photo; mobile on the setting&rsquo;s photos), the stone page and Step 3 (the setting&rsquo;s photo; mobile on
+              the ring and the stone). Earrings builder: the setting page (the diamond tile; mobile gallery), the pair page (each diamond)
+              and Step 3 (the studs and each diamond; mobile gallery). Not on the earrings cards or sheets, which don&rsquo;t draw it. The
+              &ldquo;360° View / Images (/ Video)&rdquo; tabs that come with it are left out on every builder page (Deviations).
+            </li>
+            <li>Earrings builder, drawn without a result: &ldquo;View Certificate&rdquo; (plain text) and &ldquo;Learn more&rdquo; on the pair hover card (inert, as on the stone card). Drop a Hint sends nothing, as on the ring builder.</li>
           </ul>
         </Section>
       </main>

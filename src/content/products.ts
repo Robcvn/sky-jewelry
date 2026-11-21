@@ -74,7 +74,9 @@ export const productHref = (product: Pick<Product, "category" | "slug">) =>
     ? `/fine-jewelry/${product.category}/${product.slug}/`
     : product.category === "engagement-rings"
       ? `/design-your-own/setting/${product.slug}/`
-      : `/${product.category}/${product.slug}/`;
+      : product.category === "earring-settings"
+        ? `/design-your-own/earrings/setting/${product.slug}/`
+        : `/${product.category}/${product.slug}/`;
 
 export const formatPrice = (usd: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(usd);

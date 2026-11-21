@@ -60,10 +60,23 @@ export const metalBadge = (id: MetalId) => <MetalBadge metal={id} />;
  * frames and its desktop Metal panel (Dropdown page, 4055:55935) draw it: 15px from the top on the two Yellow Gold
  * tiles, 8px on the other five, selected or not (an open question). The label is at 51px on every tile.
  */
-export function MetalTiles({ value, onChange, labelledBy, wrap = false }: { value: MetalId[]; onChange: (value: MetalId[]) => void; labelledBy: string; wrap?: boolean }) {
+export function MetalTiles({
+  value,
+  onChange,
+  labelledBy,
+  wrap = false,
+  metals,
+}: {
+  value: MetalId[];
+  onChange: (value: MetalId[]) => void;
+  labelledBy: string;
+  wrap?: boolean;
+  /** Only these metals (the earrings builder offers only metals it has a photo of). Default: all seven. */
+  metals?: MetalId[];
+}) {
   return (
     <div role="group" aria-labelledby={labelledBy} className={wrap ? "grid grid-cols-3 gap-space-2" : "flex gap-space-2"}>
-      {METALS.map((metal) => (
+      {METALS.filter((metal) => !metals || metals.includes(metal.id)).map((metal) => (
         <OptionTile
           key={metal.id}
           media={metalBadge(metal.id)}

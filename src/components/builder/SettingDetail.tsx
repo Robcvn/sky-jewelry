@@ -16,6 +16,7 @@ import { MetalSwatches } from "@/components/ui/ProductCard";
 import { CompositionChart, ProductInfoCard } from "@/components/ui/ProductInfoCard";
 import { useScrollProgress } from "@/components/ui/Scrollbar";
 import { cx } from "@/components/ui/shared";
+import { DOTS_ABOVE_HINT, Hint360 } from "@/components/ui/Viewer360";
 import { builderContent, SETTING_SHAPE_ORDER, shapeIcon, shapeLabel, styleIcon, styleLabel, type StoneShape } from "@/content/builder";
 import { metalById, type MetalId } from "@/content/metals";
 import { metalComposition, productDetailContent } from "@/content/product-detail";
@@ -43,11 +44,14 @@ export function ShownWith({ carat }: { carat: string }) {
   );
 }
 
-type Tile = { key: string; image: ImageRef; carat?: string };
+/** `hint360`: Figma's 360 marker on this photo (drawn, inert: no setting has an image sequence; Held for review). */
+type Tile = { key: string; image: ImageRef; carat?: string; hint360?: boolean };
 
 /**
  * Desktop gallery (Figma 3565:100665; one 512px column in the 1140 frame 4264:29542): the setting's photos, then
  * the two worn photos. Two columns from 1280px, as Product Detail; with an odd number the first photo spans the row.
+ * Figma draws the 360 marker on a product photo of the setting in the second row (3565:100681, a mirrored copy of
+ * the first); it is built on the setting's first photo, drawn and inert, as Step 3 puts it on its first tile.
  */
 function DesktopGallery({ tiles }: { tiles: Tile[] }) {
   const wide = (index: number) => tiles.length % 2 === 1 && index === 0;
@@ -62,6 +66,7 @@ function DesktopGallery({ tiles }: { tiles: Tile[] }) {
             className={cx("size-full object-cover", !tile.carat && "mix-blend-multiply")}
           />
           {tile.carat ? <ShownWith carat={tile.carat} /> : null}
+          {tile.hint360 ? <Hint360 className="bottom-space-4" /> : null}
         </div>
       ))}
     </div>
@@ -71,7 +76,8 @@ function DesktopGallery({ tiles }: { tiles: Tile[] }) {
 /**
  * Mobile gallery (Figma "PDP - Asset Tabs" 3587:125842): a full-width square that swipes between photos, with
  * the 64px thumbnail in the corner switching between the setting's own photos and the worn photos, as Product
- * Detail's thumbnail switches between the piece and its stone.
+ * Detail's thumbnail switches between the piece and its stone. The setting's photos carry Figma's 360 marker
+ * (3587:125815, drawn and inert); with several photos the dots sit above it. The worn photos have no marker.
  */
 function MobileGallery({ photos, name }: { photos: Tile[]; name: string }) {
   const [worn, setWorn] = useState(false);
@@ -107,8 +113,9 @@ function MobileGallery({ photos, name }: { photos: Tile[]; name: string }) {
           </div>
         ))}
       </div>
+      {worn ? null : <Hint360 className="bottom-space-4" />}
       {shown.length > 1 ? (
-        <div className="pointer-events-none absolute inset-x-0 bottom-space-4 flex justify-center [&>*]:pointer-events-auto">
+        <div className={cx("pointer-events-none absolute inset-x-0 flex justify-center [&>*]:pointer-events-auto", worn ? "bottom-space-4" : DOTS_ABOVE_HINT)}>
           <PaginationDots count={shown.length} current={current} onSelect={goTo} label={`Photos of ${name}`} itemLabel={(index) => `Photo ${index + 1} of ${shown.length}`} overlay={worn} />
         </div>
       ) : null}
@@ -150,7 +157,7 @@ function MoreTile({ expanded, onClick }: { expanded: boolean; onClick: () => voi
  * a label with the current value, then a 5-column grid of 80px tiles, 16px under the label. With more than five
  * options, four show with a More tile; More reveals the rest and becomes Less, in the fifth place as drawn.
  */
-function OptionGrid<T extends string>({
+export function OptionGrid<T extends string>({
   label,
   valueLabel,
   options,
@@ -397,7 +404,7 @@ export function SettingDetail({ setting, bands }: { setting: RingSetting; bands:
   const nextHref = stonesHref({ setting: setting.handle, metal: variant.metal, shape, start: ring.start });
 
   const photos: Tile[] = imagesFor(product, variant.metal).map((image, index) => ({ key: `${variant.metal}-${index}`, image }));
-  const tiles: Tile[] = [...photos, ...WORN.map((item, index) => ({ key: `worn-${index}`, ...item }))];
+  const tiles: Tile[] = [...photos.map((tile, index) => ({ ...tile, hint360: index === 0 })), ...WORN.map((item, index) => ({ key: `worn-${index}`, ...item }))];
 
   const quickCheckout = (
     // Drawn, but its flow belongs to part 2: shown as designed, not interactive (Held for review).

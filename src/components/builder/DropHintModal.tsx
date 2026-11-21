@@ -72,6 +72,8 @@ type DropHintModalProps = {
   image: ImageRef;
   /** The optional Ring Size field. The product page leaves it out for pieces that aren't rings (inferred). */
   ringSize?: boolean;
+  /** The subheading; the earrings builder words it for earrings. Default: the ring builder's. */
+  intro?: string;
 };
 
 /**
@@ -82,7 +84,7 @@ type DropHintModalProps = {
  * The parent remounts it on each opening, so it always starts empty. The product page opens it too, with the
  * product's photo and name in the preview (inferred: Figma draws it for the ring).
  */
-export function DropHintModal({ open, onClose, name, image, ringSize = true }: DropHintModalProps) {
+export function DropHintModal({ open, onClose, name, image, ringSize = true, intro = copy.intro }: DropHintModalProps) {
   const headingId = useId();
   const [fields, setFields] = useState<Fields>(EMPTY);
   const [errors, setErrors] = useState<Errors>({});
@@ -152,7 +154,7 @@ export function DropHintModal({ open, onClose, name, image, ringSize = true }: D
                 <h2 id={headingId} className="type-heading-caps-md px-space-10 ui-desktop:type-heading-caps-lg">
                   {copy.heading}
                 </h2>
-                <p className="type-p-xs-regular ui-desktop:type-p-sm-regular">{copy.intro}</p>
+                <p className="type-p-xs-regular ui-desktop:type-p-sm-regular">{intro}</p>
               </div>
               <div className="flex flex-col gap-space-8 ui-desktop:grid ui-desktop:grid-cols-2 ui-desktop:gap-space-11">
                 <div className="order-2 ui-desktop:order-1">

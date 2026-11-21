@@ -17,6 +17,7 @@ import { PaginationDots } from "./Pagination";
 import { Picture } from "./Picture";
 import { Swatch } from "./Swatch";
 import { cx } from "./shared";
+import { DOTS_ABOVE_HINT, Hint360 } from "./Viewer360";
 
 export type ProductCardLabels = { info: string; addToBag: string; installments: string; learnMore: string };
 
@@ -99,6 +100,11 @@ export type ProductCardBuilder = {
   href: (variant: ProductVariant) => string;
   priceNote: (variant: ProductVariant) => string | null;
   action: { label: string; href: (variant: ProductVariant) => string };
+  /**
+   * Figma's 360 marker on the hover card's photo (the ring builder's 3565:101327; the earrings card draws none):
+   * shown on hover or focus, drawn and inert (no 360° sequence; Held for review). Dots, when shown, sit above it.
+   */
+  hint360?: boolean;
 };
 
 type ProductCardProps = {
@@ -154,8 +160,18 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
             sizes={{ desktop: "(width >= 90rem) 20rem, 23vw", mobile: carousel ? "18.125rem" : "45vw" }}
             className="size-full object-cover mix-blend-multiply transition-transform duration-300 ease-out motion-reduce:transition-none ui-desktop:group-hover/card:scale-[1.067] ui-desktop:group-focus-within/card:scale-[1.067] motion-reduce:scale-100!"
           />
+          {builder?.hint360 ? (
+            <div className="hidden ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block">
+              <Hint360 className="bottom-space-4" />
+            </div>
+          ) : null}
           {images.length > 1 ? (
-            <div className="absolute inset-x-0 bottom-space-4 z-10 hidden justify-center ui-desktop:group-hover/card:flex ui-desktop:group-focus-within/card:flex">
+            <div
+              className={cx(
+                "absolute inset-x-0 z-10 hidden justify-center ui-desktop:group-hover/card:flex ui-desktop:group-focus-within/card:flex",
+                builder?.hint360 ? DOTS_ABOVE_HINT : "bottom-space-4",
+              )}
+            >
               <PaginationDots
                 count={images.length}
                 current={view}

@@ -12,9 +12,12 @@
  * A ring built in the ring builder is two cart lines, the setting's variant and the stone's, added in one cart call
  * and linked by two line attributes: a ring id ("_ring") and the ring size ("Ring Size"). bagItems() groups them back
  * into one ring; the ring counts as one item, and removing either line removes both.
+ * Earrings built in the earrings builder work the same way: the setting's line and the matched pair's line, linked
+ * by an earrings id ("_earrings"); they have no size.
  */
 import { useSyncExternalStore } from "react";
 import { completeHref, parseShape } from "@/components/builder/ring";
+import { earringsCompleteHref } from "@/components/earrings/routes";
 import type { ImageRef } from "@/components/ui/Picture";
 import { METALS, type MetalId } from "@/content/metals";
 import { imagesFor, productHref, type Product, type ProductVariant } from "@/content/products";
@@ -31,7 +34,8 @@ import {
   type ShopifyCartLine,
 } from "@/lib/shopify";
 import type { Stone } from "@/lib/builder";
-import { caratOf, localImage, LOOSE_STONE_TAG, metalOf, slugify, tagValue } from "@/lib/shopify/mapProduct";
+import type { StonePair } from "@/lib/earrings";
+import { caratOf, localImage, LOOSE_STONE_TAG, metalOf, slugify, STONE_PAIR_TAG, tagValue } from "@/lib/shopify/mapProduct";
 
 const CART_KEY = "sky-cart-id";
 const LOCAL_LINES_KEY = "sky-bag-local-lines";
@@ -40,9 +44,14 @@ const OLD_LOCAL_COUNT_KEY = "sky-bag-local-count";
 /** Line attribute keys of a built ring. The leading underscore keeps the id out of Shopify's checkout and order views. */
 export const RING_ID_KEY = "_ring";
 export const RING_SIZE_KEY = "Ring Size";
+/** Line attribute key of built earrings (their two lines share it). */
+export const EARRINGS_ID_KEY = "_earrings";
 
-/** A built ring's part: the ring it belongs to, its size and which part this line is. */
-export type BagRingPart = { id: string; size: string | null; role: "setting" | "stone" };
+/**
+ * A built piece's part: the piece it belongs to, its size and which part this line is. `build` says which builder
+ * made it: a ring (setting and stone) or earrings (setting and matched pair, no size).
+ */
+export type BagRingPart = { id: string; size: string | null; role: "setting" | "stone"; build: "ring" | "earrings" };
 
 /** A loose stone's facts (a ring's stone line), read from its tags as the builder catalogue does. */
 export type BagStone = {
@@ -54,6 +63,8 @@ export type BagStone = {
   clarity: string;
   cut: string;
   gem?: string;
+  /** A matched pair's two weights (carat is then the pair's total). */
+  pair?: [number, number];
 };
 
 /** One line of the bag, the same shape whether it comes from Shopify or the local bag. */
@@ -145,7 +156,8 @@ export function shortName(title: string) {
 
 const attribute = (attributes: CartAttribute[] | undefined, key: string) => attributes?.find((item) => item.key === key)?.value || null;
 
-const isStoneProduct = (product: { productType: string; tags: string[] }) => product.tags.includes(LOOSE_STONE_TAG) || /loose stones?/i.test(product.productType);
+const isStoneProduct = (product: { productType: string; tags: string[] }) =>
+  product.tags.includes(LOOSE_STONE_TAG) || product.tags.includes(STONE_PAIR_TAG) || /loose stones?|stone pairs?/i.test(product.productType);
 
 /** A stone's facts from its tags (the tags src/lib/builder.ts reads). */
 export function stoneFromTags(tags: string[]): BagStone | null {
@@ -153,6 +165,7 @@ export function stoneFromTags(tags: string[]): BagStone | null {
   const origin = tagValue(tags, "origin");
   const shape = tagValue(tags, "shape");
   if ((kind !== "diamond" && kind !== "gemstone") || (origin !== "natural" && origin !== "lab-grown") || !shape) return null;
+  const pair = [Number(tagValue(tags, "a-carat")), Number(tagValue(tags, "b-carat"))] as [number, number];
   return {
     kind,
     origin,
@@ -162,6 +175,7 @@ export function stoneFromTags(tags: string[]): BagStone | null {
     clarity: tagValue(tags, "clarity") ?? "",
     cut: tagValue(tags, "cut") ?? "",
     gem: tagValue(tags, "gem") ?? undefined,
+    ...(tags.includes(STONE_PAIR_TAG) && pair.every((carat) => Number.isFinite(carat) && carat > 0) ? { pair } : {}),
   };
 }
 
@@ -171,6 +185,7 @@ export function mapCartLine(line: ShopifyCartLine): BagLine {
   const product = merchandise.product;
   const category = slugify(product.productType) || "products";
   const ringId = attribute(line.attributes, RING_ID_KEY);
+  const earringsId = attribute(line.attributes, EARRINGS_ID_KEY);
   const stoneLine = isStoneProduct(product);
   const discount = line.discountAllocations.reduce((sum, allocation) => sum + money(allocation.discountedAmount), 0);
   const subtotal = money(line.cost.subtotalAmount);
@@ -192,7 +207,11 @@ export function mapCartLine(line: ShopifyCartLine): BagLine {
     subtotal,
     total: money(line.cost.totalAmount) || subtotal - discount,
     available: merchandise.availableForSale,
-    ring: ringId ? { id: ringId, size: attribute(line.attributes, RING_SIZE_KEY), role: stoneLine ? "stone" : "setting" } : null,
+    ring: ringId
+      ? { id: ringId, size: attribute(line.attributes, RING_SIZE_KEY), role: stoneLine ? "stone" : "setting", build: "ring" }
+      : earringsId
+        ? { id: earringsId, size: null, role: stoneLine ? "stone" : "setting", build: "earrings" }
+        : null,
     stone: stoneLine ? stoneFromTags(product.tags) : null,
   };
 }
@@ -201,6 +220,8 @@ export function mapCartLine(line: ShopifyCartLine): BagLine {
 
 export type BagRingItem = {
   kind: "ring";
+  /** Which builder made it: a ring, or earrings (whose stone line is a matched pair). */
+  build: "ring" | "earrings";
   key: string;
   id: string;
   size: string | null;
@@ -225,7 +246,19 @@ export function bagItems(lines: BagLine[]): BagItem[] {
     }
     let ring = rings.get(line.ring.id);
     if (!ring) {
-      ring = { kind: "ring", key: `ring:${line.ring.id}`, id: line.ring.id, size: line.ring.size, setting: null, stone: null, lines: [], subtotal: 0, total: 0, available: true };
+      ring = {
+        kind: "ring",
+        build: line.ring.build ?? "ring",
+        key: `ring:${line.ring.id}`,
+        id: line.ring.id,
+        size: line.ring.size,
+        setting: null,
+        stone: null,
+        lines: [],
+        subtotal: 0,
+        total: 0,
+        available: true,
+      };
       rings.set(line.ring.id, ring);
       items.push(ring);
     }
@@ -244,8 +277,12 @@ export function bagItems(lines: BagLine[]): BagItem[] {
 export const itemCount = (lines: BagLine[]) =>
   bagItems(lines).reduce((sum, item) => sum + (item.kind === "ring" ? Math.max(1, ...item.lines.map((line) => line.quantity)) : item.line.quantity), 0);
 
-/** Step 3 with the ring in the URL, for a bag ring's links (Edit, its name and photo). */
-export function ringHref(ring: Pick<BagRingItem, "setting" | "stone" | "size">) {
+/** Step 3 with the ring (or the earrings) in the URL, for a bag ring's links (Edit, its name and photo). */
+export function ringHref(ring: Pick<BagRingItem, "setting" | "stone" | "size"> & { build?: BagRingItem["build"] }) {
+  if (ring.build === "earrings")
+    return ring.setting
+      ? earringsCompleteHref({ setting: ring.setting.handle, metal: ring.setting.metal, shape: parseShape(ring.stone?.stone?.shape), stone: ring.stone?.handle ?? null })
+      : "/design-your-own/earrings/";
   if (!ring.setting) return "/design-your-own/";
   return completeHref({
     setting: ring.setting.handle,
@@ -272,8 +309,10 @@ type LocalLine = Omit<BagLine, "subtotal" | "total">;
 const readLocal = (): LocalLine[] => {
   try {
     const parsed = JSON.parse(read(LOCAL_LINES_KEY) ?? "[]");
-    // Lines saved before rings existed have no title, ring or stone.
-    return Array.isArray(parsed) ? parsed.map((line: LocalLine) => ({ ...line, title: line.title ?? line.name, ring: line.ring ?? null, stone: line.stone ?? null })) : [];
+    // Lines saved before rings existed have no title, ring or stone; rings saved before earrings have no build.
+    return Array.isArray(parsed)
+      ? parsed.map((line: LocalLine) => ({ ...line, title: line.title ?? line.name, ring: line.ring ? { ...line.ring, build: line.ring.build ?? "ring" } : null, stone: line.stone ?? null }))
+      : [];
   } catch {
     return [];
   }
@@ -460,7 +499,7 @@ export function addRing({ setting, settingVariant, stone, size, name }: RingToAd
         quantity: 1,
         unitPrice: settingVariant.price,
         available: settingVariant.available,
-        ring: { id, size, role: "setting" },
+        ring: { id, size, role: "setting", build: "ring" },
         stone: null,
       };
       const stoneLine: LocalLine = {
@@ -479,7 +518,7 @@ export function addRing({ setting, settingVariant, stone, size, name }: RingToAd
         quantity: 1,
         unitPrice: stone.price,
         available: stone.available,
-        ring: { id, size, role: "stone" },
+        ring: { id, size, role: "stone", build: "ring" },
         stone: { kind: stone.kind, origin: stone.origin, shape: stone.shape, carat: stone.carat, color: stone.color, clarity: stone.clarity, cut: stone.cut, gem: stone.gem },
       };
       saveLocal([...lines, settingLine, stoneLine]);
@@ -494,6 +533,92 @@ export function addRing({ setting, settingVariant, stone, size, name }: RingToAd
       [
         { merchandiseId: settingVariant.id, quantity: 1, attributes },
         { merchandiseId: stone.variantId, quantity: 1, attributes },
+      ],
+      name,
+      openPanel,
+    );
+  });
+}
+
+export type EarringsToAdd = {
+  setting: Product;
+  settingVariant: ProductVariant;
+  pair: StonePair;
+  /** The earrings' name in the bag, for a failure message. */
+  name: string;
+};
+
+/**
+ * Adds built earrings: the setting's variant and the pair's variant as two lines in one cart call, linked by the
+ * earrings id attribute, then opens the bag panel (unless openPanel is false, as for Secure Checkout).
+ * A pair is one of a kind: when this pair is already in the bag, nothing is added and the bag opens instead.
+ */
+export function addEarrings({ setting, settingVariant, pair, name }: EarringsToAdd, { openPanel = true } = {}): Promise<AddResult> {
+  return serial(async () => {
+    await start();
+    if (state.bag.lines.some((line) => line.ring && line.handle === pair.handle)) {
+      set({ error: null, panelOpen: openPanel || state.panelOpen });
+      return { ok: true, simulated: state.bag.simulated } as const;
+    }
+    const id = newRingId();
+    if (!settingVariant.id || !pair.variantId || !shopifyConfig()) {
+      const lines = readLocal();
+      const settingLine: LocalLine = {
+        id: `local:earrings:${id}:setting`,
+        variantId: settingVariant.id,
+        handle: setting._id,
+        category: setting.category,
+        href: productHref(setting),
+        name: shortName(setting.name),
+        title: setting.name,
+        metal: settingVariant.metal,
+        carat: null,
+        length: null,
+        shipsInDays: setting.shipsInDays,
+        image: imagesFor(setting, settingVariant.metal)[0] ?? setting.image,
+        quantity: 1,
+        unitPrice: settingVariant.price,
+        available: settingVariant.available,
+        ring: { id, size: null, role: "setting", build: "earrings" },
+        stone: null,
+      };
+      const pairLine: LocalLine = {
+        id: `local:earrings:${id}:stone`,
+        variantId: pair.variantId,
+        handle: pair.handle,
+        category: "stone-pairs",
+        href: `/design-your-own/earrings/stone/${pair.handle}/`,
+        name: pair.title,
+        title: pair.title,
+        metal: settingVariant.metal,
+        carat: pair.carat,
+        length: null,
+        shipsInDays: pair.shipsInDays,
+        image: pair.image,
+        quantity: 1,
+        unitPrice: pair.price,
+        available: pair.available,
+        ring: { id, size: null, role: "stone", build: "earrings" },
+        stone: {
+          kind: pair.kind,
+          origin: pair.origin,
+          shape: pair.shape,
+          carat: pair.carat,
+          color: pair.color,
+          clarity: pair.clarity,
+          cut: pair.cut,
+          pair: [pair.stones[0].carat, pair.stones[1].carat],
+        },
+      };
+      saveLocal([...lines, settingLine, pairLine]);
+      set({ error: null, panelOpen: openPanel || state.panelOpen });
+      return { ok: true, simulated: true } as const;
+    }
+    const attributes = [{ key: EARRINGS_ID_KEY, value: id }];
+    return addCart(
+      [
+        { merchandiseId: settingVariant.id, quantity: 1, attributes },
+        { merchandiseId: pair.variantId, quantity: 1, attributes },
       ],
       name,
       openPanel,

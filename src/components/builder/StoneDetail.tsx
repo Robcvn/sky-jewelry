@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { IconBlock } from "@/components/ui/IconBlock";
 import { cx } from "@/components/ui/shared";
+import { Hint360 } from "@/components/ui/Viewer360";
 import { DimensionsDiagram, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
 import { builderContent, DIAMOND_SCALES, GEM_COLORS, GEM_TYPES, gradeLabel, shapeIcon } from "@/content/builder";
 import { CLARITY_GRADES, COLOR_GRADES, CUT_GRADES } from "@/content/builder-grades";
@@ -57,18 +58,20 @@ export function StoneDetail({ stone }: { stone: Stone }) {
         <div className="sticky top-(--sticky-header-height) py-space-15 pr-space-6">
           <div data-stone-gallery className="grid grid-cols-2 gap-space-3">
             <StoneSpecsTile stone={stone} />
-            {/* Figma's 360° marker on this tile needs an image sequence, which no stone has: left out, as on Product Detail. */}
+            {/* Figma's 360° marker on this tile (3565:100868): drawn and inert, as no stone has an image sequence (Held for review). */}
             <div data-stone-photo className={`relative aspect-square overflow-hidden rounded-4 ${photoBg}`}>
               <StonePicture stone={stone} priority sizes={{ desktop: "25vw", mobile: "100vw" }} />
+              <Hint360 className="bottom-space-4" />
             </div>
             {diamond ? <StoneSizeGuideTile /> : null}
             <StoneCertificateTile stone={stone} />
           </div>
         </div>
       </div>
-      {/* Mobile: Figma "PDP - Asset Tabs" (3587:125937) with one photo and no tabs row. */}
+      {/* Mobile: Figma "PDP - Asset Tabs" (3587:125937) with one photo, the 360° marker (drawn and inert) and no tabs row. */}
       <div data-stone-photo className={`relative aspect-square w-full overflow-hidden ui-desktop:hidden ${photoBg}`}>
         <StonePicture stone={stone} priority sizes={{ desktop: "25vw", mobile: "100vw" }} />
+        <Hint360 className="bottom-space-4" />
       </div>
 
       <div className="site-container flex flex-col gap-space-6 pt-space-5 pb-space-11 ui-desktop:gap-space-8 ui-desktop:px-0 ui-desktop:py-space-15">
@@ -170,7 +173,23 @@ export function stoneSectionHeading(shape: string, title: string) {
  * "Your Diamond Info" ("Your Stone Info" for gemstones): Carat, Color, Clarity, Dimensions, Cut and Certification
  * (desktop 3565:100773, mobile 3587:125991). Step 3 reuses it (6579:194459, mobile 6579:208244).
  */
-export function StoneInfoSection({ stone, heading, headingId = "stone-info", className }: { stone: Stone; heading?: string; headingId?: string; className?: string }) {
+export function StoneInfoSection({
+  stone,
+  heading,
+  headingId = "stone-info",
+  className,
+  caratNote = pdp.caratNote.single,
+  mobileRow2 = "ring",
+}: {
+  stone: Stone;
+  heading?: string;
+  headingId?: string;
+  className?: string;
+  /** The Carat card's note; the earrings builder's stones are not centre stones. */
+  caratNote?: string;
+  /** The earrings frames draw the mobile Clarity and Dimensions cards 146 and 150 tall (the ring builder's: 164). */
+  mobileRow2?: "ring" | "earrings";
+}) {
   const diamond = stone.kind === "diamond";
   const kindLabel = stoneKindLabel(stone);
   return (
@@ -178,7 +197,7 @@ export function StoneInfoSection({ stone, heading, headingId = "stone-info", cla
       <div id={headingId}>{stoneSectionHeading(stone.shape, heading ?? (diamond ? copy.diamondInfo : copy.stoneInfo))}</div>
       {/* Figma: 171px cards 8 apart on mobile, 245px cards 16 apart on desktop, each with its own height. */}
       <div data-stone-info-grid className="grid grid-cols-2 items-start gap-space-2 ui-desktop:gap-space-4">
-        <ProductInfoCard label="Carat" value={stone.carat.toFixed(2)} note={pdp.caratNote.single} spread className="h-[8.5rem] ui-desktop:h-[9.375rem]" />
+        <ProductInfoCard label="Carat" value={stone.carat.toFixed(2)} note={caratNote} spread className="h-[8.5rem] ui-desktop:h-[9.375rem]" />
         {diamond ? (
           <ProductInfoCard label="Color" value={stone.color} note={COLOR_GRADES[stone.color]?.short} className="min-h-[8.5rem] ui-desktop:min-h-0">
             <InfoScale kind="color" position={colorPosition(stone.color)} label={`Color ${stone.color} on a scale from colorless to tinted`} />
@@ -193,7 +212,7 @@ export function StoneInfoSection({ stone, heading, headingId = "stone-info", cla
           />
         )}
         {diamond ? (
-          <ProductInfoCard label="Clarity" value={stone.clarity} note={CLARITY_GRADES[stone.clarity]?.short} className="min-h-[10.25rem] ui-desktop:min-h-0">
+          <ProductInfoCard label="Clarity" value={stone.clarity} note={CLARITY_GRADES[stone.clarity]?.short} className={cx(mobileRow2 === "earrings" ? "min-h-[9.125rem]" : "min-h-[10.25rem]", "ui-desktop:min-h-0")}>
             <InfoScale kind="clarity" position={clarityPosition(stone.clarity)} label={`Clarity ${stone.clarity} on a scale from flawless to included`} />
           </ProductInfoCard>
         ) : (
@@ -208,7 +227,7 @@ export function StoneInfoSection({ stone, heading, headingId = "stone-info", cla
             </span>
           }
           spread
-          className="h-[10.25rem] ui-desktop:h-[10.375rem]"
+          className={cx(mobileRow2 === "earrings" ? "h-[9.375rem]" : "h-[10.25rem]", "ui-desktop:h-[10.375rem]")}
         >
           {/* Figma's ruler drawing is of a round stone: shown for round stones, between the value and the ratio. */}
           {stone.shape === "round" ? (

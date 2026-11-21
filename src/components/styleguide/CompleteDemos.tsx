@@ -49,7 +49,7 @@ function sampleRing(setting: RingSetting, stone: Stone, available: boolean): Bag
     subtotal: variant.price,
     total: variant.price,
     available: true,
-    ring: { ...ring, role: "setting" },
+    ring: { ...ring, role: "setting", build: "ring" },
     stone: null,
   };
   const stoneLine: BagLine = {
@@ -68,7 +68,7 @@ function sampleRing(setting: RingSetting, stone: Stone, available: boolean): Bag
     subtotal: stone.price,
     total: stone.price,
     available,
-    ring: { ...ring, role: "stone" },
+    ring: { ...ring, role: "stone", build: "ring" },
     stone: { kind: stone.kind, origin: stone.origin, shape: stone.shape, carat: stone.carat, color: stone.color, clarity: stone.clarity, cut: stone.cut, gem: stone.gem },
   };
   return bagItems([settingLine, stoneLine])[0] as BagRingItem;

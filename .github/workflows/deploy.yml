@@ -84,9 +84,20 @@ jobs:
             echo "::error::The ring builder did not read all its settings and stones from Shopify (lines above)."
             fail=1
           fi
+          # src/lib/earrings.ts: every [earrings] line must report no local settings and all 60 pairs from Shopify.
+          earrings="$(grep -F '[earrings]' build.log || true)"
+          if [ -z "$earrings" ]; then
+            echo "::error::The build log has no [earrings] line."
+            fail=1
+          elif printf '%s\n' "$earrings" | grep -vF '0 from the local seed' | grep . \
+            || printf '%s\n' "$earrings" | grep -vF '60 pairs from Shopify' | grep .; then
+            echo "::error::The earrings builder did not read all its settings and pairs from Shopify (lines above)."
+            fail=1
+          fi
           if [ "$fail" -ne 0 ]; then exit 1; fi
           echo "Catalogue check passed:"
           printf '%s\n' "$builder" | sort -u
+          printf '%s\n' "$earrings" | sort -u
 
       - name: Upload the site
         uses: actions/upload-pages-artifact@v5

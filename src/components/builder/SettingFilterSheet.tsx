@@ -7,7 +7,7 @@ import { DialogShell, dialogPanelMotion } from "@/components/ui/Modal";
 import { OptionTile } from "@/components/ui/OptionTile";
 import { ScrollArea } from "@/components/ui/Scrollbar";
 import { builderContent, shapeLabel, SHEET_SETTING_STYLES, STONE_SHAPES, styleLabel, type SettingStyle } from "@/content/builder";
-import { metalById } from "@/content/metals";
+import { metalById, type MetalId } from "@/content/metals";
 import { productListContent } from "@/content/product-list";
 import { EMPTY_SETTING_FILTERS, type Range, type SettingFilterState } from "./settingFilters";
 
@@ -22,6 +22,8 @@ type SettingFilterSheetProps = {
   /** The styles that have settings: a sheet tile shows only for these. */
   styles: SettingStyle[];
   onApply: (next: SettingFilterState) => void;
+  /** The earrings builder's sheet has Metal and Price only (no shape or style to choose), and only its metals. */
+  sections?: { shape: boolean; style: boolean; metals?: MetalId[] };
 };
 
 /**
@@ -31,7 +33,7 @@ type SettingFilterSheetProps = {
  * Button has no disabled state in the Design System. Built like the product list's Filters sheet: choices are a draft until Apply, Clear empties the
  * draft, and Escape or a tap on the backdrop closes without applying.
  */
-export function SettingFilterSheet({ open, onClose, state, priceBounds, styles, onApply }: SettingFilterSheetProps) {
+export function SettingFilterSheet({ open, onClose, state, priceBounds, styles, onApply, sections = { shape: true, style: true } }: SettingFilterSheetProps) {
   const id = useId();
   const [draft, setDraft] = useState(state);
   const [openedWith, setOpenedWith] = useState<SettingFilterState | null>(null);
@@ -61,51 +63,55 @@ export function SettingFilterSheet({ open, onClose, state, priceBounds, styles, 
             <section className="flex flex-col gap-space-3">
               <FilterLabel id={`${id}-metal`} label={copy.metal} value={metalValue} />
               <ScrollArea label={copy.metal} className="mb-space-2">
-                <MetalTiles value={draft.metals} onChange={(metals) => set({ metals })} labelledBy={`${id}-metal`} />
+                <MetalTiles value={draft.metals} onChange={(metals) => set({ metals })} labelledBy={`${id}-metal`} metals={sections.metals} />
               </ScrollArea>
             </section>
 
-            <section className="flex flex-col gap-space-3">
-              <FilterLabel id={`${id}-shape`} label={text.shapePanel} value={draft.shape ? shapeLabel(draft.shape) : copy.all} />
-              <ScrollArea label={text.shapePanel} className="mb-space-2">
-                <div role="radiogroup" aria-labelledby={`${id}-shape`} className="flex gap-space-2">
-                  {STONE_SHAPES.map((shape) => (
-                    <OptionTile
-                      key={shape.value}
-                      type="radio"
-                      name={`${id}-shape`}
-                      icon={shape.icon}
-                      checked={draft.shape === shape.value}
-                      onChange={() => set({ shape: shape.value })}
-                      onClick={() => draft.shape === shape.value && set({ shape: null })}
-                    >
-                      {shape.label}
-                    </OptionTile>
-                  ))}
-                </div>
-              </ScrollArea>
-            </section>
+            {sections.shape ? (
+              <section className="flex flex-col gap-space-3">
+                <FilterLabel id={`${id}-shape`} label={text.shapePanel} value={draft.shape ? shapeLabel(draft.shape) : copy.all} />
+                <ScrollArea label={text.shapePanel} className="mb-space-2">
+                  <div role="radiogroup" aria-labelledby={`${id}-shape`} className="flex gap-space-2">
+                    {STONE_SHAPES.map((shape) => (
+                      <OptionTile
+                        key={shape.value}
+                        type="radio"
+                        name={`${id}-shape`}
+                        icon={shape.icon}
+                        checked={draft.shape === shape.value}
+                        onChange={() => set({ shape: shape.value })}
+                        onClick={() => draft.shape === shape.value && set({ shape: null })}
+                      >
+                        {shape.label}
+                      </OptionTile>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </section>
+            ) : null}
 
-            <section className="flex flex-col gap-space-3">
-              <FilterLabel id={`${id}-style`} label={text.style} value={draft.style ? styleLabel(draft.style) : copy.all} />
-              <ScrollArea label={text.style} className="mb-space-2">
-                <div role="radiogroup" aria-labelledby={`${id}-style`} className="flex gap-space-2">
-                  {SHEET_SETTING_STYLES.filter((style) => styles.includes(style.value)).map((style) => (
-                    <OptionTile
-                      key={style.value}
-                      type="radio"
-                      name={`${id}-style`}
-                      icon={style.icon}
-                      checked={draft.style === style.value}
-                      onChange={() => set({ style: style.value })}
-                      onClick={() => draft.style === style.value && set({ style: null })}
-                    >
-                      {style.label}
-                    </OptionTile>
-                  ))}
-                </div>
-              </ScrollArea>
-            </section>
+            {sections.style ? (
+              <section className="flex flex-col gap-space-3">
+                <FilterLabel id={`${id}-style`} label={text.style} value={draft.style ? styleLabel(draft.style) : copy.all} />
+                <ScrollArea label={text.style} className="mb-space-2">
+                  <div role="radiogroup" aria-labelledby={`${id}-style`} className="flex gap-space-2">
+                    {SHEET_SETTING_STYLES.filter((style) => styles.includes(style.value)).map((style) => (
+                      <OptionTile
+                        key={style.value}
+                        type="radio"
+                        name={`${id}-style`}
+                        icon={style.icon}
+                        checked={draft.style === style.value}
+                        onChange={() => set({ style: style.value })}
+                        onClick={() => draft.style === style.value && set({ style: null })}
+                      >
+                        {style.label}
+                      </OptionTile>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </section>
+            ) : null}
 
             <section className="flex flex-col gap-space-1">
               <FilterLabel label={copy.price} tall />

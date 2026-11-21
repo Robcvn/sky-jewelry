@@ -10,6 +10,8 @@ import { DialogShell, dialogPanelMotion } from "@/components/ui/Modal";
 import { PaginationDots } from "@/components/ui/Pagination";
 import { Picture, slotImage } from "@/components/ui/Picture";
 import { Installments, MetalSwatches } from "@/components/ui/ProductCard";
+import { cx } from "@/components/ui/shared";
+import { DOTS_ABOVE_HINT, Hint360 } from "@/components/ui/Viewer360";
 import { builderContent, shapeIcon, shapeLabel, styleIcon, styleLabel, type StoneShape } from "@/content/builder";
 import { metalById } from "@/content/metals";
 import { productListContent } from "@/content/product-list";
@@ -30,6 +32,13 @@ type SettingQuickViewProps = {
   priceNote: (variant: ProductVariant) => string | null;
   infoHref: (variant: ProductVariant) => string;
   addHref: (variant: ProductVariant) => string;
+  /**
+   * The earrings builder: its label for the main button ("Customize"), no Stone tile (an earring setting has no
+   * shape option) and no 360 marker (its quick view, Fine Jewelry's "Product List / Modal" 3587:127035, hides it).
+   */
+  actionLabel?: string;
+  stoneTile?: boolean;
+  hint360?: boolean;
 };
 
 /**
@@ -37,9 +46,10 @@ type SettingQuickViewProps = {
  * the photo, the name, the price with its "with stone" note, the Metal, Stone and Style tiles, then Info and Add
  * Setting with the installments line. The swatches choose the metal. As in the product list's quick view, the
  * tiles show the current choice and their chevrons are not interactive (their pickers are on the setting's page).
- * The frame's 360° View / Images / Video tabs are left out: no setting has a 360° sequence or a video.
+ * Figma's 360° marker on the photo is drawn and inert (no 360° sequence; Held for review); with several photos the
+ * dots sit above it. The frame's 360° View / Images / Video tabs are left out, as on every builder page.
  */
-export function SettingQuickView({ setting, initialVariant, shape, open, onClose, priceNote, infoHref, addHref }: SettingQuickViewProps) {
+export function SettingQuickView({ setting, initialVariant, shape, open, onClose, priceNote, infoHref, addHref, actionLabel = text.addSetting, stoneTile = true, hint360 = true }: SettingQuickViewProps) {
   const id = useId();
   const { product } = setting;
   const [variant, setVariant] = useState(initialVariant);
@@ -76,8 +86,9 @@ export function SettingQuickView({ setting, initialVariant, shape, open, onClose
 
             <div className="relative aspect-square shrink-0 overflow-hidden rounded-4 bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]">
               <Picture image={slotImage(image, "quickview")} sizes={{ desktop: "23rem", mobile: "min(23.375rem, 96vw)" }} className="size-full object-cover mix-blend-multiply" />
+              {hint360 ? <Hint360 className="bottom-space-4" /> : null}
               {images.length > 1 ? (
-                <div className="absolute inset-x-0 bottom-space-4 flex justify-center">
+                <div className={cx("absolute inset-x-0 flex justify-center", hint360 ? DOTS_ABOVE_HINT : "bottom-space-4")}>
                   <PaginationDots count={images.length} current={view} onSelect={setView} label={`Photos of ${name}`} itemLabel={(index) => `Photo ${index + 1} of ${images.length}`} />
                 </div>
               ) : null}
@@ -105,7 +116,7 @@ export function SettingQuickView({ setting, initialVariant, shape, open, onClose
 
               <div className="flex gap-space-2">
                 {tile(cardLabels.metal, <MetalBadge metal={metal.id} />, metal.shortLabel)}
-                {tile(cardLabels.stone, <Icon name={shapeIcon(stone)} size={32} />, shapeLabel(stone))}
+                {stoneTile ? tile(cardLabels.stone, <Icon name={shapeIcon(stone)} size={32} />, shapeLabel(stone)) : null}
                 {setting.style ? tile(text.style, <Icon name={styleIcon(setting.style)} size={32} />, styleLabel(setting.style)) : null}
               </div>
 
@@ -114,7 +125,7 @@ export function SettingQuickView({ setting, initialVariant, shape, open, onClose
                   {builderContent.info}
                 </ButtonLink>
                 <ButtonLink href={addHref(variant)} size="sm" rightIcon="chevron-right" className="flex-1">
-                  {text.addSetting}
+                  {actionLabel}
                 </ButtonLink>
               </div>
               <Installments price={variant.price} labels={cardLabels} onLearnMore={() => setCreditOpen(true)} />

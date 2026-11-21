@@ -5,6 +5,7 @@ import { CreditModal } from "@/components/bag/BagModals";
 import { ButtonLink } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { DialogShell, dialogPanelMotion } from "@/components/ui/Modal";
+import { Hint360 } from "@/components/ui/Viewer360";
 import { builderContent, shapeLabel } from "@/content/builder";
 import type { Stone } from "@/lib/builder";
 import { StoneInstallments, StonePrice, StoneStats } from "./StoneCard";
@@ -23,7 +24,8 @@ type StoneQuickViewProps = {
  * Figma mobile "Modal / Stone Selection" (3587:126319, 390 x 646), opened by tapping a stone card on mobile: a white
  * sheet with 8px padding, the stone's photo (374 square) with a close button, the shape as the title, the price, the
  * Carat / Color / Clarity / Ratio row, Info and Complete Ring, and the installments line (Learn more opens the Credit
- * modal, as the product quick view). Figma's "360° View / Images" tabs are hidden: no stone has a 360° sequence.
+ * modal, as the product quick view). Figma's 360° marker on the photo is drawn and inert (no stone has a 360°
+ * sequence; Held for review); its "360° View / Images" tabs are left out, as on every builder page.
  */
 export function StoneQuickView({ stone, open, onClose, href, completeHref, settingPrice }: StoneQuickViewProps) {
   const id = useId();
@@ -39,6 +41,7 @@ export function StoneQuickView({ stone, open, onClose, href, completeHref, setti
             <IconButton icon="close" label="Close" variant="ghost" size="md" onClick={onClose} className="absolute top-space-4 right-space-4 z-10" />
             <div className="relative aspect-square shrink-0 overflow-hidden rounded-4 bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]">
               <StonePicture stone={stone} sizes={{ desktop: "23rem", mobile: "min(23.375rem, 96vw)" }} />
+              <Hint360 className="bottom-space-4" />
             </div>
             <div className="flex flex-col gap-space-4 px-space-2 py-space-3">
               <div className="flex flex-col gap-space-1 text-center">

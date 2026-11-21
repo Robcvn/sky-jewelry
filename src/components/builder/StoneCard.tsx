@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { cx } from "@/components/ui/shared";
+import { Hint360 } from "@/components/ui/Viewer360";
 import { builderContent, shapeLabel } from "@/content/builder";
 import { formatInstallment, formatPrice } from "@/content/products";
 import type { Stone } from "@/lib/builder";
@@ -95,8 +96,9 @@ type StoneCardProps = {
  * mobile 171 wide in 3587:125351): a bordered card with the stone's photo on the product-image gradient, its shape
  * as the title, its price (and the ring's price once a setting is chosen), and the Carat / Color / Clarity / Ratio
  * row. Desktop hover or keyboard focus: the white shell with a shadow grows 8px around the card and Info, Complete
- * Ring and the installments line show below, as the Fine Jewelry product card does. Figma's hover card also has
- * "360° View / Images" tabs, hidden because no stone has a 360° sequence (Held for review).
+ * Ring and the installments line show below, as the Fine Jewelry product card does. Figma's hover card also draws
+ * the 360° marker on the photo (I3565:101262;3144:9124), shown on hover or focus, drawn and inert (no stone has a
+ * 360° sequence; Held for review), and "360° View / Images" tabs, left out as on every builder page.
  * Mobile: no hover; tapping the card opens the stone's sheet.
  */
 export function StoneCard({ stone, href, completeHref, settingPrice, onQuickView }: StoneCardProps) {
@@ -110,6 +112,9 @@ export function StoneCard({ stone, href, completeHref, settingPrice, onQuickView
       <div className="relative flex flex-col overflow-hidden rounded-8 border border-black-alpha-10 bg-secondary-skin ui-desktop:group-hover/card:border-transparent ui-desktop:group-hover/card:bg-transparent ui-desktop:group-focus-within/card:border-transparent ui-desktop:group-focus-within/card:bg-transparent">
         <div className="relative aspect-square overflow-hidden rounded-t-4 bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))] ui-desktop:rounded-4">
           <StonePicture stone={stone} sizes={{ desktop: "(width >= 90rem) 18.75rem, 21vw", mobile: "45vw" }} />
+          <div className="hidden ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block">
+            <Hint360 className="bottom-space-4" />
+          </div>
         </div>
         <div className="flex flex-col gap-space-3 py-space-2 ui-desktop:gap-space-4 ui-desktop:py-space-3">
           <div className="flex flex-col gap-space-1 text-center">

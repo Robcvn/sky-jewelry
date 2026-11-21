@@ -15,17 +15,21 @@ type RingConfigChoiceProps = {
   actions: RingConfigAction[];
   /** Figma's stone-unavailable state (7412:101492): dashed error border, struck values and Select New Stone. */
   unavailable?: { message: string; action: RingConfigAction } | null;
+  /** The earrings builder's rows: a 40px photo after the icon (Figma 3565:99587 "image"). */
+  image?: ReactNode;
+  /** The earrings builder's desktop rows write the links in sentence case (ui-xs/link), as the mobile rows do. */
+  sentenceCase?: boolean;
   className?: string;
 };
 
 /** Edit / View / Remove: Figma's overline link on desktop, the sentence-case ui-xs link on mobile, with a 12px rule between. */
-function Actions({ actions }: { actions: RingConfigAction[] }) {
+function Actions({ actions, sentenceCase = false }: { actions: RingConfigAction[]; sentenceCase?: boolean }) {
   return (
     <span className="flex items-center gap-space-3">
       {actions.map((action, index) => (
         <Fragment key={action.label}>
           {index > 0 ? <span aria-hidden="true" className="h-space-3 w-px bg-black-alpha-20" /> : null}
-          <Link href={action.href} className="type-ui-xs-link ui-transition-fast rounded-4 text-primary-leather hover:text-black-alpha-60 ui-desktop:type-overline-xs-link">
+          <Link href={action.href} className={cx("type-ui-xs-link ui-transition-fast rounded-4 text-primary-leather hover:text-black-alpha-60", !sentenceCase && "ui-desktop:type-overline-xs-link")}>
             {action.label}
             {action.context ? <span className="sr-only">{action.context}</span> : null}
           </Link>
@@ -41,7 +45,7 @@ function Actions({ actions }: { actions: RingConfigAction[] }) {
  * dashed state-error border (dash 2, gap 4), the stone-unavailable icon and name in the error colour, the summary
  * and price struck through at 50%, and "This stone is no longer available." with Select New Stone.
  */
-export function RingConfigChoice({ icon, name, summary, price, actions, unavailable = null, className }: RingConfigChoiceProps) {
+export function RingConfigChoice({ icon, name, summary, price, actions, unavailable = null, image, sentenceCase = false, className }: RingConfigChoiceProps) {
   const error = Boolean(unavailable);
   return (
     <div data-ring-config={error ? "unavailable" : "default"} className={cx("relative flex items-start gap-space-4 rounded-4 bg-secondary-ivory p-space-4 text-primary-leather", className)}>
@@ -52,6 +56,7 @@ export function RingConfigChoice({ icon, name, summary, price, actions, unavaila
         </svg>
       ) : null}
       <Icon name={error ? "stone-unavailable" : icon} size={32} className={cx("shrink-0", error && "text-state-error")} />
+      {image ? <span className="relative size-space-10 shrink-0 overflow-hidden rounded-[2px]">{image}</span> : null}
       <div className={cx("flex min-w-0 flex-1 flex-col", error ? "gap-1" : "gap-space-2")}>
         <div className="flex flex-col gap-1">
           <p className={cx("type-ui-sm-medium", error && "text-state-error")}>{name}</p>
@@ -65,7 +70,7 @@ export function RingConfigChoice({ icon, name, summary, price, actions, unavaila
             </Link>
           </div>
         ) : (
-          <Actions actions={actions} />
+          <Actions actions={actions} sentenceCase={sentenceCase} />
         )}
       </div>
       <p className={cx("shrink-0", error ? "type-ui-md-regular line-through opacity-50" : "type-ui-md-medium")}>{price}</p>

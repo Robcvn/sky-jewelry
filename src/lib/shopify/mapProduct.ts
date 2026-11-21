@@ -35,6 +35,8 @@ export function localImage(url: string, alt: string): ImageRef | null {
 
 /** The tag every loose stone carries (shopify/builder-import.csv). */
 export const LOOSE_STONE_TAG = "loose-stone";
+/** The tag every matched pair of the earrings builder carries (shopify/earrings-import.csv). */
+export const STONE_PAIR_TAG = "stone-pair";
 
 /** 360° frames: images whose file name ends in "-spin-<number>", in number order. */
 const SPIN = /-spin-(\d+)$/;
@@ -62,8 +64,8 @@ export function caratOf(options: Array<{ name: string; value: string }>) {
  */
 export function mapShopifyProduct(product: ShopifyProduct): Product | null {
   if (!product.handle || !product.title) return null;
-  // Loose stones are the ring builder's (src/lib/builder.ts), not jewellery products.
-  if (product.tags.includes(LOOSE_STONE_TAG)) return null;
+  // Loose stones are the ring builder's (src/lib/builder.ts) and stone pairs the earrings builder's (src/lib/earrings.ts), not jewellery products.
+  if (product.tags.includes(LOOSE_STONE_TAG) || product.tags.includes(STONE_PAIR_TAG)) return null;
 
   const variants: ProductVariant[] = product.variants.nodes
     .map((variant) => ({
