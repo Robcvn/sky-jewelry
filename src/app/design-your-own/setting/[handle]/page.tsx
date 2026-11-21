@@ -8,7 +8,7 @@ import { ButtonCards } from "@/components/pdp/DetailSections";
 import { withBasePath } from "@/components/ui/shared";
 import { PAIRED_BAND_HANDLES } from "@/content/builder";
 import { homePage, type Reviews as ReviewsContent } from "@/content/home";
-import { getBuilderCatalog } from "@/lib/builder";
+import { getBuilderCatalog, stoneSummary } from "@/lib/builder";
 import { getCatalog, pickProducts } from "@/lib/catalog";
 
 type Params = { handle: string };
@@ -41,6 +41,8 @@ export default async function SettingPage({ params }: { params: Promise<Params> 
   const { product } = setting;
   const { products } = await getCatalog();
   const bands = pickProducts(products, PAIRED_BAND_HANDLES);
+  // Stone first, this page is Step 2: the stones go along, slim, for the step bar and the chosen stone's shape and origin.
+  const stones = (await getBuilderCatalog()).stones.map(stoneSummary);
 
   // Structured data for search engines: the setting and its metals' price range.
   const jsonLd = {
@@ -62,8 +64,8 @@ export default async function SettingPage({ params }: { params: Promise<Params> 
   return (
     <main id="main-content" tabIndex={-1} className="flex-1">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <BuilderSteps current={1} />
-      <SettingDetail setting={setting} bands={bands} />
+      <BuilderSteps current={1} stones={stones} />
+      <SettingDetail setting={setting} bands={bands} stones={stones} />
       <Reviews content={reviews} />
       <ButtonCards />
     </main>

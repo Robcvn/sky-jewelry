@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useId, useMemo, useRef, useState } from "react";
 import { MetalTiles, PanelBody, PriceRange } from "@/components/plp/FilterControls";
 import { shipDateLabel } from "@/components/plp/filters";
@@ -18,9 +19,9 @@ import { builderContent, SETTING_STYLES, shapeIcon, shapeLabel, STONE_SHAPES, st
 import { metalById } from "@/content/metals";
 import { productListContent } from "@/content/product-list";
 import { formatPrice, type ProductVariant } from "@/content/products";
-import type { RingSetting } from "@/lib/builder";
+import type { RingSetting, StoneSummary } from "@/lib/builder";
 import { PromoCard } from "./PromoCard";
-import { settingHref, settingTitle, stonesHref } from "./ring";
+import { completeHref, parseRing, parseShape, settingHref, settingTakes, settingTitle, stoneFirst, stoneFirstStartHref, stonesHref } from "./ring";
 import { SettingFilterSheet } from "./SettingFilterSheet";
 import {
   applySettingFilters,
@@ -33,7 +34,7 @@ import {
   type SettingFilterState,
 } from "./settingFilters";
 import { SettingQuickView } from "./SettingQuickView";
-import { useIsClient, useQuery } from "./useQuery";
+import { liveQuery, useIsClient, useQuery } from "./useQuery";
 
 const { settings: text } = builderContent;
 const { filters: copy, sortOptions, card: cardLabels } = productListContent;
@@ -42,6 +43,8 @@ type SettingListingProps = {
   settings: RingSetting[];
   /** The lowest stone price for each shape, and "any" for every shape: the "with stone" note adds it to the setting's price. */
   stoneFrom: Record<string, number>;
+  /** Stone first: the stones (slim), to find the one chosen in Step 1. */
+  stones?: StoneSummary[];
 };
 
 type Chip = { key: string; label: string; icon?: IconName; remove: (state: SettingFilterState) => SettingFilterState };
@@ -53,15 +56,43 @@ type Chip = { key: string; label: string; icon?: IconName; remove: (state: Setti
  * Mobile: the heading, Filters / Ships by / Sort by, the active filters as chips, and a 2-column grid; the style,
  * shape, metal and price controls are in the Filters sheet. Filtering, sorting and View More run in the browser;
  * their state lives in the URL query string, next to the ring's.
+ * Stone first (?first=stone&stone=; Figma Builder Stone First - Setting 8270:93583, mobile 6683:68102) this is Step
+ * 2: only the settings that take the chosen stone's shape, "Set with" fixed to that shape, "with stone" the chosen
+ * stone's price, and Choose Setting going to Step 3. Without a valid stone it goes back to Step 1.
  */
-export function SettingListing({ settings, stoneFrom }: SettingListingProps) {
+export function SettingListing({ settings: allSettings, stoneFrom, stones = [] }: SettingListingProps) {
   const id = useId();
   const isClient = useIsClient();
   const isDesktop = useIsDesktop();
+  const router = useRouter();
   const [search, setQuery] = useQuery();
-  const state = useMemo(() => (search ? parseSettingFilters(new URLSearchParams(search)) : EMPTY_SETTING_FILTERS), [search]);
-  const setState = (next: SettingFilterState) => setQuery(serializeSettingFilters(next));
+  const ringNow = useMemo(() => parseRing(new URLSearchParams(search)), [search]);
+  const first = stoneFirst(ringNow);
+  const chosen = useMemo(() => (ringNow.first === "stone" ? (stones.find((stone) => stone.handle === ringNow.stone) ?? null) : null), [ringNow, stones]);
+  const lockedShape = chosen ? parseShape(chosen.shape) : null;
+  const settings = useMemo(() => (chosen ? allSettings.filter((setting) => settingTakes(setting, chosen.shape)) : allSettings), [allSettings, chosen]);
+  const state = useMemo(() => {
+    const parsed = search ? parseSettingFilters(new URLSearchParams(search)) : EMPTY_SETTING_FILTERS;
+    return lockedShape ? { ...parsed, shape: lockedShape } : parsed;
+  }, [search, lockedShape]);
+  // The filters' own query, plus (stone first) the chosen stone and the flow, which the filters don't hold.
+  const setState = (next: SettingFilterState) => {
+    const params = serializeSettingFilters(lockedShape ? { ...next, shape: lockedShape } : next);
+    if (chosen) {
+      params.set("stone", chosen.handle);
+      params.set("first", "stone");
+    }
+    setQuery(params);
+  };
   const set = (patch: Partial<SettingFilterState>) => setState({ ...state, ...patch, page: 1 });
+
+  // Stone first without a valid stone in the URL: back to Step 1 (the URL read as the effect runs: see liveQuery).
+  useEffect(() => {
+    if (!isClient) return;
+    const live = parseRing(liveQuery());
+    if (stoneFirst(live) && !stones.some((stone) => stone.handle === live.stone)) router.replace(stoneFirstStartHref(live));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClient, first, chosen]);
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [quickView, setQuickView] = useState<{ setting: RingSetting; variant: ProductVariant; open: boolean } | null>(null);
@@ -76,13 +107,15 @@ export function SettingListing({ settings, stoneFrom }: SettingListingProps) {
   const shown = matches.slice(0, pageSize * state.page);
   const priceOn = rangeActive(state.price, bounds);
 
-  const ring = { shape: state.shape, start: state.start };
+  const ring = { shape: state.shape, start: state.start, stone: chosen?.handle ?? null, first: chosen ? ("stone" as const) : null };
   const withStone = (variant: ProductVariant) => {
-    const stone = stoneFrom[state.shape ?? "any"] ?? stoneFrom.any;
+    const stone = chosen ? chosen.price : (stoneFrom[state.shape ?? "any"] ?? stoneFrom.any);
     return stone ? `${text.withStone} ${formatPrice(variant.price + stone)}` : null;
   };
   const infoHref = (setting: RingSetting) => (variant: ProductVariant) => settingHref(setting.handle, { ...ring, metal: variant.metal });
-  const chooseHref = (setting: RingSetting) => (variant: ProductVariant) => stonesHref({ ...ring, setting: setting.handle, metal: variant.metal });
+  // Setting first: Step 2, the stones. Stone first: Step 3 (the prototype's Choose Setting goes to Builder Stone First - Complete).
+  const chooseHref = (setting: RingSetting) => (variant: ProductVariant) =>
+    chosen ? completeHref({ ...ring, setting: setting.handle, metal: variant.metal }) : stonesHref({ ...ring, setting: setting.handle, metal: variant.metal });
 
   const shipChoices = [
     { value: "", label: copy.anyDate },
@@ -91,7 +124,8 @@ export function SettingListing({ settings, stoneFrom }: SettingListingProps) {
 
   const chips: Chip[] = [
     ...(state.style ? [{ key: "style", label: styleLabel(state.style), icon: styleIcon(state.style), remove: (s: SettingFilterState) => ({ ...s, style: null }) }] : []),
-    ...(state.shape ? [{ key: "shape", label: shapeLabel(state.shape), icon: shapeIcon(state.shape), remove: (s: SettingFilterState) => ({ ...s, shape: null }) }] : []),
+    // Stone first the shape is the stone's, not a filter the shopper set: no chip.
+    ...(state.shape && !lockedShape ? [{ key: "shape", label: shapeLabel(state.shape), icon: shapeIcon(state.shape), remove: (s: SettingFilterState) => ({ ...s, shape: null }) }] : []),
     ...state.metals.map((metal) => ({ key: metal, label: metalById(metal).label, remove: (s: SettingFilterState) => ({ ...s, metals: s.metals.filter((m) => m !== metal) }) })),
     ...(priceOn ? [{ key: "price", label: `${formatPrice(state.price![0])}–${formatPrice(state.price![1])}`, remove: (s: SettingFilterState) => ({ ...s, price: null }) }] : []),
     ...(state.ships && isClient ? [{ key: "ships", label: `${copy.shipsBy} ${shipDateLabel(state.ships)}`, remove: (s: SettingFilterState) => ({ ...s, ships: null }) }] : []),
@@ -188,13 +222,13 @@ export function SettingListing({ settings, stoneFrom }: SettingListingProps) {
               {...panelProps}
               label={text.shapePanel}
               displayValue={state.shape ? `${text.setWith} ${shapeLabel(state.shape)}` : text.shape}
-              clearable={Boolean(state.shape)}
+              clearable={Boolean(state.shape) && !lockedShape}
               onClear={() => set({ shape: null })}
               panelWidth="w-80"
               panel={
                 <PanelBody label={text.shapePanel} id={`${id}-shape`}>
                   <div role="radiogroup" aria-labelledby={`${id}-shape`} className="grid grid-cols-3 gap-space-2 pt-space-2">
-                    {STONE_SHAPES.map((shape) => (
+                    {STONE_SHAPES.filter((shape) => !lockedShape || shape.value === lockedShape).map((shape) => (
                       <OptionTile
                         key={shape.value}
                         type="radio"
@@ -345,6 +379,7 @@ export function SettingListing({ settings, stoneFrom }: SettingListingProps) {
         state={state}
         priceBounds={bounds}
         styles={styles.map((style) => style.value)}
+        sections={lockedShape ? { shape: true, style: true, shapes: [lockedShape] } : undefined}
         onApply={(next) => {
           setSheetOpen(false);
           setState(next);

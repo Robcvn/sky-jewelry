@@ -22,8 +22,11 @@ type SettingFilterSheetProps = {
   /** The styles that have settings: a sheet tile shows only for these. */
   styles: SettingStyle[];
   onApply: (next: SettingFilterState) => void;
-  /** The earrings builder's sheet has Metal and Price only (no shape or style to choose), and only its metals. */
-  sections?: { shape: boolean; style: boolean; metals?: MetalId[] };
+  /**
+   * The earrings builder's sheet has Metal and Price only (no shape or style to choose), and only its metals.
+   * Stone first, the shape is the chosen stone's: `shapes` offers only it, and it can't be cleared.
+   */
+  sections?: { shape: boolean; style: boolean; metals?: MetalId[]; shapes?: string[] };
 };
 
 /**
@@ -72,7 +75,7 @@ export function SettingFilterSheet({ open, onClose, state, priceBounds, styles, 
                 <FilterLabel id={`${id}-shape`} label={text.shapePanel} value={draft.shape ? shapeLabel(draft.shape) : copy.all} />
                 <ScrollArea label={text.shapePanel} className="mb-space-2">
                   <div role="radiogroup" aria-labelledby={`${id}-shape`} className="flex gap-space-2">
-                    {STONE_SHAPES.map((shape) => (
+                    {STONE_SHAPES.filter((shape) => !sections.shapes || sections.shapes.includes(shape.value)).map((shape) => (
                       <OptionTile
                         key={shape.value}
                         type="radio"
@@ -80,7 +83,7 @@ export function SettingFilterSheet({ open, onClose, state, priceBounds, styles, 
                         icon={shape.icon}
                         checked={draft.shape === shape.value}
                         onChange={() => set({ shape: shape.value })}
-                        onClick={() => draft.shape === shape.value && set({ shape: null })}
+                        onClick={() => !sections.shapes && draft.shape === shape.value && set({ shape: null })}
                       >
                         {shape.label}
                       </OptionTile>

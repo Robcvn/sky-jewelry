@@ -51,6 +51,24 @@ export type Stone = Omit<SeedStone, "photo"> & {
   image: ImageRef | null;
 };
 
+/**
+ * What the setting pages need of the stone chosen first (stone-first flow): its step-bar line, photo, price, shape
+ * and origin. A slim copy, so the settings list and setting pages don't carry every stone's details.
+ */
+export type StoneSummary = Pick<Stone, "handle" | "title" | "kind" | "origin" | "gem" | "shape" | "carat" | "price" | "image" | "available">;
+export const stoneSummary = ({ handle, title, kind, origin, gem, shape, carat, price, image, available }: Stone): StoneSummary => ({
+  handle,
+  title,
+  kind,
+  origin,
+  gem: gem ?? undefined,
+  shape,
+  carat,
+  price,
+  image,
+  available,
+});
+
 /** The site's own files for each stone photo (the Shopify image is matched by file name, as for products). */
 const STONE_IMAGES: Record<StonePhoto, Omit<ImageRef, "alt">> = {
   "stone-diamond-round": { desktop: "diamond-round-d", mobile: "diamond-round-m" },

@@ -17,6 +17,11 @@ type StoneQuickViewProps = {
   onClose: () => void;
   href: string;
   completeHref: string;
+  /**
+   * "Complete Ring", or "Select Stone" stone first: the mobile frame (6683:69132) keeps "Complete Ring" from the
+   * setting-first sheet; a corrected oversight, as no setting is chosen yet and desktop says "Select Stone".
+   */
+  actionLabel?: string;
   settingPrice: number | null;
 };
 
@@ -27,7 +32,7 @@ type StoneQuickViewProps = {
  * modal, as the product quick view). Figma's 360° marker is placed on the photo, hidden while SHOW_360 is off (no
  * stone has a 360° sequence; Deviations); its "360° View / Images" tabs are not built.
  */
-export function StoneQuickView({ stone, open, onClose, href, completeHref, settingPrice }: StoneQuickViewProps) {
+export function StoneQuickView({ stone, open, onClose, href, completeHref, actionLabel = builderContent.stones.completeRing, settingPrice }: StoneQuickViewProps) {
   const id = useId();
   const [creditOpen, setCreditOpen] = useState(false);
   return (
@@ -57,7 +62,7 @@ export function StoneQuickView({ stone, open, onClose, href, completeHref, setti
                   {builderContent.info}
                 </ButtonLink>
                 <ButtonLink href={completeHref} size="sm" rightIcon="chevron-right" className="flex-1">
-                  {builderContent.stones.completeRing}
+                  {actionLabel}
                 </ButtonLink>
               </div>
               <StoneInstallments price={stone.price} onLearnMore={() => setCreditOpen(true)} />

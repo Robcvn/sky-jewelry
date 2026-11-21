@@ -14,7 +14,7 @@ import { CLARITY_GRADES, COLOR_GRADES, CUT_GRADES } from "@/content/builder-grad
 import { productDetailContent } from "@/content/product-detail";
 import { formatInstallment, formatPrice } from "@/content/products";
 import type { Stone } from "@/lib/builder";
-import { completeHref, parseRing, parseShape, stonesHref } from "./ring";
+import { completeHref, parseRing, parseShape, stoneFirst, stoneFirstNextHref, stonesHref } from "./ring";
 import { StoneCertificateTile, stoneKindLabel, StoneSizeGuideTile, StoneSpecsTile, STONE_DRAWING_BG, STONE_TILE_BG } from "./StoneDetailGallery";
 import { StonePicture } from "./StonePicture";
 import { useQuery } from "./useQuery";
@@ -47,6 +47,10 @@ export function StoneDetail({ stone }: { stone: Stone }) {
   const diamond = stone.kind === "diamond";
   const [dollar, amount] = [formatPrice(stone.price).slice(0, 1), formatPrice(stone.price).slice(1)];
   const complete = completeHref({ ...ring, shape: parseShape(stone.shape) ?? ring.shape, stone: stone.handle });
+  // Stone first (Builder Stone First - Stone Info 5440:30981, mobile 6683:68723): the stone is Step 1, so the button
+  // is "Select Your Setting" (to Step 2's settings) and there is no Remove Stone; the desktop title writes the weight
+  // "0.50 Carat", as the mobile frames do.
+  const first = stoneFirst(ring);
   const photoBg = stone.image ? STONE_TILE_BG : STONE_DRAWING_BG;
 
   const sectionHeading = (title: string) => stoneSectionHeading(stone.shape, title);
@@ -77,7 +81,7 @@ export function StoneDetail({ stone }: { stone: Stone }) {
       <div className="site-container flex flex-col gap-space-6 pt-space-5 pb-space-11 ui-desktop:gap-space-8 ui-desktop:px-0 ui-desktop:py-space-15">
         <div className="flex flex-col gap-space-4">
           <h1 className="type-heading-md text-primary-leather">
-            <span className="hidden ui-desktop:inline">{stone.title}</span>
+            <span className="hidden ui-desktop:inline">{first ? mobileTitle(stone.title) : stone.title}</span>
             <span className="ui-desktop:hidden">{mobileTitle(stone.title)}</span>
           </h1>
           {/* Figma: the "$" in caps-xs centred beside the amount in caps-sm, 26px in all. */}
@@ -89,13 +93,15 @@ export function StoneDetail({ stone }: { stone: Stone }) {
 
         <div className="flex flex-col gap-space-4">
           <div className="flex flex-col gap-space-3">
-            <ButtonLink href={complete} className="w-full">
-              {copy.completeYourRing}
+            <ButtonLink href={first ? stoneFirstNextHref(stone, ring) : complete} className="w-full">
+              {first ? copy.selectYourSetting : copy.completeYourRing}
             </ButtonLink>
-            {/* Mobile frame only: desktop draws no Remove Stone. */}
-            <ButtonLink href={stonesHref(ring)} variant="secondary" className="w-full ui-desktop:hidden">
-              {copy.removeStone}
-            </ButtonLink>
+            {/* Mobile frame only: desktop draws no Remove Stone, and neither stone-first frame does. */}
+            {first ? null : (
+              <ButtonLink href={stonesHref(ring)} variant="secondary" className="w-full ui-desktop:hidden">
+                {copy.removeStone}
+              </ButtonLink>
+            )}
           </div>
           <p className="type-body-xs-regular flex flex-wrap items-center justify-center gap-x-space-2 text-center text-primary-leather">
             <span>

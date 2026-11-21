@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { CreditModal } from "@/components/bag/BagModals";
 import { PickerLabel } from "@/components/pdp/OptionPickers";
@@ -21,9 +22,9 @@ import { builderContent, SETTING_SHAPE_ORDER, shapeIcon, shapeLabel, styleIcon, 
 import { metalById, type MetalId } from "@/content/metals";
 import { metalComposition, productDetailContent } from "@/content/product-detail";
 import { formatInstallment, formatPrice, imagesFor, productHref, variantName, type Product } from "@/content/products";
-import type { RingSetting } from "@/lib/builder";
-import { parseRing, ringParams, settingsHref, settingVariant, stonesHref } from "./ring";
-import { useQuery } from "./useQuery";
+import type { RingSetting, StoneSummary } from "@/lib/builder";
+import { completeHref, parseRing, parseShape, ringParams, settingShapes, settingsHref, settingVariant, stoneFirst, stoneFirstStartHref, stonesHref } from "./ring";
+import { liveQuery, useIsClient, useQuery } from "./useQuery";
 
 const { setting: text } = builderContent;
 const pdp = productDetailContent;
@@ -165,12 +166,15 @@ export function OptionGrid<T extends string>({
   options,
   value,
   onChange,
+  columns = 5,
 }: {
   label: string;
   valueLabel: string;
   options: Array<{ value: T; label: string; ariaLabel?: string; icon?: IconName; media?: React.ReactNode }>;
   value: T;
   onChange: (value: T) => void;
+  /** 5 (Setting Options - Stone and Material), or 2 (the stone-first "Stone" picker's 249px tiles). */
+  columns?: 2 | 5;
 }) {
   const id = useId();
   const [expanded, setExpanded] = useState(false);
@@ -196,7 +200,7 @@ export function OptionGrid<T extends string>({
   return (
     <div className="flex flex-col gap-space-4">
       <PickerLabel id={`${id}-label`} label={label} value={valueLabel} />
-      <div className="grid grid-cols-5 gap-space-2">
+      <div className={cx("grid gap-space-2", columns === 2 ? "grid-cols-2" : "grid-cols-5")}>
         <div role="radiogroup" aria-labelledby={`${id}-label`} className="contents">
           {shown.slice(0, 4).map(tile)}
         </div>
@@ -223,6 +227,7 @@ function MobileOptions({
   style,
   onMetal,
   onShape,
+  shapeLocked = false,
 }: {
   metals: MetalId[];
   metal: MetalId;
@@ -230,6 +235,8 @@ function MobileOptions({
   style: string | null;
   onMetal: (metal: MetalId) => void;
   onShape: (shape: StoneShape) => void;
+  /** Stone first: the shape is the chosen stone's, so the Stone tile only shows it, as Style does. */
+  shapeLocked?: boolean;
 }) {
   const id = useId();
   const [open, setOpen] = useState<"metal" | "stone" | null>(null);
@@ -303,17 +310,21 @@ function MobileOptions({
       ) : (
         <div className={tileClass}>{summary(pdp.labels.metal, metalBadge(metal), metalById(metal).shortLabel, false)}</div>
       )}
-      <button
-        ref={(node) => {
-          openers.current.stone = node;
-        }}
-        type="button"
-        aria-expanded={false}
-        onClick={() => setOpen("stone")}
-        className={cx(tileClass, "cursor-pointer")}
-      >
-        {summary(pdp.labels.stone, <Icon name={shapeIcon(shape)} size={32} />, shapeLabel(shape), true)}
-      </button>
+      {shapeLocked ? (
+        <div className={tileClass}>{summary(pdp.labels.stone, <Icon name={shapeIcon(shape)} size={32} />, shapeLabel(shape), false)}</div>
+      ) : (
+        <button
+          ref={(node) => {
+            openers.current.stone = node;
+          }}
+          type="button"
+          aria-expanded={false}
+          onClick={() => setOpen("stone")}
+          className={cx(tileClass, "cursor-pointer")}
+        >
+          {summary(pdp.labels.stone, <Icon name={shapeIcon(shape)} size={32} />, shapeLabel(shape), true)}
+        </button>
+      )}
       {style ? <div className={tileClass}>{summary(builderContent.settings.style, <Icon name={styleIcon(style)} size={32} />, styleLabel(style), false)}</div> : null}
     </div>
   );
@@ -392,18 +403,35 @@ const PROFILE = {
  * the Product Info Cards and the accordions. The chosen metal and centre stone shape live in the URL
  * (?metal=&shape=), and "Choose This Setting" carries them to Step 2.
  */
-export function SettingDetail({ setting, bands }: { setting: RingSetting; bands: Product[] }) {
+export function SettingDetail({ setting, bands, stones = [] }: { setting: RingSetting; bands: Product[]; stones?: StoneSummary[] }) {
   const { product } = setting;
   const [search, setQuery] = useQuery();
+  const isClient = useIsClient();
+  const router = useRouter();
   const ring = parseRing(new URLSearchParams(search));
+  // Stone first (?first=stone&stone=; Builder Stone First - Setting Info 5440:30785, mobile 6683:68628) this page is
+  // Step 2: the chosen stone fixes the shape (and, on desktop, the "Stone" picker shows its origin), there is no Meet
+  // With Our Consultant, and Choose This Setting goes to Step 3. Without a valid stone it goes back to Step 1.
+  const first = stoneFirst(ring);
+  const chosen = first ? (stones.find((stone) => stone.handle === ring.stone) ?? null) : null;
   const variant = settingVariant(product, ring.metal);
-  const shape: StoneShape = ring.shape ?? "round";
+  const shape: StoneShape = (chosen ? parseShape(chosen.shape) : null) ?? ring.shape ?? "round";
   const [creditOpen, setCreditOpen] = useState(false);
   const name = variantName(product, variant);
   const metals = [...new Set(product.variants.map((item) => item.metal))];
-  const choose = (patch: { metal?: MetalId; shape?: StoneShape }) => setQuery(ringParams({ metal: patch.metal ?? variant.metal, shape: patch.shape ?? shape, start: ring.start }));
+  const keep = chosen ? { stone: chosen.handle, first: "stone" as const } : {};
+  const choose = (patch: { metal?: MetalId; shape?: StoneShape }) => setQuery(ringParams({ metal: patch.metal ?? variant.metal, shape: patch.shape ?? shape, start: ring.start, ...keep }));
   const [dollar, amount] = [formatPrice(variant.price).slice(0, 1), formatPrice(variant.price).slice(1)];
-  const nextHref = stonesHref({ setting: setting.handle, metal: variant.metal, shape, start: ring.start });
+  const nextHref = chosen
+    ? completeHref({ setting: setting.handle, metal: variant.metal, shape, stone: chosen.handle, first: "stone" })
+    : stonesHref({ setting: setting.handle, metal: variant.metal, shape, start: ring.start });
+
+  useEffect(() => {
+    if (!isClient) return;
+    const live = parseRing(liveQuery());
+    if (stoneFirst(live) && !stones.some((stone) => stone.handle === live.stone)) router.replace(stoneFirstStartHref(live));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClient, first, chosen]);
 
   const photos: Tile[] = imagesFor(product, variant.metal).map((image, index) => ({ key: `${variant.metal}-${index}`, image }));
   const tiles: Tile[] = [...photos.map((tile, index) => ({ ...tile, hint360: index === 0 })), ...WORN.map((item, index) => ({ key: `worn-${index}`, ...item }))];
@@ -486,7 +514,7 @@ export function SettingDetail({ setting, bands }: { setting: RingSetting; bands:
           <OptionGrid
             label={text.centerShape}
             valueLabel={shapeLabel(shape)}
-            options={SETTING_SHAPE_ORDER.map((item) => ({ value: item, label: shapeLabel(item), icon: shapeIcon(item) }))}
+            options={(chosen ? [shape] : settingShapes(setting)).map((item) => ({ value: item, label: shapeLabel(item), icon: shapeIcon(item) }))}
             value={shape}
             onChange={(next) => choose({ shape: next })}
           />
@@ -497,13 +525,37 @@ export function SettingDetail({ setting, bands }: { setting: RingSetting; bands:
             value={variant.metal}
             onChange={(next) => choose({ metal: next })}
           />
+          {chosen && chosen.kind === "diamond" ? (
+            // Stone first, desktop only: the chosen diamond's origin. Figma draws both tiles; the stone fixes it, so only its own shows.
+            <OptionGrid
+              columns={2}
+              label={text.stoneOrigin.label}
+              valueLabel={chosen.origin === "natural" ? text.stoneOrigin.natural : text.stoneOrigin.labGrown}
+              options={[
+                chosen.origin === "natural"
+                  ? { value: "natural", label: text.stoneOrigin.natural, icon: "natural-diamond" as const }
+                  : { value: "lab-grown", label: text.stoneOrigin.labGrown, icon: "lab-diamond" as const },
+              ]}
+              value={chosen.origin}
+              onChange={() => undefined}
+            />
+          ) : null}
         </div>
         <div className="ui-desktop:hidden">
-          <MobileOptions metals={metals} metal={variant.metal} shape={shape} style={setting.style} onMetal={(metal) => choose({ metal })} onShape={(next) => choose({ shape: next })} />
+          <MobileOptions
+            metals={metals}
+            metal={variant.metal}
+            shape={shape}
+            style={setting.style}
+            onMetal={(metal) => choose({ metal })}
+            onShape={(next) => choose({ shape: next })}
+            shapeLocked={Boolean(chosen)}
+          />
         </div>
 
         {quickCheckout}
-        {consultant}
+        {/* Neither stone-first frame draws Meet With Our Consultant. */}
+        {first ? null : consultant}
 
         <div className="flex flex-col gap-space-6 ui-desktop:gap-space-8">
           <div className="flex flex-col gap-space-4">

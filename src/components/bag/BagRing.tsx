@@ -38,6 +38,8 @@ export function bagRingNames(ring: BagRingItem) {
 /** Step 2 with the ring's setting kept: where Select New Stone leads. */
 export function newStoneHref(ring: BagRingItem) {
   if (ring.build === "earrings") return pairsHref({ setting: ring.setting?.handle ?? null, metal: ring.setting?.metal ?? null, shape: (ring.stone?.stone?.shape as Ring["shape"]) ?? null });
+  // Stone first, a new stone is chosen on Step 1 (keeping the setting for the "with setting" prices).
+  if (ring.first === "stone") return stonesHref({ setting: ring.setting?.handle ?? null, metal: ring.setting?.metal ?? null, first: "stone" });
   return stonesHref({ setting: ring.setting?.handle ?? null, metal: ring.setting?.metal ?? null, shape: (ring.stone?.stone?.shape as Ring["shape"]) ?? null });
 }
 

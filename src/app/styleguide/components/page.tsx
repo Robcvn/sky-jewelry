@@ -1551,6 +1551,13 @@ export default async function ComponentsPage() {
             <li>Built earrings in the bag follow the built ring&rsquo;s rows (inferred: the bag frames draw only a ring): the heading is Step 3&rsquo;s name, the setting row shows Metal (no size), the pair row &ldquo;Natural Round Diamonds&rdquo; with both weights, Color, Cut and Clarity; one care plan row; they count as one item and Remove takes out both lines. The panel shows &ldquo;14K Yellow Gold / 1.02ct&rdquo; (the pair&rsquo;s total).</li>
             <li>Earrings builder, pair no longer available: the ring builder&rsquo;s drawn Stone Unavailable state, worded for a pair (&ldquo;These diamonds are no longer available.&rdquo;, &ldquo;Select New Diamonds&rdquo;, and the modal) (inferred: no earrings frame draws it). Step 3 reads the pair&rsquo;s availability from the Storefront API, the bag from the cart.</li>
             <li>Earrings builder Diamond Info, Carat card: &ldquo;The weight of this diamond.&rdquo; (the ring builder&rsquo;s says &ldquo;the center stone&rdquo;). Drop a Hint on the earrings pages has no Ring Size field and says &ldquo;Let someone know about the earrings you&rsquo;ve designed.&rdquo;</li>
+            <li>Stone-first ring builder (Figma Stone First Builder 5440:36716 and Builder Stone First - Setting 8270:93583; mobile Section 1 6683:68101): the same pages in the other order, marked by first=stone in the URL. Step 1 is the stone list (/design-your-own/stone/), Step 2 the settings (/design-your-own/), Step 3 the complete ring; the step bar reads Select Diamond (Select Stone for gemstones), Select Setting, Complete Ring (mobile Stone, Setting, Ring). The menus&rsquo; stone links and Home&rsquo;s &ldquo;Start with a Stone&rdquo; start there.</li>
+            <li>Stone first, Select Stone (Step 1 hover card and sheet) and Select Your Setting (the stone&rsquo;s page) go straight to Step 2. The prototype opens &ldquo;Choose your Setting&rdquo; first, which is not built (Open questions).</li>
+            <li>Stone first, Step 2 lists only the settings that take the chosen stone&rsquo;s shape. No setting records its shapes, so every setting is taken to take all ten (as the setting page&rsquo;s Center Stone Shape picker offers): no stone is left without a setting. &ldquo;Set with&rdquo; is fixed to the stone&rsquo;s shape: its panel and the mobile sheet offer only that shape, and no shape chip shows. The third promo card keeps the setting-first card (Figma: &ldquo;Can&rsquo;t Decide? Take our quiz&rdquo;, Open questions).</li>
+            <li>Stone first, the setting page: Figma draws every shape under Center Stone Shape and, on desktop, both tiles under &ldquo;Stone&rdquo; (Lab Grown Diamond, Natural Diamond). The chosen stone fixes both, so each shows only the stone&rsquo;s own value, and the mobile Stone tile only shows it, as Style does. The Stone picker is drawn for diamonds only: a gemstone has none. Meet With Our Consultant is left out, as both stone-first frames do; Choose This Setting goes to Step 3.</li>
+            <li>Stone first, Step 3: desktop lists the stone&rsquo;s row before the setting&rsquo;s, as Builder Stone First - Complete does; mobile keeps the setting first, as its frame does. The stone-first Complete frame is a copy of the older Step 3 (no ring size or care plan); the page is the built Step 3 with only the order changed. Edit goes to the setting page and Remove to Step 2, keeping the stone; View goes to the stone&rsquo;s page and Remove to Step 1 with nothing chosen; Select New Stone goes to Step 1, keeping the setting.</li>
+            <li>Built rings in the bag remember the flow they were built in (a hidden &ldquo;_first&rdquo; line attribute), so the bag&rsquo;s Edit and the ring&rsquo;s name return to Step 3 in that flow, and Select New Stone to that flow&rsquo;s stone list.</li>
+            <li>Fine Jewelry menu and mobile Fine Jewelry screen: &ldquo;Design Your Own Earrings&rdquo; (to /design-your-own/earrings/) is added as the last row of the Earrings column. It is not in the approved menu; the wording is from the TO DOS menu rebuild (7970:215029), and the icon is the Assets &ldquo;Band&rdquo; that frame uses for &ldquo;Start with an Earring Setting&rdquo;. The desktop panel keeps its height (Rings has more rows).</li>
           </ul>
         </Section>
 
@@ -1729,6 +1736,8 @@ export default async function ComponentsPage() {
             <li>Earrings Step 3: the pair row&rsquo;s &ldquo;J &bull; VVS2&rdquo; under a VVS1 card and the installments&rsquo; $147.50 are built from the earrings&rsquo; own data.</li>
             <li>Earrings Step 3 model photo badge: Figma&rsquo;s &ldquo;Showing 1.61ct&rdquo; is built as &ldquo;Shown with 1.61 ct&rdquo;, the ring builder&rsquo;s badge wording. Beside a pair of another weight, &ldquo;Showing 1.61ct&rdquo; read as a contradiction.</li>
             <li>Earrings Step 2, mobile heading: the mobile frame (3587:126869) repeats Step 1&rsquo;s &ldquo;Design your own Earrings / Select your Perfect Piece&rdquo;, a leftover. Built with the desktop frame&rsquo;s &ldquo;Select your stone shape and Quality&rdquo; (broken before &ldquo;and&rdquo;, as the ring builder&rsquo;s mobile Step 2).</li>
+            <li>Stone first, Step 1&rsquo;s stone cards draw &ldquo;with setting: $1,800&rdquo; before any setting is chosen (Builder Stone First - Stone 5440:31393): the line shows only once a setting is in the ring.</li>
+            <li>Stone first, the mobile stone sheet (6683:69132) keeps the setting-first sheet&rsquo;s &ldquo;Complete Ring&rdquo;: built &ldquo;Select Stone&rdquo;, as the desktop hover card, since no setting is chosen yet.</li>
           </ul>
         </Section>
 
@@ -1819,7 +1828,7 @@ export default async function ComponentsPage() {
               heart and pear diamonds and the other coloured stones (they show a line drawing for now); a photo per carat size for the carat
               toggle; a cut-out ring for the step bar.
             </li>
-            <li>360° image sequences needed: the 360° marker, tabs and viewer stay off (SHOW_360) until they exist. Requested: a turntable sequence of each ring setting in each metal colour, of the earring setting, and of one diamond per shape (36 frames per turn, square, on white), named &ldquo;&lt;photo&gt;-spin-01&rdquo; to &ldquo;-spin-36&rdquo;. Recommendation: start with the six listed ring settings and the earring setting, then add the diamonds.</li>
+            <li>360° image sequences needed: the 360° marker, tabs and viewer stay off (SHOW_360) until they exist. Requested: a turntable sequence of each ring setting in each metal colour, of the earring setting, and of one diamond per shape (36 frames per turn, square, on the same background and lighting as the product photos), named &ldquo;&lt;photo&gt;-spin-01&rdquo; to &ldquo;-spin-36&rdquo;. Recommendation: start with the six listed ring settings and the earring setting, then add the diamonds.</li>
             <li>
               Product page sample data with no source in the catalogue: metal composition, diamond grades and grading lab, stone
               dimensions. All kept in src/content/product-detail.ts until real data exists (Shopify metafields could hold them).
@@ -1858,7 +1867,13 @@ export default async function ComponentsPage() {
               Order Detail don&rsquo;t. Built square. Which is right?
             </li>
             <li>Photos are needed for Channel Set, Halo, Side-Stone and Eternity before they can be listed in the builder.</li>
-            <li>Ring builder: the stone-first menu links (&ldquo;Start with a Natural Diamond&rdquo; and the others) land on Step 1; a stone-first flow is not part of part 2.</li>
+            <li>Stone first, &ldquo;Choose your Setting&rdquo; (desktop Modal - Ring Size 7 5440:36621, mobile Modal - Setting Type 6683:73402): the prototype opens it from Select Stone and Select Your Setting, but its Pendant Setting card leads nowhere and no pendant builder is drawn. Not built; Select Stone goes straight to the ring settings. Recommendation: drop it until a pendant builder is designed.</li>
+            <li>&ldquo;Choose your Stone&rdquo; (Modal - Ring Size 8 7389:99059: Natural Diamond, Lab Grown Diamond (Recommended), Gemstone): nothing opens it, and its first card links to the settings. Not built. Recommendation: drop it; the menus already start each stone type.</li>
+            <li>Stone first, Step 2&rsquo;s third promo card is &ldquo;Can&rsquo;t Decide? Take our quiz &hellip; Start the Quiz&rdquo;, but no quiz is drawn. The setting-first promo card is kept. Recommendation: design the quiz, or keep the promo.</li>
+            <li>Stone first, the setting page&rsquo;s Center Stone Shape and Stone pickers: Figma draws every shape and both origins, but choosing another value would contradict the stone already chosen, and nothing shows what it should do. Kept showing only the chosen stone&rsquo;s shape and origin (Rob&rsquo;s decision, Nov 21). Open: should the frames draw them that way, or change the stone?</li>
+            <li>The stone&rsquo;s page title: the stone-first desktop frame writes &ldquo;0.50 Carat I VVS2 Round Natural Diamond&rdquo;, the setting-first one &ldquo;2.50ct I VVS2 &hellip;&rdquo;; each is built as drawn. Recommendation: one form for both.</li>
+            <li>&ldquo;Start with a Pendant&rdquo; (Diamonds menu) has no design and stays as it was. Recommendation: draw a pendant builder or drop the link.</li>
+            <li>The &ldquo;Badge Design&rdquo; section beside the stone-first frames (6227:35727: a &ldquo;Ships Fast&rdquo; badge on a product card) is not used by any frame. Not built. Recommendation: say where it belongs.</li>
             <li>Ring builder: Remove Setting and Remove Stone are drawn, and built, on mobile only.</li>
             <li>Ring builder installments: setting cards say &ldquo;Pay in 12&rdquo; and stone cards &ldquo;Pay in 4&rdquo;; each is built as drawn.</li>
             <li>Ring builder step bar: one frame repeats the price inside the setting&rsquo;s name; built with the name and one price.</li>
@@ -1893,12 +1908,11 @@ export default async function ComponentsPage() {
             <li>Product card &ldquo;Learn more&rdquo; (hover state): stays inert; the product page, quick view and bag open Modal - Credit.</li>
             <li>
               Ring builder Step 3 (/design-your-own/complete/), drawn without a result: &ldquo;View Certificate&rdquo; (plain text) and the
-              add-to-bag loaders from the Animations page. The stone-first flow and a mock order from checkout are not part
-              of it.
+              add-to-bag loaders from the Animations page. A mock order from checkout is not part of it.
             </li>
             <li>
               Ring builder, drawn without a result: Quick Checkout and Meet With Our Consultant&rsquo;s &ldquo;Book Now&rdquo; on the
-              setting page (shown as designed, inert); the video and the carat tabs on the gallery photos (left out); &ldquo;View Certificate&rdquo; on stones (plain text). The stone-first frames are not built.
+              setting page (shown as designed, inert); the video and the carat tabs on the gallery photos (left out); &ldquo;View Certificate&rdquo; on stones (plain text). The same on the stone-first pages (Quick Checkout stays on the stone-first setting page, as drawn).
             </li>
             <li>Quick Checkout&rsquo;s open states (on the Accordion page; unnamed variants Open3, Open4): the closed card is on the setting page, inert. Part 2 (Step 3) doesn&rsquo;t cover it.</li>
             <li>Landing page live chat and text actions (no chat or messaging service to connect to).</li>

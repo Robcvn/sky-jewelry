@@ -44,6 +44,8 @@ const OLD_LOCAL_COUNT_KEY = "sky-bag-local-count";
 /** Line attribute keys of a built ring. The leading underscore keeps the id out of Shopify's checkout and order views. */
 export const RING_ID_KEY = "_ring";
 export const RING_SIZE_KEY = "Ring Size";
+/** A ring built stone first carries "_first: stone", so the bag's links return to that flow's steps. */
+export const RING_FIRST_KEY = "_first";
 /** Line attribute key of built earrings (their two lines share it). */
 export const EARRINGS_ID_KEY = "_earrings";
 
@@ -51,7 +53,7 @@ export const EARRINGS_ID_KEY = "_earrings";
  * A built piece's part: the piece it belongs to, its size and which part this line is. `build` says which builder
  * made it: a ring (setting and stone) or earrings (setting and matched pair, no size).
  */
-export type BagRingPart = { id: string; size: string | null; role: "setting" | "stone"; build: "ring" | "earrings" };
+export type BagRingPart = { id: string; size: string | null; role: "setting" | "stone"; build: "ring" | "earrings"; first?: "stone" | null };
 
 /** A loose stone's facts (a ring's stone line), read from its tags as the builder catalogue does. */
 export type BagStone = {
@@ -208,7 +210,13 @@ export function mapCartLine(line: ShopifyCartLine): BagLine {
     total: money(line.cost.totalAmount) || subtotal - discount,
     available: merchandise.availableForSale,
     ring: ringId
-      ? { id: ringId, size: attribute(line.attributes, RING_SIZE_KEY), role: stoneLine ? "stone" : "setting", build: "ring" }
+      ? {
+          id: ringId,
+          size: attribute(line.attributes, RING_SIZE_KEY),
+          role: stoneLine ? "stone" : "setting",
+          build: "ring",
+          first: attribute(line.attributes, RING_FIRST_KEY) === "stone" ? "stone" : null,
+        }
       : earringsId
         ? { id: earringsId, size: null, role: stoneLine ? "stone" : "setting", build: "earrings" }
         : null,
@@ -222,6 +230,8 @@ export type BagRingItem = {
   kind: "ring";
   /** Which builder made it: a ring, or earrings (whose stone line is a matched pair). */
   build: "ring" | "earrings";
+  /** "stone" when the ring was built stone first. */
+  first: "stone" | null;
   key: string;
   id: string;
   size: string | null;
@@ -249,6 +259,7 @@ export function bagItems(lines: BagLine[]): BagItem[] {
       ring = {
         kind: "ring",
         build: line.ring.build ?? "ring",
+        first: line.ring.first ?? null,
         key: `ring:${line.ring.id}`,
         id: line.ring.id,
         size: line.ring.size,
@@ -278,7 +289,7 @@ export const itemCount = (lines: BagLine[]) =>
   bagItems(lines).reduce((sum, item) => sum + (item.kind === "ring" ? Math.max(1, ...item.lines.map((line) => line.quantity)) : item.line.quantity), 0);
 
 /** Step 3 with the ring (or the earrings) in the URL, for a bag ring's links (Edit, its name and photo). */
-export function ringHref(ring: Pick<BagRingItem, "setting" | "stone" | "size"> & { build?: BagRingItem["build"] }) {
+export function ringHref(ring: Pick<BagRingItem, "setting" | "stone" | "size"> & { build?: BagRingItem["build"]; first?: BagRingItem["first"] }) {
   if (ring.build === "earrings")
     return ring.setting
       ? earringsCompleteHref({ setting: ring.setting.handle, metal: ring.setting.metal, shape: parseShape(ring.stone?.stone?.shape), stone: ring.stone?.handle ?? null })
@@ -290,6 +301,7 @@ export function ringHref(ring: Pick<BagRingItem, "setting" | "stone" | "size"> &
     shape: parseShape(ring.stone?.stone?.shape),
     stone: ring.stone?.handle ?? null,
     size: (ring.size as never) ?? null,
+    first: ring.first ?? null,
   });
 }
 
@@ -466,6 +478,8 @@ export type RingToAdd = {
   size: string;
   /** The ring's name in the bag ("Vine Ring"), for a failure message. */
   name: string;
+  /** "stone" when built stone first: stored with the lines so the bag's Edit returns to that flow. */
+  first?: "stone" | null;
 };
 
 /**
@@ -473,7 +487,7 @@ export type RingToAdd = {
  * id and size attributes, then opens the bag panel (unless openPanel is false, as for Secure Checkout).
  * A stone is one of a kind: when this stone is already in the bag, nothing is added and the bag opens instead.
  */
-export function addRing({ setting, settingVariant, stone, size, name }: RingToAdd, { openPanel = true } = {}): Promise<AddResult> {
+export function addRing({ setting, settingVariant, stone, size, name, first }: RingToAdd, { openPanel = true } = {}): Promise<AddResult> {
   return serial(async () => {
     await start();
     if (state.bag.lines.some((line) => line.ring && line.handle === stone.handle)) {
@@ -499,7 +513,7 @@ export function addRing({ setting, settingVariant, stone, size, name }: RingToAd
         quantity: 1,
         unitPrice: settingVariant.price,
         available: settingVariant.available,
-        ring: { id, size, role: "setting", build: "ring" },
+        ring: { id, size, role: "setting", build: "ring", first: first ?? null },
         stone: null,
       };
       const stoneLine: LocalLine = {
@@ -518,7 +532,7 @@ export function addRing({ setting, settingVariant, stone, size, name }: RingToAd
         quantity: 1,
         unitPrice: stone.price,
         available: stone.available,
-        ring: { id, size, role: "stone", build: "ring" },
+        ring: { id, size, role: "stone", build: "ring", first: first ?? null },
         stone: { kind: stone.kind, origin: stone.origin, shape: stone.shape, carat: stone.carat, color: stone.color, clarity: stone.clarity, cut: stone.cut, gem: stone.gem },
       };
       saveLocal([...lines, settingLine, stoneLine]);
@@ -528,6 +542,7 @@ export function addRing({ setting, settingVariant, stone, size, name }: RingToAd
     const attributes = [
       { key: RING_ID_KEY, value: id },
       { key: RING_SIZE_KEY, value: size },
+      ...(first === "stone" ? [{ key: RING_FIRST_KEY, value: "stone" }] : []),
     ];
     return addCart(
       [

@@ -17,7 +17,7 @@ import { productListContent } from "@/content/product-list";
 import type { Product } from "@/content/products";
 import type { Stone } from "@/lib/builder";
 import { CccModal, type CccTab } from "./CccModal";
-import { completeHref, parseRing, settingVariant, startDefaults, stoneHref, type Ring } from "./ring";
+import { completeHref, parseRing, settingVariant, startDefaults, stoneFirst, stoneFirstNextHref, stoneHref, type Ring } from "./ring";
 import { StoneCard } from "./StoneCard";
 import {
   AdvancedPanel,
@@ -179,6 +179,10 @@ export function StoneListing({ stones, settings, variant }: StoneListingProps) {
 
   const setting = settings.find((product) => product.slug === ring.setting);
   const settingPrice = setting ? settingVariant(setting, ring.metal).price : null;
+  // Stone first (?first=stone), this list is Step 1: a stone's main action is "Select Stone", to Step 2's settings.
+  const first = stoneFirst(ring);
+  const nextHref = (stone: Stone) => (first ? stoneFirstNextHref(stone, ring) : completeHref({ ...ring, stone: stone.handle }));
+  const actionLabel = first ? copy.selectStone : copy.completeRing;
 
   const shipChoices = [{ value: "", label: listCopy.anyDate }, ...(isClient ? stoneShipOptions(pool).map((days) => ({ value: String(days), label: shipDateLabel(days) })) : [])];
 
@@ -506,7 +510,8 @@ export function StoneListing({ stones, settings, variant }: StoneListingProps) {
                   <StoneCard
                     stone={stone}
                     href={stoneHref(stone.handle, ring)}
-                    completeHref={completeHref({ ...ring, stone: stone.handle })}
+                    completeHref={nextHref(stone)}
+                    actionLabel={actionLabel}
                     settingPrice={settingPrice}
                     onQuickView={(item) => setQuickView({ stone: item, open: true })}
                   />
@@ -563,7 +568,8 @@ export function StoneListing({ stones, settings, variant }: StoneListingProps) {
           open={quickView.open}
           onClose={() => setQuickView({ ...quickView, open: false })}
           href={stoneHref(quickView.stone.handle, ring)}
-          completeHref={completeHref({ ...ring, stone: quickView.stone.handle })}
+          completeHref={nextHref(quickView.stone)}
+          actionLabel={actionLabel}
           settingPrice={settingPrice}
         />
       ) : null}

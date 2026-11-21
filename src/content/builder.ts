@@ -219,6 +219,11 @@ export const builderContent = {
     material: "Material",
     chooseThis: "Choose This Setting",
     removeSetting: "Remove Setting",
+    /**
+     * Stone first, desktop only (Builder Stone First - Setting Info 5440:30785, "Setting Options - Stone"): the chosen
+     * diamond's origin, "Stone: Lab Grown Diamond", over Figma's two tiles.
+     */
+    stoneOrigin: { label: "Stone", natural: "Natural Diamond", labGrown: "Lab Grown Diamond" },
     info: "Your Setting Info",
     quickCheckout: { title: "Quick Checkout", body: "Pick the origin and size of your center stone, and we’ll curate a diamond perfectly suited to your ring." },
     consultant: {
@@ -267,6 +272,8 @@ export const builderContent = {
     of: "of",
     withSetting: "with setting:",
     completeRing: "Complete Ring",
+    /** Stone first, Step 1's hover card and sheet (Builder Stone First - Stone 5440:31393). */
+    selectStone: "Select Stone",
     empty: "No stones matching your selection. Try adjusting your filters.",
     stats: { carat: "Carat", color: "Color", clarity: "Clarity", ratio: "Ratio" },
     /** Help copy for the Cut / Color / Clarity modal (3565:101513 to 101515; mobile 3587:126684 to 126686). */
@@ -280,6 +287,8 @@ export const builderContent = {
   },
   stone: {
     completeYourRing: "Complete Your Ring",
+    /** Stone first (Builder Stone First - Stone Info 5440:30981; mobile 6683:68723 "Select your setting", set in caps). */
+    selectYourSetting: "Select Your Setting",
     removeStone: "Remove Stone",
     diamondInfo: "Your Diamond Info",
     stoneInfo: "Your Stone Info",

@@ -249,7 +249,7 @@ export const homePage: HomePage = {
           icon: "gemstone",
           title: "Stone",
           body: "Browse our dazzling diamond collection and experience the brilliance in every piece.",
-          cta: { label: "Start with a Stone", href: "/design-your-own/?start=natural-diamond" },
+          cta: { label: "Start with a Stone", href: "/design-your-own/stone/?start=natural-diamond&first=stone" },
         },
       ],
       diamond: { desktop: "dyo-diamond-d", mobile: "dyo-diamond-m", alt: "" },

@@ -178,6 +178,9 @@ const fineJewelryMenu: MegaMenu = {
         item("Pearl Earrings", "/fine-jewelry/earrings/?type=pearl", icon("pearl-earrings")),
         item("Gold Earrings", "/fine-jewelry/earrings/?type=gold", icon("gold-earrings")),
         item("Hoop Earrings", "/fine-jewelry/earrings/?type=hoop", icon("hoop-earrings")),
+        // Not in the approved menu: wording from the TO DOS menu rebuild (7970:215029), whose "Start with an Earring
+        // Setting" row uses the Assets "Band" icon (Deviations).
+        item("Design Your Own Earrings", "/design-your-own/earrings/", icon("band")),
       ],
     },
     {
@@ -218,10 +221,10 @@ const engagementRingsMenu: MegaMenu = {
       title: "Design Your Own",
       columns: 1,
       links: [
-        item("Start with a Natural Diamond", "/design-your-own/?start=natural-diamond", icon("natural-diamond")),
-        item("Start with a Lab-Created Diamond", "/design-your-own/?start=lab-diamond", icon("lab-diamond")),
+        item("Start with a Natural Diamond", "/design-your-own/stone/?start=natural-diamond&first=stone", icon("natural-diamond")),
+        item("Start with a Lab-Created Diamond", "/design-your-own/stone/?start=lab-diamond&first=stone", icon("lab-diamond")),
         item("Start with a Setting", "/design-your-own/?start=setting", icon("setting")),
-        item("Start with a Gemstone", "/design-your-own/?start=gemstone", icon("gemstone")),
+        item("Start with a Gemstone", "/design-your-own/stone/?start=gemstone&first=stone", icon("gemstone")),
       ],
     },
     {
@@ -319,8 +322,8 @@ const diamondsMenu: MegaMenu = {
       title: "Design Your Diamond Ring",
       columns: 1,
       links: [
-        item("Start with a Natural Diamond", "/design-your-own/?start=natural-diamond", icon("natural-diamond")),
-        item("Start with a Lab-Created Diamond", "/design-your-own/?start=lab-diamond", icon("lab-diamond")),
+        item("Start with a Natural Diamond", "/design-your-own/stone/?start=natural-diamond&first=stone", icon("natural-diamond")),
+        item("Start with a Lab-Created Diamond", "/design-your-own/stone/?start=lab-diamond&first=stone", icon("lab-diamond")),
         item("Start with a Setting", "/design-your-own/?start=setting", icon("setting")),
         item("Start with a Pendant", "/design-your-own/pendant/", icon("pendant-solitaire")),
       ],
@@ -370,10 +373,10 @@ const gemstonesMenu: MegaMenu = {
       columns: 1,
       links: [
         // No moissanite icon in Assets: Figma's Natural Diamond is kept and flagged.
-        item("Start with a Moissanite", "/design-your-own/?start=moissanite", icon("natural-diamond")),
-        item("Start with a Sapphire", "/design-your-own/?start=sapphire", icon("gemstone")),
+        item("Start with a Moissanite", "/design-your-own/stone/?start=moissanite&first=stone", icon("natural-diamond")),
+        item("Start with a Sapphire", "/design-your-own/stone/?start=sapphire&first=stone", icon("gemstone")),
         item("Start with a Setting", "/design-your-own/?start=setting", icon("setting")),
-        item("Start with an Emerald", "/design-your-own/?start=emerald", icon("emerald")),
+        item("Start with an Emerald", "/design-your-own/stone/?start=emerald&first=stone", icon("emerald")),
       ],
     },
     { _key: "shape", title: "Gemstones By Shape", columns: 2, links: SHAPES("/gemstones/") },

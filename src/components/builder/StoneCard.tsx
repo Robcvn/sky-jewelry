@@ -84,8 +84,10 @@ type StoneCardProps = {
   stone: Stone;
   /** The stone's page, carrying the ring. */
   href: string;
-  /** Step 3 with this stone (planned route). */
+  /** The card's main action: Step 3 with this stone (setting first) or Step 2, the settings (stone first). */
   completeHref: string;
+  /** The main action's label: "Complete Ring", or "Select Stone" stone first (Builder Stone First - Stone 5440:31393). */
+  actionLabel?: string;
   /** Price of the chosen setting, or null when the ring has none yet. */
   settingPrice: number | null;
   /** Mobile: tapping the card opens Modal / Stone Selection. */
@@ -102,7 +104,7 @@ type StoneCardProps = {
  * off (no stone has a 360° sequence; Deviations), and "360° View / Images" tabs, which are not built.
  * Mobile: no hover; tapping the card opens the stone's sheet.
  */
-export function StoneCard({ stone, href, completeHref, settingPrice, onQuickView }: StoneCardProps) {
+export function StoneCard({ stone, href, completeHref, actionLabel = copy.completeRing, settingPrice, onQuickView }: StoneCardProps) {
   const title = shapeLabel(stone.shape);
   return (
     <article data-stone={stone.handle} className="group/card relative flex flex-col text-primary-leather focus-within:z-20 ui-desktop:hover:z-20">
@@ -142,7 +144,7 @@ export function StoneCard({ stone, href, completeHref, settingPrice, onQuickView
               <span className="sr-only">: {stone.title}</span>
             </ButtonLink>
             <ButtonLink href={completeHref} size="sm" rightIcon="chevron-right" className="flex-1">
-              {copy.completeRing}
+              {actionLabel}
             </ButtonLink>
           </div>
           <StoneInstallments price={stone.price} />

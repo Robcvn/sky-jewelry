@@ -35,6 +35,8 @@ import {
   settingVariant,
   stoneCaratTitle,
   stoneColorLabel,
+  stoneFirst,
+  stoneFirstStartHref,
   stoneHref,
   stonesHref,
   stoneShortName,
@@ -199,7 +201,11 @@ type CompleteRingProps = {
  * Ring builder Step 3, "Complete" (Figma desktop "Add Care Plan - Select Ring Size" 6579:194412, "Ring Size Selected"
  * 6579:194864, "Complete" 6579:195316, "None Available" 6579:195764; mobile 6579:208180 and its three sisters).
  * One static page: the ring (?setting=&metal=&shape=&stone=&size=) is read from the URL in the browser.
- * - No valid setting: back to Step 1. A setting but no valid stone: Step 2, keeping the ring.
+ * - No valid setting: back to Step 1. A setting but no valid stone: Step 2, keeping the ring. Stone first
+ *   (?first=stone): no valid stone goes back to Step 1, a stone without a valid setting to Step 2, keeping the stone.
+ * - Stone first (Builder Stone First - Complete 5440:30339, mobile 6683:68224): the step bar starts with the stone,
+ *   and on desktop the stone's row comes before the setting's (mobile keeps the setting first, as its frame does).
+ *   Edit, View and Remove lead to that flow's steps; the bag remembers the flow (see addRing).
  * - Choosing a ring size writes size= to the URL, so a link resumes the whole ring. Secure Checkout and Add to Bag
  *   are disabled until a size is chosen, as Figma's Select Ring Size frame draws them.
  * - The stone's availability is read from the Storefront API; when it is gone, the page takes Figma's "Builder -
@@ -211,8 +217,12 @@ export function CompleteRing({ settings, stones, bands, children }: CompleteRing
   const isDesktop = useIsDesktop();
   const router = useRouter();
   const ring = parseRing(new URLSearchParams(search));
-  const setting = settings.find((item) => item.handle === ring.setting) ?? null;
-  const stone = setting ? (stones.find((item) => item.handle === ring.stone) ?? null) : null;
+  const first = stoneFirst(ring);
+  const foundSetting = settings.find((item) => item.handle === ring.setting) ?? null;
+  const foundStone = stones.find((item) => item.handle === ring.stone) ?? null;
+  // Each flow needs its first piece before the second counts.
+  const setting = first ? (foundStone ? foundSetting : null) : foundSetting;
+  const stone = first ? foundStone : setting ? foundStone : null;
   const available = useStoneAvailable(stone);
   const unavailable = Boolean(stone) && !available;
   const [busy, setBusy] = useState(false);
@@ -221,15 +231,18 @@ export function CompleteRing({ settings, stones, bands, children }: CompleteRing
   const unavailableShown = useRef(false);
   const describedBy = useId();
 
-  // Missing pieces: no valid setting goes to Step 1; a setting without a valid stone goes to Step 2 with the ring kept.
-  // The URL is read as the effect runs: right after a click into this page (Complete Ring, the bag's Edit), the first
-  // render can still see the previous page's query, and trusting it sent the shopper back.
+  // Missing pieces: no valid setting goes to Step 1; a setting without a valid stone goes to Step 2 with the ring kept
+  // (stone first: no valid stone goes to Step 1, a stone without a setting to Step 2). The URL is read as the effect
+  // runs: right after a link to this page, the first render can still see the previous page's query.
   useEffect(() => {
     if (!isClient) return;
     const live = parseRing(liveQuery());
     const liveSetting = settings.find((item) => item.handle === live.setting) ?? null;
-    const liveStone = liveSetting ? (stones.find((item) => item.handle === live.stone) ?? null) : null;
-    if (!liveSetting) router.replace(settingsHref(live));
+    const liveStone = stones.find((item) => item.handle === live.stone) ?? null;
+    if (stoneFirst(live)) {
+      if (!liveStone) router.replace(stoneFirstStartHref(live));
+      else if (!liveSetting) router.replace(settingsHref({ ...live, stone: liveStone.handle, shape: liveStone.shape as Ring["shape"] }));
+    } else if (!liveSetting) router.replace(settingsHref(live));
     else if (!liveStone) router.replace(stonesHref({ ...live, setting: liveSetting.handle }));
     // The ring is read from the URL; re-run when it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -257,15 +270,18 @@ export function CompleteRing({ settings, stones, bands, children }: CompleteRing
   const { product } = setting;
   const variant = settingVariant(product, ring.metal);
   const short = settingShort(product);
-  const linkRing: Partial<Ring> = { setting: setting.handle, metal: variant.metal, shape: stone.shape as Ring["shape"], start: ring.start };
+  const linkRing: Partial<Ring> = { setting: setting.handle, metal: variant.metal, shape: stone.shape as Ring["shape"], start: ring.start, first: ring.first, stone: first ? stone.handle : null };
   const total = variant.price + stone.price;
   const ringPhotos: Tile[] = imagesFor(product, variant.metal).map((image, index) => ({ key: `${variant.metal}-${index}`, image }));
   const shipsInDays = Math.max(product.shipsInDays ?? 0, stone.shipsInDays);
   const diamond = stone.kind === "diamond";
   const close = () => setDialog(null);
-  const newStoneHref = stonesHref(linkRing);
+  // Select New Stone: setting first, the stone list keeping the setting; stone first, Step 1 keeping the setting (for
+  // the "with setting" prices). Remove on the stone: setting first, the same; stone first, Step 1 with nothing chosen.
+  const newStoneHref = first ? stonesHref({ setting: setting.handle, metal: variant.metal, start: ring.start, first: "stone" }) : stonesHref({ ...linkRing, stone: null });
+  const removeStoneHref = first ? stoneFirstStartHref(ring) : newStoneHref;
 
-  const addArgs = { setting: product, settingVariant: variant, stone, size: ring.size ?? "", name: ringName(short, stone, "panel") };
+  const addArgs = { setting: product, settingVariant: variant, stone, size: ring.size ?? "", name: ringName(short, stone, "panel"), first: ring.first };
   // Add to Bag opens the bag panel (the header draws it), which also shows a failure.
   const add = async () => {
     setBusy(true);
@@ -306,6 +322,44 @@ export function CompleteRing({ settings, stones, bands, children }: CompleteRing
     [t.approxTotalCarat, `${setting.specs.tcw.toFixed(2)}ct`],
   ];
 
+  const settingRow = (
+    <RingConfigChoice
+      key="setting"
+      icon="setting"
+      name={short}
+      summary={metalById(variant.metal).label}
+      price={formatPrice(variant.price)}
+      actions={[
+        { label: text.edit, href: settingHref(setting.handle, linkRing), context: `: ${short} setting` },
+        { label: text.remove, href: settingsHref(linkRing), context: `: ${short} setting` },
+      ]}
+    />
+  );
+  const stoneRow = (
+    <RingConfigChoice
+      key="stone"
+      icon={shapeIcon(stone.shape)}
+      name={
+        <>
+          <span className="hidden ui-desktop:inline">{stoneCaratTitle(stone.title)}</span>
+          <span className="ui-desktop:hidden">{stoneShortName(stone, "complete")}</span>
+        </>
+      }
+      summary={
+        <>
+          <span className="hidden ui-desktop:inline">{stoneSummary(stone, " • ")}</span>
+          <span className="ui-desktop:hidden">{stoneSummary(stone, " ")}</span>
+        </>
+      }
+      price={formatPrice(stone.price)}
+      actions={[
+        { label: text.view, href: stoneHref(stone.handle, { ...linkRing, stone: null }), context: `: ${stoneCaratTitle(stone.title)}` },
+        { label: text.remove, href: removeStoneHref, context: `: ${stoneCaratTitle(stone.title)}` },
+      ]}
+      unavailable={unavailable ? { message: text.unavailable.row, action: { label: text.unavailable.selectNewStone, href: newStoneHref } } : null}
+    />
+  );
+
   return (
     <>
       <BuilderSteps current={3} settings={products} stone={stone} stoneUnavailable={unavailable} />
@@ -343,37 +397,7 @@ export function CompleteRing({ settings, stones, bands, children }: CompleteRing
           </div>
 
           <div className="flex flex-col gap-space-4">
-            <RingConfigChoice
-              icon="setting"
-              name={short}
-              summary={metalById(variant.metal).label}
-              price={formatPrice(variant.price)}
-              actions={[
-                { label: text.edit, href: settingHref(setting.handle, linkRing), context: `: ${short} setting` },
-                { label: text.remove, href: settingsHref(linkRing), context: `: ${short} setting` },
-              ]}
-            />
-            <RingConfigChoice
-              icon={shapeIcon(stone.shape)}
-              name={
-                <>
-                  <span className="hidden ui-desktop:inline">{stoneCaratTitle(stone.title)}</span>
-                  <span className="ui-desktop:hidden">{stoneShortName(stone, "complete")}</span>
-                </>
-              }
-              summary={
-                <>
-                  <span className="hidden ui-desktop:inline">{stoneSummary(stone, " • ")}</span>
-                  <span className="ui-desktop:hidden">{stoneSummary(stone, " ")}</span>
-                </>
-              }
-              price={formatPrice(stone.price)}
-              actions={[
-                { label: text.view, href: stoneHref(stone.handle, linkRing), context: `: ${stoneCaratTitle(stone.title)}` },
-                { label: text.remove, href: newStoneHref, context: `: ${stoneCaratTitle(stone.title)}` },
-              ]}
-              unavailable={unavailable ? { message: text.unavailable.row, action: { label: text.unavailable.selectNewStone, href: newStoneHref } } : null}
-            />
+            {first && isDesktop ? [stoneRow, settingRow] : [settingRow, stoneRow]}
           </div>
 
           <div className="flex flex-col gap-space-4">
