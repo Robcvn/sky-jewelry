@@ -2,7 +2,7 @@ import { defineCliConfig } from "sanity/cli";
 
 export default defineCliConfig({
   api: { projectId: "74lb1xq2", dataset: "production" },
-  // The first `npx sanity deploy` asks for the studio's address (<name>.sanity.studio) and prints an app id:
-  // add it here as deployment: { appId: "…" } so later deploys don't ask again.
-  deployment: { autoUpdates: true },
+  // The studio's app id, printed by the first `npx sanity deploy` (https://sky-site.sanity.studio): later deploys
+  // reuse it instead of asking for the address again.
+  deployment: { appId: "fp9yaj81fjzmucavd7ukmour", autoUpdates: true },
 });
