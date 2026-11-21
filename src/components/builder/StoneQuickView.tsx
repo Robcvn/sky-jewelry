@@ -24,8 +24,8 @@ type StoneQuickViewProps = {
  * Figma mobile "Modal / Stone Selection" (3587:126319, 390 x 646), opened by tapping a stone card on mobile: a white
  * sheet with 8px padding, the stone's photo (374 square) with a close button, the shape as the title, the price, the
  * Carat / Color / Clarity / Ratio row, Info and Complete Ring, and the installments line (Learn more opens the Credit
- * modal, as the product quick view). Figma's 360° marker on the photo is drawn and inert (no stone has a 360°
- * sequence; Held for review); its "360° View / Images" tabs are left out, as on every builder page.
+ * modal, as the product quick view). Figma's 360° marker is placed on the photo, hidden while SHOW_360 is off (no
+ * stone has a 360° sequence; Deviations); its "360° View / Images" tabs are not built.
  */
 export function StoneQuickView({ stone, open, onClose, href, completeHref, settingPrice }: StoneQuickViewProps) {
   const id = useId();

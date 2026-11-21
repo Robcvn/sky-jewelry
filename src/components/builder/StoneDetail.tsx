@@ -58,7 +58,7 @@ export function StoneDetail({ stone }: { stone: Stone }) {
         <div className="sticky top-(--sticky-header-height) py-space-15 pr-space-6">
           <div data-stone-gallery className="grid grid-cols-2 gap-space-3">
             <StoneSpecsTile stone={stone} />
-            {/* Figma's 360° marker on this tile (3565:100868): drawn and inert, as no stone has an image sequence (Held for review). */}
+            {/* Figma's 360° marker on this tile (3565:100868): placed, hidden while SHOW_360 is off (no stone has an image sequence). */}
             <div data-stone-photo className={`relative aspect-square overflow-hidden rounded-4 ${photoBg}`}>
               <StonePicture stone={stone} priority sizes={{ desktop: "25vw", mobile: "100vw" }} />
               <Hint360 className="bottom-space-4" />
@@ -68,7 +68,7 @@ export function StoneDetail({ stone }: { stone: Stone }) {
           </div>
         </div>
       </div>
-      {/* Mobile: Figma "PDP - Asset Tabs" (3587:125937) with one photo, the 360° marker (drawn and inert) and no tabs row. */}
+      {/* Mobile: Figma "PDP - Asset Tabs" (3587:125937) with one photo, the 360° marker (hidden while SHOW_360 is off) and no tabs row. */}
       <div data-stone-photo className={`relative aspect-square w-full overflow-hidden ui-desktop:hidden ${photoBg}`}>
         <StonePicture stone={stone} priority sizes={{ desktop: "25vw", mobile: "100vw" }} />
         <Hint360 className="bottom-space-4" />

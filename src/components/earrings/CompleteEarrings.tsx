@@ -43,8 +43,8 @@ type CompleteEarringsProps = {
  * Earrings builder Step 3, "Complete" (Figma desktop Custom Earrings - Complete 3565:99574, mobile 3587:128540).
  * One static page: the earrings (?setting=&metal=&shape=&stone=) are read from the URL in the browser.
  * - No valid setting: back to Step 1. A setting but no valid pair: Step 2, keeping the earrings.
- * - Desktop: the 2 x 2 gallery (the studs with the 360 hint, the model photo with Figma's badge, dots and arrow, and
- *   each diamond with the 360 hint); the title and Drop a Hint; the setting row and the pair row; the total; Secure
+ * - Desktop: the 2 x 2 gallery (the studs, the model photo with Figma's badge, dots and arrow, and each diamond; the
+ *   360 hint is placed on the studs and diamonds, hidden while SHOW_360 is off); the title and Drop a Hint; the setting row and the pair row; the total; Secure
  *   Checkout and Add to Bag (there is no size to choose); a Diamond Info block per stone; Setting Info; the accordions.
  * - Mobile: the gallery with the diamond thumbnail; Setting Info comes before the two Diamond Info blocks, and a
  *   qualities block per stone follows the page, as the mobile frame orders them.

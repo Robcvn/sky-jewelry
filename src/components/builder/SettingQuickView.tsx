@@ -46,8 +46,8 @@ type SettingQuickViewProps = {
  * the photo, the name, the price with its "with stone" note, the Metal, Stone and Style tiles, then Info and Add
  * Setting with the installments line. The swatches choose the metal. As in the product list's quick view, the
  * tiles show the current choice and their chevrons are not interactive (their pickers are on the setting's page).
- * Figma's 360° marker on the photo is drawn and inert (no 360° sequence; Held for review); with several photos the
- * dots sit above it. The frame's 360° View / Images / Video tabs are left out, as on every builder page.
+ * Figma's 360° marker is placed on the photo, hidden while SHOW_360 is off (no 360° sequence; Deviations). The
+ * frame's 360° View / Images / Video tabs are not built.
  */
 export function SettingQuickView({ setting, initialVariant, shape, open, onClose, priceNote, infoHref, addHref, actionLabel = text.addSetting, stoneTile = true, hint360 = true }: SettingQuickViewProps) {
   const id = useId();

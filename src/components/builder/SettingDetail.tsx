@@ -44,14 +44,15 @@ export function ShownWith({ carat }: { carat: string }) {
   );
 }
 
-/** `hint360`: Figma's 360 marker on this photo (drawn, inert: no setting has an image sequence; Held for review). */
+/** `hint360`: Figma's 360 marker on this photo (hidden while SHOW_360 is off: no setting has an image sequence). */
 type Tile = { key: string; image: ImageRef; carat?: string; hint360?: boolean };
 
 /**
  * Desktop gallery (Figma 3565:100665; one 512px column in the 1140 frame 4264:29542): the setting's photos, then
  * the two worn photos. Two columns from 1280px, as Product Detail; with an odd number the first photo spans the row.
  * Figma draws the 360 marker on a product photo of the setting in the second row (3565:100681, a mirrored copy of
- * the first); it is built on the setting's first photo, drawn and inert, as Step 3 puts it on its first tile.
+ * the first); it is placed on the setting's first photo, as Step 3 puts it on its first tile, and hidden while
+ * SHOW_360 is off.
  */
 function DesktopGallery({ tiles }: { tiles: Tile[] }) {
   const wide = (index: number) => tiles.length % 2 === 1 && index === 0;
@@ -77,7 +78,8 @@ function DesktopGallery({ tiles }: { tiles: Tile[] }) {
  * Mobile gallery (Figma "PDP - Asset Tabs" 3587:125842): a full-width square that swipes between photos, with
  * the 64px thumbnail in the corner switching between the setting's own photos and the worn photos, as Product
  * Detail's thumbnail switches between the piece and its stone. The setting's photos carry Figma's 360 marker
- * (3587:125815, drawn and inert); with several photos the dots sit above it. The worn photos have no marker.
+ * (3587:125815), hidden while SHOW_360 is off; with it on, the dots of several photos sit above it. The worn photos
+ * have no marker.
  */
 function MobileGallery({ photos, name }: { photos: Tile[]; name: string }) {
   const [worn, setWorn] = useState(false);

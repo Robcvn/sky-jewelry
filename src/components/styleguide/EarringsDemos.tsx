@@ -138,7 +138,7 @@ export function EarringsDemos({ setting, pair }: { setting: EarringSetting; pair
             <PairCard pair={pair} href="#earrings-builder" completeHref="#earrings-builder" settingPrice={variant.price} onQuickView={() => setDialog("sheet")} />
           </div>
         </Demo>
-        <Demo label="A diamond's views (Stones Info 3565:99228): photo with the 360 hint, specs, certificate">
+        <Demo label="A diamond's views (Stones Info 3565:99228): photo, specs, certificate">
           <div className="max-w-[20.1875rem]">
             <PairStoneViews stone={pair.stones[0]} name={pair.stones[0].title} variant="desktop" />
           </div>
@@ -150,7 +150,7 @@ export function EarringsDemos({ setting, pair }: { setting: EarringSetting; pair
         </Button>
       </Demo>
 
-      <Demo label="Step 3 gallery (3565:99574): the studs with the 360 hint, the model photo with Figma's badge, dots and arrow, and each diamond">
+      <Demo label="Step 3 gallery (3565:99574): the studs, the model photo with Figma's badge, dots and arrow, and each diamond">
         <div className="max-w-[43.375rem]">
           <EarringsDesktopGallery
             tiles={[

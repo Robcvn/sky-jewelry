@@ -78,8 +78,8 @@ export function TotalPrice({ total, struck }: { total: number; struck: boolean }
 /**
  * Desktop gallery (Figma 6579:194556): a 2 x 2 grid of 341px tiles. The setting's photo, the stone, the stone's
  * certificate, and a second ring photo: the setting's own when it has one, otherwise the setting page's photo of a
- * ring worn (with its "Shown with" badge). Figma's 360° marker on the setting's photo (6579:194559) is drawn and
- * inert (no 360° sequences; Held for review), as on the setting and stone pages. The stone tile's pagination dots
+ * ring worn (with its "Shown with" badge). Figma's 360° marker is placed on the setting's photo (6579:194559),
+ * hidden while SHOW_360 is off (no 360° sequences; Deviations), as on the setting and stone pages. The stone tile's pagination dots
  * are left out (one stone photo).
  */
 function DesktopGallery({ ring, stone }: { ring: Tile[]; stone: Stone }) {
@@ -106,8 +106,8 @@ function DesktopGallery({ ring, stone }: { ring: Tile[]; stone: Stone }) {
 /**
  * Mobile gallery (Figma "PDP - Asset Tabs" 6579:208207): the ring photo, full width, with a 64px thumbnail of the
  * stone that switches the view to the stone and back, as the setting page's thumbnail switches to the worn photos.
- * Figma's 360° marker (6579:208180) is drawn and inert, on the ring and on the stone, as on the earrings pages;
- * with several ring photos the dots sit above it. The "360° View / Images" tabs are left out, as on every builder page.
+ * Figma's 360° marker (6579:208180) is placed on the ring and on the stone, hidden while SHOW_360 is off (with it on,
+ * the dots of several ring photos sit above it). The "360° View / Images" tabs are not built.
  */
 function MobileGallery({ ring, stone, name }: { ring: Tile[]; stone: Stone; name: string }) {
   const [showStone, setShowStone] = useState(false);

@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Modal } from "@/components/ui/Modal";
 import { Pagination, PaginationDots } from "@/components/ui/Pagination";
 import { Tabs } from "@/components/ui/Tabs";
+import { SHOW_360 } from "@/lib/features";
 import { Tag } from "@/components/ui/Tag";
 import { TextButton } from "@/components/ui/TextButton";
 import { DiamondTypeTiles, MetalTiles } from "@/components/plp/FilterControls";
@@ -138,8 +139,9 @@ export function ProductCardDemo({ product }: { product: Product }) {
   );
 }
 
+/** Tabs - Line with its full-width rule. While SHOW_360 is off no "360° View" tab is shown anywhere: the demo uses the pair page's labels. */
 export function GalleryTabsDemo() {
-  const [tab, setTab] = useState("images");
+  const [tab, setTab] = useState(SHOW_360 ? "images" : "a");
   return (
     <div className="w-[24.375rem] max-w-full">
       <Tabs
@@ -149,10 +151,17 @@ export function GalleryTabsDemo() {
         divider
         value={tab}
         onChange={setTab}
-        items={[
-          { id: "spin", label: "360° View" },
-          { id: "images", label: "Images" },
-        ]}
+        items={
+          SHOW_360
+            ? [
+                { id: "spin", label: "360° View" },
+                { id: "images", label: "Images" },
+              ]
+            : [
+                { id: "a", label: "Diamond 1" },
+                { id: "b", label: "Diamond 2" },
+              ]
+        }
       />
     </div>
   );

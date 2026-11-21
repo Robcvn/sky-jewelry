@@ -77,8 +77,8 @@ const DESKTOP_SIZES = { desktop: "(width >= 90rem) 21.3rem, 24vw", mobile: "100v
 
 /**
  * The desktop gallery of Setting Info and Complete (Figma 3565:98709 and 3565:99574, "images"): a 2 x 2 grid of
- * 341px tiles, 12 apart, in the 694px column. Each frame chooses its four tiles. The 360 hint is drawn where Figma
- * draws it; no photo has an image sequence, so it turns nothing (Held for review).
+ * 341px tiles, 12 apart, in the 694px column. Each frame chooses its four tiles. The 360 hint is placed where Figma
+ * draws it and hidden while SHOW_360 is off (no photo has an image sequence; Deviations).
  */
 export function EarringsDesktopGallery({ tiles }: { tiles: GalleryTile[] }) {
   return (
@@ -108,8 +108,8 @@ export function EarringsDesktopGallery({ tiles }: { tiles: GalleryTile[] }) {
 /**
  * The mobile gallery of Setting Info and Complete (Figma "PDP - Fine Jewelry / Asset Tabs" 3587:127517, 390 tall
  * here): the setting's photos, full width and swiped sideways, with the 360 hint, and a 64px thumbnail of a
- * diamond in the corner that switches to the diamond and back (the prototype's "State=360, Type=Stone"). The
- * "360° View / Images" tabs below are left out, as on the ring builder's pages (Deviations).
+ * diamond in the corner that switches to the diamond and back (the prototype's "State=360, Type=Stone"). The 360 hint
+ * is hidden while SHOW_360 is off, and the "360° View / Images" tabs below are not built (Deviations).
  */
 export function EarringsMobileGallery({ photos, stone, name }: { photos: ImageRef[]; stone: Pick<Stone, "image" | "shape" | "title">; name: string }) {
   const [showStone, setShowStone] = useState(false);
@@ -169,7 +169,7 @@ function SpecsThumb({ stone }: { stone: Stone }) {
 /**
  * One diamond of a pair (Figma Stones Info "stack" 3565:99228: desktop a 323px tile over a row of three 75px
  * thumbnails, 8 apart and 12 in from the left; mobile 3587:127889: a 390px tile and the row centred). The tile
- * shows the stone's photo with the 360 hint, its specs drawing, or its certificate; the thumbnails switch it, the
+ * shows the stone's photo (with the 360 hint while SHOW_360 is on), its specs drawing, or its certificate; the thumbnails switch it, the
  * chosen one outlined in leather. Mobile Figma's first thumbnail is the earrings photo, a placeholder: it shows the
  * stone, as on desktop (a corrected design oversight).
  */

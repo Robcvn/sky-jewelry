@@ -17,6 +17,7 @@ import { PaginationDots } from "./Pagination";
 import { Picture } from "./Picture";
 import { Swatch } from "./Swatch";
 import { cx } from "./shared";
+import { SHOW_360 } from "@/lib/features";
 import { DOTS_ABOVE_HINT, Hint360 } from "./Viewer360";
 
 export type ProductCardLabels = { info: string; addToBag: string; installments: string; learnMore: string };
@@ -101,8 +102,8 @@ export type ProductCardBuilder = {
   priceNote: (variant: ProductVariant) => string | null;
   action: { label: string; href: (variant: ProductVariant) => string };
   /**
-   * Figma's 360 marker on the hover card's photo (the ring builder's 3565:101327; the earrings card draws none):
-   * shown on hover or focus, drawn and inert (no 360° sequence; Held for review). Dots, when shown, sit above it.
+   * Figma's 360 marker on the hover card's photo (the ring builder's 3565:101327; the earrings card draws none),
+   * for hover or focus. Hidden while SHOW_360 is off (no 360° sequence); with it on, dots sit above it.
    */
   hint360?: boolean;
 };
@@ -160,7 +161,7 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
             sizes={{ desktop: "(width >= 90rem) 20rem, 23vw", mobile: carousel ? "18.125rem" : "45vw" }}
             className="size-full object-cover mix-blend-multiply transition-transform duration-300 ease-out motion-reduce:transition-none ui-desktop:group-hover/card:scale-[1.067] ui-desktop:group-focus-within/card:scale-[1.067] motion-reduce:scale-100!"
           />
-          {builder?.hint360 ? (
+          {SHOW_360 && builder?.hint360 ? (
             <div className="hidden ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block">
               <Hint360 className="bottom-space-4" />
             </div>

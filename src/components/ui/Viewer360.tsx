@@ -4,6 +4,7 @@ import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Picture, type ImageRef } from "./Picture";
 import { cx, withBasePath } from "./shared";
 import { Icon } from "./Icon";
+import { SHOW_360 } from "@/lib/features";
 
 type Viewer360Props = {
   /** The image sequence, in rotation order (at least two frames). */
@@ -76,15 +77,19 @@ export function Viewer360({ frames, label, sizes, className }: Viewer360Props) {
   );
 }
 
-/** Pagination dots placed above the 360 hint when a photo has both (16 + the hint's 48 + 8). */
-export const DOTS_ABOVE_HINT = "bottom-[calc(var(--spacing-space-4)+var(--spacing-space-11)+var(--spacing-space-2))]";
+/**
+ * Where pagination dots sit on a photo that carries the 360 hint: above it (16 + the hint's 48 + 8) while SHOW_360 is
+ * on, in their usual place (16 from the bottom) while it is off.
+ */
+export const DOTS_ABOVE_HINT = SHOW_360 ? "bottom-[calc(var(--spacing-space-4)+var(--spacing-space-11)+var(--spacing-space-2))]" : "bottom-space-4";
 
 /**
  * Figma's 360 hint (the 360 icon over a dashed arc and its control dots, 132 x 48), centred at the bottom of a tile.
- * The viewer above uses it as its drag hint; the ring and earrings builders show it alone, wherever Figma draws it
- * on a photo with no image sequence (a drawn control with nothing to turn yet: Held for review).
+ * The viewer above uses it as its drag hint; the ring and earrings builders place it alone wherever Figma draws it
+ * on a photo. Renders nothing while SHOW_360 is off (Deviations: hidden until 360 image sequences exist).
  */
 export function Hint360({ className }: { className?: string }) {
+  if (!SHOW_360) return null;
   return (
     <div aria-hidden="true" data-hint-360 className={cx("pointer-events-none absolute inset-x-0 flex flex-col items-center", className)}>
       <Icon name="360-view" size={40} className="text-primary-leather" />

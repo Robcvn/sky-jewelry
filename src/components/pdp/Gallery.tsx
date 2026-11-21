@@ -5,6 +5,7 @@ import { PaginationDots } from "@/components/ui/Pagination";
 import { Picture, slotImage, type ImageRef } from "@/components/ui/Picture";
 import { Tabs } from "@/components/ui/Tabs";
 import { Viewer360 } from "@/components/ui/Viewer360";
+import { SHOW_360 } from "@/lib/features";
 import { cx } from "@/components/ui/shared";
 import { productDetailContent } from "@/content/product-detail";
 import type { Product, ProductVariant } from "@/content/products";
@@ -16,12 +17,14 @@ const TILE_BG = "bg-[radial-gradient(var(--color-base-white),var(--color-seconda
 /**
  * Desktop gallery (Figma 3565:98419): a sticky column with the photos in a 2 x 2 grid of squares on the
  * product-image gradient. With an odd number of photos the first one spans the row. When the product has a
- * 360° sequence, the viewer takes the second tile (Figma's 360 tile); otherwise that tile shows the stone.
+ * 360° sequence (and SHOW_360 is on), the viewer takes the second tile (Figma's 360 tile); otherwise that tile shows
+ * the stone.
  */
 export function DesktopGallery({ product, variant, name }: { product: Product; variant: ProductVariant; name: string }) {
   const photos = desktopGallery(product, variant.metal);
   const tiles: Array<{ key: string; image?: ImageRef; spin?: ImageRef[] }> = photos.map((image, index) => ({ key: `${variant.metal}-${index}`, image }));
-  if (product.spin) tiles.splice(1, 0, { key: "spin", spin: product.spin });
+  const spin = SHOW_360 ? product.spin : null;
+  if (spin) tiles.splice(1, 0, { key: "spin", spin });
   const wide = (index: number) => tiles.length % 2 === 1 && index === 0;
 
   return (
@@ -57,6 +60,7 @@ export function MobileGallery({ product, variant, name }: { product: Product; va
   const stone = stonePhoto(product);
   const [showStone, setShowStone] = useState(false);
   const [tab, setTab] = useState<"images" | "spin">("images");
+  const spin = SHOW_360 ? product.spin : null;
   const photos = showStone && stone ? [stone] : galleryPhotos(product, variant.metal).map((image) => slotImage(image, "gallery-m"));
   const scroller = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
@@ -79,8 +83,8 @@ export function MobileGallery({ product, variant, name }: { product: Product; va
   return (
     <div className="flex flex-col gap-space-2">
       <div className={cx("relative aspect-square w-full overflow-hidden", TILE_BG)}>
-        {tab === "spin" && product.spin ? (
-          <Viewer360 frames={product.spin} label={`${name}, 360° view`} sizes={{ desktop: "50vw", mobile: "100vw" }} />
+        {tab === "spin" && spin ? (
+          <Viewer360 frames={spin} label={`${name}, 360° view`} sizes={{ desktop: "50vw", mobile: "100vw" }} />
         ) : (
           <>
             <div
@@ -130,7 +134,7 @@ export function MobileGallery({ product, variant, name }: { product: Product; va
           </button>
         ) : null}
       </div>
-      {product.spin ? (
+      {spin ? (
         <Tabs
           label={`Views of ${name}`}
           variant="line"
