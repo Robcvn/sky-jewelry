@@ -32,6 +32,13 @@ export function useQuery() {
   return [search, setQuery] as const;
 }
 
+/**
+ * The query string as it is now, for effects that redirect. After a client-side navigation the new page's first
+ * render can still see the previous page's query (Next.js updates the URL as it commits), so an effect that trusted
+ * that render would send the shopper back where they came from.
+ */
+export const liveQuery = () => new URLSearchParams(window.location.search);
+
 const noop = () => () => {};
 /** True after hydration, for values that only exist in the browser (ship dates, the URL's ring). */
 export const useIsClient = () => useSyncExternalStore(noop, () => true, () => false);

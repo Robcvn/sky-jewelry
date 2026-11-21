@@ -48,7 +48,7 @@ import { StoneInfoSection } from "./StoneDetail";
 import { StoneCertificateTile, STONE_DRAWING_BG, STONE_TILE_BG } from "./StoneDetailGallery";
 import { StoneDetailQualities } from "./StoneDetailQualities";
 import { StonePicture } from "./StonePicture";
-import { useIsClient, useQuery } from "./useQuery";
+import { liveQuery, useIsClient, useQuery } from "./useQuery";
 
 const text = builderContent.complete;
 const pdp = productDetailContent;
@@ -222,10 +222,15 @@ export function CompleteRing({ settings, stones, bands, children }: CompleteRing
   const describedBy = useId();
 
   // Missing pieces: no valid setting goes to Step 1; a setting without a valid stone goes to Step 2 with the ring kept.
+  // The URL is read as the effect runs: right after a click into this page (Complete Ring, the bag's Edit), the first
+  // render can still see the previous page's query, and trusting it sent the shopper back.
   useEffect(() => {
     if (!isClient) return;
-    if (!setting) router.replace(settingsHref(ring));
-    else if (!stone) router.replace(stonesHref({ ...ring, setting: setting.handle }));
+    const live = parseRing(liveQuery());
+    const liveSetting = settings.find((item) => item.handle === live.setting) ?? null;
+    const liveStone = liveSetting ? (stones.find((item) => item.handle === live.stone) ?? null) : null;
+    if (!liveSetting) router.replace(settingsHref(live));
+    else if (!liveStone) router.replace(stonesHref({ ...live, setting: liveSetting.handle }));
     // The ring is read from the URL; re-run when it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient, search, setting, stone]);

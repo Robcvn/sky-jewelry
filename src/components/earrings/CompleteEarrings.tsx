@@ -7,7 +7,7 @@ import { TotalPrice } from "@/components/builder/CompleteRing";
 import { DropHintModal } from "@/components/builder/DropHintModal";
 import { settingTitle, settingVariant } from "@/components/builder/ring";
 import { RingConfigChoice } from "@/components/builder/RingConfigChoice";
-import { useIsClient, useQuery } from "@/components/builder/useQuery";
+import { liveQuery, useIsClient, useQuery } from "@/components/builder/useQuery";
 import { Accordion, AccordionItem } from "@/components/ui/Accordion";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -65,10 +65,16 @@ export function CompleteEarrings({ settings, pairs, children }: CompleteEarrings
   const [hintKey, setHintKey] = useState(0);
   const unavailableShown = useRef(false);
 
+  // Missing pieces: no valid setting goes to Step 1, a setting without a valid pair to Step 2. The URL is read as the
+  // effect runs: right after a click into this page (Complete Earrings, the bag's Edit), the first render can still
+  // see the previous page's query, and trusting it sent the shopper back.
   useEffect(() => {
     if (!isClient) return;
-    if (!setting) router.replace(earringSettingsHref());
-    else if (!pair) router.replace(pairsHref({ ...earrings, setting: setting.handle }));
+    const live = parseEarrings(liveQuery());
+    const liveSetting = settings.find((item) => item.handle === live.setting) ?? null;
+    const livePair = liveSetting ? (pairs.find((item) => item.handle === live.stone) ?? null) : null;
+    if (!liveSetting) router.replace(earringSettingsHref());
+    else if (!livePair) router.replace(pairsHref({ ...live, setting: liveSetting.handle }));
     // The earrings are read from the URL; re-run when it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient, search, setting, pair]);
