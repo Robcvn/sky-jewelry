@@ -42,3 +42,13 @@ export const liveQuery = () => new URLSearchParams(window.location.search);
 const noop = () => () => {};
 /** True after hydration, for values that only exist in the browser (ship dates, the URL's ring). */
 export const useIsClient = () => useSyncExternalStore(noop, () => true, () => false);
+
+/**
+ * Moves to a new query on the same page as a new history entry (so Back returns to the previous one), and tells
+ * every useQuery on the page. The search results use it for a new search typed on /search/.
+ */
+export function pushQuery(params: URLSearchParams | string) {
+  const query = params.toString();
+  window.history.pushState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+  window.dispatchEvent(new Event(EVENT));
+}

@@ -199,7 +199,9 @@ export const builderContent = {
         after: { desktop: 11, mobile: 9 },
         width: { desktop: "wide", mobile: "wide" },
         title: "The Sky Guarantee",
-        body: "Every ring comes with our lifetime warranty and 30-day returns.",
+        // As the design states it: "Sky offers a lifetime warranty" (Modal - Insurance 5029:82247) and "30 days free
+        // returns" (Top Bar 3565:101512).
+        body: "Sky offers a lifetime warranty and 30 days free returns.",
         cta: { label: "Learn More", href: "/the-sky-guarantee/" },
         image: { desktop: "builder-promo-couple-d", alt: "A couple holding hands outdoors, one wearing a halo engagement ring" },
       },

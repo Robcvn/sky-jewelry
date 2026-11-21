@@ -3,9 +3,11 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { cx, withBasePath } from "@/components/ui/shared";
+import { searchContent } from "@/content/search";
 import type { HeaderContent } from "@/content/site";
 import { MobileBar } from "./HeaderParts";
 import { MenuBlogBlock, MenuGroupBlock, ShopAllRow } from "./MegaMenu";
+import { MenuLinkItem } from "./MenuLinkItem";
 import { NavItem } from "./NavItem";
 import { useSearchSubmit } from "./SearchPanel";
 
@@ -40,6 +42,9 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
   const focusAfterMove = useRef<"back" | string | null>(null);
   const searchId = useId();
   const onSearch = useSearchSubmit(onClose);
+  // "Nav / Search" (4979:47688): with the search field in use, the menu's links give way to Popular searches. It stays
+  // until focus leaves the search area with the field empty (so a tap on a term isn't lost).
+  const [searching, setSearching] = useState(false);
   const category = content.primary.find((link) => link._key === shown);
 
   // Scroll lock and first focus for the real (fixed) menu.
@@ -122,13 +127,23 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
       <div className="relative flex-1 overflow-hidden">
         {/* Main screen */}
         <div inert={active !== null} className={cx(SCREEN, "overflow-y-auto", active !== null && "-translate-x-full")}>
+          <div
+            className="contents"
+            onFocus={() => setSearching(true)}
+            onBlur={(event) => {
+              const next = event.relatedTarget as Node | null;
+              const field = event.currentTarget.querySelector("input");
+              if (!(next && event.currentTarget.contains(next)) && !field?.value) setSearching(false);
+            }}
+          >
           <form
             role="search"
+            data-search-area
             aria-label={`${content.search.label}${labelSuffix}`}
             action={withBasePath("/search/")}
             method="get"
             onSubmit={onSearch}
-            className="shrink-0 border-b border-primary-leather"
+            className="flex shrink-0 items-center border-b border-primary-leather"
           >
             <label htmlFor={searchId} className="sr-only">
               {content.search.label}
@@ -140,11 +155,32 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
               autoComplete="off"
               enterKeyHint="search"
               placeholder={content.searchPanel.mobilePlaceholder}
-              className="type-ui-sm-regular min-h-space-12 w-full bg-transparent px-space-5 text-primary-leather placeholder:text-black-alpha-60 focus-visible:-outline-offset-2 [&::-webkit-search-cancel-button]:appearance-none"
+              className="type-ui-sm-regular min-h-space-12 w-full min-w-0 flex-1 bg-transparent px-space-5 text-primary-leather placeholder:text-black-alpha-60 focus-visible:-outline-offset-2 [&::-webkit-search-cancel-button]:appearance-none"
             />
+            {/* The search screen draws an Arrow Right at the field's end (submit). */}
+            {searching ? (
+              <button type="submit" aria-label={content.searchPanel.submitLabel} className="ui-transition-fast mr-space-4 flex shrink-0 cursor-pointer text-primary-leather hover:text-black-alpha-60">
+                <Icon name="arrow-right" size={24} />
+              </button>
+            ) : null}
           </form>
 
-          <nav aria-label={`Main${labelSuffix}`} className="flex-1 border-b border-primary-leather p-space-5">
+          {searching ? (
+            // Figma: "Popular searches" (overline-xs) and five Nav Item - Child rows (MD, 34 tall), 20 in, 16 apart.
+            <nav data-search-area aria-label={`${searchContent.empty.popularHeading}${labelSuffix}`} className="flex flex-col gap-space-4 p-space-5">
+              <p className="type-overline-xs-medium">{searchContent.empty.popularHeading}</p>
+              <ul className="flex flex-col">
+                {searchContent.empty.popular.map((term) => (
+                  <li key={term}>
+                    <MenuLinkItem link={{ _key: term, label: term, href: `/search/?q=${encodeURIComponent(term)}` }} />
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
+          </div>
+
+          <nav aria-label={`Main${labelSuffix}`} hidden={searching} className="flex-1 border-b border-primary-leather p-space-5">
             <ul className="flex flex-col gap-space-3">
               {content.primary.map((link) => (
                 <li key={link._key}>
@@ -165,7 +201,7 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
             </ul>
           </nav>
 
-          <nav aria-label={`More${labelSuffix}`} className="shrink-0 p-space-5">
+          <nav aria-label={`More${labelSuffix}`} hidden={searching} className="shrink-0 p-space-5">
             <ul className="flex flex-col items-start gap-space-2">
               {content.mobileMenu.utility.map((link) => (
                 <li key={link._key} className="flex">
