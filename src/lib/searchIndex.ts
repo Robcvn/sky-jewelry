@@ -9,12 +9,11 @@
  */
 import type { ImageRef } from "@/components/ui/Picture";
 import type { ArticleBlock } from "@/content/article";
-import { blogPosts, postHref } from "@/content/blog";
-import { educationResources, resourceHref, topicById } from "@/content/education";
-import { homeSection } from "@/content/landing/shared";
+import { postHref } from "@/content/blog";
+import { resourceHref, topicById } from "@/content/education";
 import { metalById } from "@/content/metals";
 import { isFineJewelry, FINE_JEWELRY_CATEGORIES, variantName, type Product } from "@/content/products";
-import { supportPage } from "@/content/support";
+import { getEditorialContent, homeSectionOf } from "@/lib/content";
 import { getBuilderCatalog } from "./builder";
 import { getCatalog } from "./catalog";
 import { getEarringsCatalog } from "./earrings";
@@ -72,6 +71,7 @@ function productHaystack(product: Product, type: string[]) {
 }
 
 export async function buildSearchIndex(): Promise<SearchIndex> {
+  const { blogPosts, educationResources, supportPage, homePage } = await getEditorialContent();
   const [{ products: catalog }, { settings, stones }, { settings: earringSettings }] = await Promise.all([getCatalog(), getBuilderCatalog(), getEarringsCatalog()]);
 
   // Products: Fine Jewelry in the product lists' order (category, then Best Match), then the ring settings in Step 1's
@@ -141,7 +141,7 @@ export async function buildSearchIndex(): Promise<SearchIndex> {
   // FAQs: the support page's, then Home's that ask something new (four of Home's five ask the same question).
   const support = supportPage.faqs.items.map((item) => ({ id: `faq-${item._key}`, question: item.question, answer: item.answer }));
   const seen = new Set(support.map((item) => normalize(item.question)));
-  const home = homeSection("faqs", "faqs").items
+  const home = homeSectionOf(homePage, "faqs", "faqs").items
     .filter((item) => !seen.has(normalize(item.question)))
     .map((item) => ({ id: `home-faq-${item._key}`, question: item.question, answer: item.answer.join(" ") }));
   const faqs: SearchFaq[] = [...support, ...home].map((item) => ({ ...item, haystack: hay(item.question, "FAQs", item.answer) }));

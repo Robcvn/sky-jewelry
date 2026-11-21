@@ -1,6 +1,7 @@
 # Builds the static export and publishes it to GitHub Pages at /sky-jewelry/.
 # Secrets: FONTS_DEPLOY_KEY (read-only deploy key for Robcvn/sky-jewelry-fonts), NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
 # NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN. Pages must use "GitHub Actions" as its source.
+# The editorial content comes from Sanity (project 74lb1xq2, dataset production, public read: no token).
 name: Deploy to GitHub Pages
 
 on:
@@ -62,6 +63,9 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: /sky-jewelry
           NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN: ${{ secrets.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN }}
           NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN: ${{ secrets.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN }}
+          # Public values (src/lib/sanity.ts), not secrets.
+          NEXT_PUBLIC_SANITY_PROJECT_ID: 74lb1xq2
+          NEXT_PUBLIC_SANITY_DATASET: production
         # bash runs with -o pipefail, so a failed build still fails this step through tee.
         run: npm run build 2>&1 | tee build.log
 
@@ -110,6 +114,30 @@ jobs:
           printf '%s\n' "$counts"
           printf '%s\n' "$builder" | sort -u
           printf '%s\n' "$earrings" | sort -u
+
+      - name: Check the build read the editorial content from Sanity
+        shell: bash
+        run: |
+          # src/lib/content.ts: every build worker prints "[content] N documents from Sanity, M from local files."
+          # Any local fallback (M above 0), or a [content] WARNING, stops the deploy.
+          content="$(grep -F '[content]' build.log || true)"
+          if [ -z "$content" ]; then
+            echo "::error::The build log has no [content] line."
+            exit 1
+          fi
+          if printf '%s\n' "$content" | grep -F 'WARNING' \
+            || printf '%s\n' "$content" | grep -E '^\[content\] [0-9]+ documents from Sanity' | grep -vE ', 0 from local files\.$' | grep .; then
+            echo "::error::The build used the local content files for some editorial documents (lines above): check the Sanity import."
+            exit 1
+          fi
+          counts="$(printf '%s\n' "$content" | grep -oE '^\[content\] [0-9]+ documents from Sanity, 0 from local files\.$' | sort -u)"
+          if [ "$(printf '%s\n' "$counts" | grep -c .)" -ne 1 ]; then
+            printf '%s\n' "$content"
+            echo "::error::The [content] lines disagree (above): pages were built from different reads of Sanity. Run the deploy again in a minute."
+            exit 1
+          fi
+          echo "Content check passed:"
+          printf '%s\n' "$counts"
 
       - name: Upload the site
         uses: actions/upload-pages-artifact@v5

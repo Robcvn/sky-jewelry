@@ -1,9 +1,10 @@
 import { BlogRow } from "@/components/home/BlogRow";
 import { BestSellersSection } from "@/components/sections/BestSellers";
 import { em, span } from "@/components/ui/RichText";
-import { blogPage as page, blogPosts, postTopicId, type BlogPost } from "@/content/blog";
+import { postTopicId, type BlogPost } from "@/content/blog";
 import { contentBestSellers } from "@/content/education";
 import { getCatalog, pickProducts } from "@/lib/catalog";
+import { getEditorialContent } from "@/lib/content";
 import { ArticleBody } from "./ArticleBody";
 import { PostHeader } from "./ContentSections";
 
@@ -17,6 +18,7 @@ export async function PostView({ post }: { post: BlogPost }) {
   // The flyout's products, read from Shopify at build time like every product row.
   const handles = post.body.flatMap((block) => (block._type === "figure" && block.products ? block.products.handles : []));
   const { products: catalog } = await getCatalog();
+  const { blogPage: page, blogPosts } = await getEditorialContent();
   const products = Object.fromEntries(handles.map((handle) => [handle, pickProducts(catalog, [handle])]));
 
   // "You Should also Read": the three newest other posts (for a story, the three newest other stories).

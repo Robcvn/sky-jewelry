@@ -6,16 +6,17 @@ import { ArticleBody } from "@/components/content/ArticleBody";
 import { NextResource, ResourceHero } from "@/components/content/ContentSections";
 import { BestSellersSection } from "@/components/sections/BestSellers";
 import { articleSections } from "@/content/article";
-import { contentBestSellers, educationCenterPage as page, educationResources, resourceBySlug, resourceHref, topicById } from "@/content/education";
+import { contentBestSellers, resourceHref, topicById } from "@/content/education";
+import { getEditorialContent, resourceBySlug } from "@/lib/content";
 
 export const dynamicParams = false;
 
-export function generateStaticParams() {
-  return educationResources.map((resource) => ({ slug: resource.slug }));
+export async function generateStaticParams() {
+  return (await getEditorialContent()).educationResources.map((resource) => ({ slug: resource.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const resource = resourceBySlug((await params).slug);
+  const resource = resourceBySlug(await getEditorialContent(), (await params).slug);
   if (!resource) return {};
   return { title: resource.title, description: resource.excerpt, alternates: { canonical: withBasePath(resourceHref(resource)) } };
 }
@@ -25,10 +26,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
  * section list beside the article (a floating menu on mobile), "Next Resource" and the best sellers.
  */
 export default async function ResourcePage({ params }: { params: Promise<{ slug: string }> }) {
-  const resource = resourceBySlug((await params).slug);
+  const content = await getEditorialContent();
+  const page = content.educationCenterPage;
+  const resource = resourceBySlug(content, (await params).slug);
   if (!resource) notFound();
   const topic = topicById(resource.topic);
-  const next = resourceBySlug(resource.next);
+  const next = resourceBySlug(content, resource.next);
   const sections = articleSections(resource.body);
 
   return (

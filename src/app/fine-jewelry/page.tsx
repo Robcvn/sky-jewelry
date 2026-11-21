@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import { PageSections } from "@/components/sections/PageSections";
-import { fineJewelryPage as page } from "@/content/landing/fine-jewelry";
+import { getEditorialContent } from "@/lib/content";
 
-export const metadata: Metadata = { title: page.seo.title, description: page.seo.description };
+const getPage = async () => (await getEditorialContent()).landing["fine-jewelry"];
 
-/** Category landing page, assembled from its content file (src/content/landing/fine-jewelry.ts). */
-export default function LandingPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPage();
+  return { title: page.seo.title, description: page.seo.description };
+}
+
+/** Category landing page, assembled from its content (Sanity, or src/content/landing/fine-jewelry.ts; see src/lib/content.ts). */
+export default async function LandingPage() {
+  const page = await getPage();
   return (
     <main id="main-content" tabIndex={-1} className="flex-1">
       <PageSections sections={page.sections} />

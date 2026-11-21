@@ -4,7 +4,7 @@
  * Copy is from the Figma Header and Footer pages. Hrefs point at routes that later tasks will build.
  */
 import type { IconName } from "@/icons/icon-data";
-import { homePosts, postHref } from "./blog";
+import { homePosts, postHref, type BlogPost } from "./blog";
 import { CONTACT, DIAMOND_JEWELRY, diamondList, fineJewelryList, gemstoneList, settingsList, SUPPORT } from "./links";
 
 export type NavLink = { _key: string; label: string; href: string };
@@ -430,6 +430,22 @@ const gemstonesMenu: MegaMenu = {
   shopAll: { _key: "shop-all", label: "Shop All Gemstones", href: "/gemstones/" },
 };
 
+/** A blog post as the Education menu's "Explore Our Blog" shows it. */
+export const blogTeaser = (post: Pick<BlogPost, "_id" | "title" | "topic" | "date" | "slug" | "kind" | "thumbnail">): BlogTeaser => ({
+  _key: post._id,
+  title: post.title,
+  topic: post.topic,
+  date: post.date,
+  href: postHref(post),
+  image: post.thumbnail,
+});
+
+/** The header with these posts in the Education menu's "Explore Our Blog" (Sanity's, from src/lib/content.ts). */
+export const withMenuPosts = (header: HeaderContent, posts: BlogTeaser[]): HeaderContent => ({
+  ...header,
+  primary: header.primary.map((link) => (link.menu.blog ? { ...link, menu: { ...link.menu, blog: { ...link.menu.blog, posts } } } : link)),
+});
+
 /** Figma's Education frame has placeholder copy. These topics replace it; the layout is as designed. */
 const educationMenu: MegaMenu = {
   _type: "megaMenu",
@@ -468,14 +484,8 @@ const educationMenu: MegaMenu = {
   ],
   blog: {
     title: "Explore Our Blog",
-    posts: homePosts.map((post) => ({
-      _key: post._id,
-      title: post.title,
-      topic: post.topic,
-      date: post.date,
-      href: postHref(post),
-      image: post.thumbnail,
-    })),
+    // Home's blog row's posts (the same three); the site passes Sanity's to the header (src/lib/content.ts).
+    posts: homePosts.map((post) => blogTeaser(post)),
     footerLink: { _key: "all", label: "All Blog Posts", href: "/blog/" },
   },
   shopAll: { _key: "shop-all", label: "All Education", href: "/education/" },
@@ -488,6 +498,25 @@ const SAMPLE_CONTACT = {
   email: "info@example.com",
 };
 
+/**
+ * Figma "contact drop down" (6725:45688), opened by the header's Support link, for the given contact details: the
+ * site settings' sample phone and email (src/lib/content.ts passes them to the header; this module's are the fallback).
+ */
+export const contactDropdownFor = (contact: { phone: string; email: string }): HeaderContent["contactDropdown"] => ({
+  trigger: "support",
+  label: "Contact",
+  heading: "We’re here to help.",
+  items: [
+    // No chat or text service: drawn, not a link (Held for review).
+    { _key: "text", icon: "text-message", title: "Text Us", body: "Get an instant response", cta: { label: "Let’s Chat!" } },
+    // Figma's number is the store's own: the site's sample number instead (Deviations).
+    { _key: "call", icon: "phone", title: "Give Us a Call", body: "Chat with one of our experts.", cta: { label: `Call ${contact.phone}`, href: `tel:${contact.phone.replace(/[^+\d]/g, "")}` } },
+    { _key: "email", icon: "mail", title: "Have an Inquiry?", body: "Email us at anytime.", cta: { label: "Send an email", href: `mailto:${contact.email}` } },
+  ],
+  // The prototype sends this row to the Sky Guarantee page (3565:101916).
+  footerLink: { _key: "more", label: "more contact options", href: SUPPORT },
+});
+
 export const siteHeader: HeaderContent = {
   _type: "siteHeader",
   utility: [
@@ -496,20 +525,7 @@ export const siteHeader: HeaderContent = {
     // On desktop Support opens the contact dropdown (the prototype's overlay); its "more contact options" opens the page.
     { _key: "support", label: "Support", href: SUPPORT },
   ],
-  contactDropdown: {
-    trigger: "support",
-    label: "Contact",
-    heading: "We’re here to help.",
-    items: [
-      // No chat or text service: drawn, not a link (Held for review).
-      { _key: "text", icon: "text-message", title: "Text Us", body: "Get an instant response", cta: { label: "Let’s Chat!" } },
-      // Figma's number is the store's own: the site's sample number instead (Deviations).
-      { _key: "call", icon: "phone", title: "Give Us a Call", body: "Chat with one of our experts.", cta: { label: `Call ${SAMPLE_CONTACT.phone}`, href: `tel:${SAMPLE_CONTACT.phone.replace(/[^+\d]/g, "")}` } },
-      { _key: "email", icon: "mail", title: "Have an Inquiry?", body: "Email us at anytime.", cta: { label: "Send an email", href: `mailto:${SAMPLE_CONTACT.email}` } },
-    ],
-    // The prototype sends this row to the Sky Guarantee page (3565:101916).
-    footerLink: { _key: "more", label: "more contact options", href: SUPPORT },
-  },
+  contactDropdown: contactDropdownFor(SAMPLE_CONTACT),
   primary: [
     { _key: "fine-jewelry", label: "Fine Jewelry", href: "/fine-jewelry/", menu: fineJewelryMenu },
     { _key: "engagement-rings", label: "Engagement Rings", href: "/engagement-rings/", menu: engagementRingsMenu },

@@ -6,7 +6,8 @@ import { earringSettingHref } from "@/components/earrings/routes";
 import { Reviews } from "@/components/home/Reviews";
 import { ButtonCards, WhatsInTheBox } from "@/components/pdp/DetailSections";
 import { withBasePath } from "@/components/ui/shared";
-import { homePage, type Reviews as ReviewsContent } from "@/content/home";
+import type { Reviews as ReviewsContent } from "@/content/home";
+import { getEditorialContent } from "@/lib/content";
 import { getEarringsCatalog } from "@/lib/earrings";
 
 type Params = { handle: string };
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 }
 
 /** The reviews section reuses the Home section and its sample reviews, as Product Detail does. */
-const reviews = homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
+const homeReviews = async () => (await getEditorialContent()).homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
 
 /**
  * Earrings builder, Step 1: a setting's page (Figma desktop Custom Earrings - Setting Info 3565:98709, mobile
@@ -67,7 +68,7 @@ export default async function EarringSettingPage({ params }: { params: Promise<P
       <div className="hidden ui-desktop:block">
         <WhatsInTheBox />
       </div>
-      <Reviews content={reviews} />
+      <Reviews content={await homeReviews()} />
       <ButtonCards />
     </main>
   );

@@ -2,12 +2,14 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Carousel } from "@/components/ui/Carousel";
 import { PostCard } from "@/components/ui/PostCard";
 import { RichText, plainText } from "@/components/ui/RichText";
-import { blogPosts, postHref } from "@/content/blog";
+import { postHref } from "@/content/blog";
 import type { BlogRow as BlogRowContent } from "@/content/home";
+import { getEditorialContent } from "@/lib/content";
 import { SECTION_HEADING, SECTION_HEADING_EM, SECTION_Y } from "./styles";
 
 /** Figma Home section 10: the latest three blog posts. A row on desktop, swipeable on mobile. */
-export function BlogRow({ content }: { content: BlogRowContent }) {
+export async function BlogRow({ content }: { content: BlogRowContent }) {
+  const { blogPosts } = await getEditorialContent();
   const headingId = `${content._key}-heading`;
   const posts = content.postIds.map((id) => blogPosts.find((post) => post._id === id)).filter((post) => post !== undefined);
   const viewAll = (

@@ -6,7 +6,8 @@ import { pairHref } from "@/components/earrings/routes";
 import { Reviews } from "@/components/home/Reviews";
 import { ButtonCards, WhatsInTheBox } from "@/components/pdp/DetailSections";
 import { withBasePath } from "@/components/ui/shared";
-import { homePage, type Reviews as ReviewsContent } from "@/content/home";
+import type { Reviews as ReviewsContent } from "@/content/home";
+import { getEditorialContent } from "@/lib/content";
 import { getEarringsCatalog } from "@/lib/earrings";
 
 type Params = { handle: string };
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   return pair ? { title: pair.title, description: pair.description, alternates: { canonical: withBasePath(pairHref(pair.handle)) } } : {};
 }
 
-const reviews = homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
+const homeReviews = async () => (await getEditorialContent()).homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
 
 /**
  * Earrings builder, Step 2: a pair's page (Figma desktop Custom Earrings - Stones Info 3565:99083, mobile
@@ -64,7 +65,7 @@ export default async function PairPage({ params }: { params: Promise<Params> }) 
       <div className="hidden ui-desktop:block">
         <WhatsInTheBox />
       </div>
-      <Reviews content={reviews} />
+      <Reviews content={await homeReviews()} />
       <ButtonCards />
     </main>
   );

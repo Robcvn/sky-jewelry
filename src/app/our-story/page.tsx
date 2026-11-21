@@ -6,9 +6,12 @@ import { Picture } from "@/components/ui/Picture";
 import { RichText } from "@/components/ui/RichText";
 import { cx, withBasePath } from "@/components/ui/shared";
 import { contentBestSellers } from "@/content/education";
-import { ourStoryPage as page } from "@/content/our-story";
+import { getEditorialContent } from "@/lib/content";
 
-export const metadata: Metadata = { title: page.seo.title, description: page.seo.description, alternates: { canonical: withBasePath("/our-story/") } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { ourStoryPage: page } = await getEditorialContent();
+  return { title: page.seo.title, description: page.seo.description, alternates: { canonical: withBasePath("/our-story/") } };
+}
 
 const SQUARE = "relative aspect-square w-full overflow-hidden rounded-4 bg-secondary-ivory ui-desktop:w-[49.04%] ui-desktop:shrink-0";
 const SQUARE_SIZES = { desktop: "(width >= 90rem) 38.25rem, 42vw", mobile: "calc(100vw - 40px)" };
@@ -19,8 +22,8 @@ const SQUARE_SIZES = { desktop: "(width >= 90rem) 38.25rem, 42vw", mobile: "calc
  * Desktop: the photo hero (1440 x 756) with the overline, the title and one full-width Hero Button - Overlay at its foot;
  * two text-and-square-photo sections (photo right, then left; 96 apart); The Foundations; the best sellers.
  */
-export default function OurStoryPage() {
-  const { hero, business, apart, foundations } = page;
+export default async function OurStoryPage() {
+  const { hero, business, apart, foundations } = (await getEditorialContent()).ourStoryPage;
   return (
     <main id="main-content" tabIndex={-1} className="flex-1">
       {/* Home's hero pattern: 640 tall on mobile, 756 on desktop; the 40% shade from 25% down. */}

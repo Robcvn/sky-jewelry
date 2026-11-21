@@ -3,34 +3,39 @@ import { withBasePath } from "@/components/ui/shared";
 import { ContentList, type ListItem, type ListTopic } from "@/components/content/ContentList";
 import { FeaturedPost } from "@/components/content/ContentSections";
 import { GuaranteeIconsSection } from "@/components/sections/LandingSections";
-import { blogPage as page, blogPosts, postHref, postTopicId } from "@/content/blog";
+import { postHref, postTopicId } from "@/content/blog";
+import { getEditorialContent } from "@/lib/content";
 import { guaranteeIcons } from "@/content/landing/shared";
 
-export const metadata: Metadata = { title: page.seo.title, description: page.seo.description, alternates: { canonical: withBasePath("/blog/") } };
-
-/** The newest post is featured; the grid lists the rest. */
-const [featured, ...rest] = [...blogPosts].sort((a, b) => b.date.localeCompare(a.date));
-
-const items: ListItem[] = rest.map((post) => ({
-  id: post._id,
-  href: postHref(post),
-  title: post.title,
-  excerpt: post.excerpt,
-  topic: postTopicId(post.topic),
-  topicLabel: post.topic,
-  date: post.date,
-  readTime: post.readTime,
-  image: post.image,
-}));
-
-/** The Topic menu lists the topics the grid's posts actually have, in the order they first appear. */
-const topics: ListTopic[] = [...new Set(rest.map((post) => post.topic))].map((label) => ({ id: postTopicId(label), label }));
+export async function generateMetadata(): Promise<Metadata> {
+  const { blogPage: page } = await getEditorialContent();
+  return { title: page.seo.title, description: page.seo.description, alternates: { canonical: withBasePath("/blog/") } };
+}
 
 /**
  * The Blog List (Figma 3565:101703, mobile 3587:129657): the heading, the featured post, the Topic and Sort menus over
  * the post grid (topic, sort and page in the URL) and the Sky Jewelry Guarantee.
  */
-export default function BlogPage() {
+export default async function BlogPage() {
+  const { blogPage: page, blogPosts } = await getEditorialContent();
+  // The newest post is featured; the grid lists the rest.
+  const [featured, ...rest] = [...blogPosts].sort((a, b) => b.date.localeCompare(a.date));
+
+  const items: ListItem[] = rest.map((post) => ({
+    id: post._id,
+    href: postHref(post),
+    title: post.title,
+    excerpt: post.excerpt,
+    topic: postTopicId(post.topic),
+    topicLabel: post.topic,
+    date: post.date,
+    readTime: post.readTime,
+    image: post.image,
+  }));
+
+  /** The Topic menu lists the topics the grid's posts actually have, in the order they first appear. */
+  const topics: ListTopic[] = [...new Set(rest.map((post) => post.topic))].map((label) => ({ id: postTopicId(label), label }));
+
   return (
     <main id="main-content" tabIndex={-1} className="flex-1">
       <div className="site-container flex flex-col pt-space-11 text-primary-leather ui-desktop:pt-space-15">

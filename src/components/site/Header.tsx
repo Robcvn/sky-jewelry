@@ -17,7 +17,7 @@ import {
 import { Icon } from "@/components/ui/Icon";
 import { cx } from "@/components/ui/shared";
 import { useIsDesktop } from "@/components/ui/useIsDesktop";
-import { siteHeader, type HeaderContent } from "@/content/site";
+import { contactDropdownFor, siteHeader, withMenuPosts, type BlogTeaser, type FooterContent, type HeaderContent } from "@/content/site";
 import { ContactDropdown } from "./ContactDropdown";
 import { headerIconButtonClasses, IconLink, MobileBar } from "./HeaderParts";
 import { Logo } from "./Logo";
@@ -377,6 +377,10 @@ type HeaderProps = {
   defaultMenuCategory?: string;
   /** Appended to landmark labels so style guide previews stay unique. */
   labelSuffix?: string;
+  /** The contact details for the contact dropdown: the site settings' (src/lib/content.ts). Without them, the module's. */
+  contact?: FooterContent["contact"];
+  /** The Education menu's blog posts: the Blog's posts as the build read them (src/lib/content.ts). Without them, the module's. */
+  menuPosts?: BlogTeaser[];
 };
 
 /**
@@ -388,13 +392,17 @@ type HeaderProps = {
  * Style guide previews (breakpoint, defaultMenuOpen or labelSuffix set) get neither.
  */
 export function Header({
-  content = siteHeader,
+  content: baseContent = siteHeader,
+  contact,
+  menuPosts,
   layout = "two-row",
   breakpoint,
   defaultMenuOpen = false,
   defaultMenuCategory,
   labelSuffix = "",
 }: HeaderProps) {
+  const withPosts = menuPosts ? withMenuPosts(baseContent, menuPosts) : baseContent;
+  const content = contact ? { ...withPosts, contactDropdown: contactDropdownFor(contact) } : withPosts;
   const bagCount = useBagCount();
   const bagLabel = `${content.bag.label}, ${bagCount} ${bagCount === 1 ? "item" : "items"}`;
   const baseId = useId();

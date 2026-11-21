@@ -4,7 +4,8 @@ import { Reviews } from "@/components/home/Reviews";
 import { ButtonCards, WhatsInTheBox } from "@/components/pdp/DetailSections";
 import { withBasePath } from "@/components/ui/shared";
 import { builderContent, COMPLETE_ROUTE, PAIRED_BAND_HANDLES } from "@/content/builder";
-import { homePage, type Reviews as ReviewsContent } from "@/content/home";
+import type { Reviews as ReviewsContent } from "@/content/home";
+import { getEditorialContent } from "@/lib/content";
 import { getBuilderCatalog } from "@/lib/builder";
 import { getCatalog, pickProducts } from "@/lib/catalog";
 
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 /** The reviews section reuses the Home section and its sample reviews, as Product Detail does. */
-const reviews = homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
+const homeReviews = async () => (await getEditorialContent()).homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
 
 /**
  * Ring builder Step 3: the complete ring. One static page with every setting and stone; the ring
@@ -32,7 +33,7 @@ export default async function CompletePage() {
     <main id="main-content" tabIndex={-1} className="flex-1">
       <CompleteRing settings={settings} stones={stones} bands={bands}>
         <WhatsInTheBox />
-        <Reviews content={reviews} />
+        <Reviews content={await homeReviews()} />
         <ButtonCards />
       </CompleteRing>
     </main>

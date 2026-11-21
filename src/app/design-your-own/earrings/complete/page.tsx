@@ -4,7 +4,8 @@ import { Reviews } from "@/components/home/Reviews";
 import { ButtonCards } from "@/components/pdp/DetailSections";
 import { withBasePath } from "@/components/ui/shared";
 import { EARRINGS_COMPLETE_ROUTE, earringsContent } from "@/content/earrings";
-import { homePage, type Reviews as ReviewsContent } from "@/content/home";
+import type { Reviews as ReviewsContent } from "@/content/home";
+import { getEditorialContent } from "@/lib/content";
 import { getEarringsCatalog } from "@/lib/earrings";
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-const reviews = homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
+const homeReviews = async () => (await getEditorialContent()).homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
 
 /**
  * Earrings builder Step 3: the complete earrings. One static page with every setting and pair; the earrings
@@ -27,7 +28,7 @@ export default async function CompleteEarringsPage() {
   return (
     <main id="main-content" tabIndex={-1} className="flex-1">
       <CompleteEarrings settings={settings} pairs={pairs}>
-        <Reviews content={reviews} />
+        <Reviews content={await homeReviews()} />
         <ButtonCards />
       </CompleteEarrings>
     </main>

@@ -3,6 +3,7 @@ import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
 import { ADOBE_FONTS_STYLESHEET, fontClassName, fontStyle } from "@/fonts";
+import { getEditorialContent } from "@/lib/content";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // The announcement bar, footer and contact details: Sanity's site settings, or the local files (src/lib/content.ts).
+  const { announcementBar, siteFooter, contact, menuPosts } = await getEditorialContent();
   return (
     <html
       lang="en"
@@ -35,10 +38,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to main content
         </a>
-        <AnnouncementBar />
-        <Header />
+        <AnnouncementBar content={announcementBar} />
+        <Header contact={contact} menuPosts={menuPosts} />
         {children}
-        <Footer />
+        <Footer content={siteFooter} />
       </body>
     </html>
   );

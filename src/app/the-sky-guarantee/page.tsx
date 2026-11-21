@@ -7,10 +7,13 @@ import { ButtonText } from "@/components/ui/Button";
 import { IconCard } from "@/components/ui/IconBlock";
 import { Input, TextArea } from "@/components/ui/Input";
 import { withBasePath } from "@/components/ui/shared";
-import { homeSection } from "@/content/landing/shared";
-import { supportPage as page, type SupportCard } from "@/content/support";
+import type { SupportCard } from "@/content/support";
+import { getEditorialContent, homeSectionOf } from "@/lib/content";
 
-export const metadata: Metadata = { title: page.seo.title, description: page.seo.description, alternates: { canonical: withBasePath("/the-sky-guarantee/") } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { supportPage: page } = await getEditorialContent();
+  return { title: page.seo.title, description: page.seo.description, alternates: { canonical: withBasePath("/the-sky-guarantee/") } };
+}
 
 const H2 = "type-heading-lg scroll-mt-space-6 ui-desktop:type-heading-2xl";
 const INTRO = "type-p-md-regular mt-space-4 ui-desktop:mt-space-6";
@@ -35,7 +38,8 @@ function Cards({ cards }: { cards: SupportCard[] }) {
  * FAQs, then the Education block. Mobile: the hero, a section menu, Contact Sky Jewelry (hidden on desktop), the same
  * sections and the Education block.
  */
-export default function SupportPage() {
+export default async function SupportPage() {
+  const { supportPage: page, homePage } = await getEditorialContent();
   const contact = page.contact;
   const navSections = [
     { id: "support-offerings", label: page.offerings.nav, nav: page.offerings.nav },
@@ -113,7 +117,7 @@ export default function SupportPage() {
           </section>
         </div>
       </div>
-      <EducationCenter variant="support" content={homeSection("educationCenter", "education")} />
+      <EducationCenter variant="support" content={homeSectionOf(homePage, "educationCenter", "education")} />
     </main>
   );
 }

@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Reviews } from "@/components/home/Reviews";
 import { ButtonCards, DiamondQualities, WhatsInTheBox } from "@/components/pdp/DetailSections";
 import { ProductDetail } from "@/components/pdp/ProductDetail";
-import { homePage, type Reviews as ReviewsContent } from "@/content/home";
+import type { Reviews as ReviewsContent } from "@/content/home";
+import { getEditorialContent } from "@/lib/content";
 import { sampleDiamondGrades } from "@/content/product-detail";
 import { isFineJewelry, productHref } from "@/content/products";
 import { withBasePath } from "@/components/ui/shared";
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 }
 
 /** The reviews section reuses the Home section and its sample reviews (Figma's PDP reviews are placeholder text). */
-const reviews = homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
+const homeReviews = async () => (await getEditorialContent()).homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
 
 export default async function ProductPage({ params }: { params: Promise<Params> }) {
   const product = await findProduct(await params);
@@ -60,7 +61,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
       <ProductDetail product={product} />
       {product.diamondType ? <DiamondQualities grades={sampleDiamondGrades[product.diamondType]} /> : null}
       <WhatsInTheBox />
-      <Reviews content={reviews} />
+      <Reviews content={await homeReviews()} />
       <ButtonCards />
     </main>
   );

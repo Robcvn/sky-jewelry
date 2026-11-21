@@ -7,7 +7,8 @@ import { StoneDetailQualities } from "@/components/builder/StoneDetailQualities"
 import { Reviews } from "@/components/home/Reviews";
 import { ButtonCards } from "@/components/pdp/DetailSections";
 import { withBasePath } from "@/components/ui/shared";
-import { homePage, type Reviews as ReviewsContent } from "@/content/home";
+import type { Reviews as ReviewsContent } from "@/content/home";
+import { getEditorialContent } from "@/lib/content";
 import { getBuilderCatalog } from "@/lib/builder";
 
 type Params = { handle: string };
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 }
 
 /** The reviews section reuses the Home section and its sample reviews, as Product Detail does. */
-const reviews = homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
+const homeReviews = async () => (await getEditorialContent()).homePage.sections.find((section): section is ReviewsContent => section._type === "reviews")!;
 
 /**
  * Ring builder, Step 2: a stone's page (Figma desktop Builder 2 - Stone Info 3565:100732, mobile 3587:125910).
@@ -65,7 +66,7 @@ export default async function StonePage({ params }: { params: Promise<Params> })
       <StoneDetail stone={stone} />
       {/* Figma draws "Your Diamond's Qualities" for a diamond; gemstones are graded on other scales, so they have no such section. */}
       {stone.kind === "diamond" ? <StoneDetailQualities stone={stone} /> : null}
-      <Reviews content={reviews} />
+      <Reviews content={await homeReviews()} />
       <ButtonCards />
     </main>
   );
