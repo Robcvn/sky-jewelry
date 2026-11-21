@@ -1,0 +1,28 @@
+{
+  "name": "sky-site-studio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sanity Studio for the Sky Jewelry site's editorial content (project 74lb1xq2, dataset production).",
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "start": "sanity start",
+    "validate": "sanity schema validate",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "@sanity/vision": "6.24.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sanity": "6.24.0",
+    "styled-components": "6.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

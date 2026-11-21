@@ -1,0 +1,4 @@
+# Dependencies and build output: npm install and npm run build make them again.
+node_modules
+dist
+.sanity
