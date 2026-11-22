@@ -8,7 +8,7 @@ import { getCatalog } from "@/lib/catalog";
 export const metadata: Metadata = {
   title: accountContent.orders.title,
   description: "Your Sky Jewelry orders.",
-  robots: { index: false },
+  robots: { index: false, follow: false },
 };
 
 /** Account - Orders (3565:97997, mobile 3587:124427): the mock orders, newest first. */

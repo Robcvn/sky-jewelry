@@ -146,6 +146,21 @@ export function Dropdown({
     return () => document.removeEventListener("pointerdown", closeOnOutsidePress);
   }, [open, setOpen]);
 
+  // Escape closes an open list or panel wherever focus is, and returns focus to the trigger. The trigger (list) and the
+  // panel handle it themselves when they have focus; this catches the rest: a panel's trigger right after a click, and
+  // Safari, which doesn't focus a button it clicks. Calling preventDefault keeps a dialog around the dropdown open.
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      event.preventDefault();
+      setOpen(false);
+      triggerRef.current?.focus();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [open, setOpen]);
+
   useEffect(() => {
     if (open && !panel) document.getElementById(`${id}-option-${activeIndex}`)?.scrollIntoView({ block: "nearest" });
   }, [open, panel, activeIndex, id]);

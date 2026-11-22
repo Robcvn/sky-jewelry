@@ -5,7 +5,7 @@ import { builderContent } from "@/content/builder";
 import { searchContent as text } from "@/content/search";
 import { buildSearchIndex } from "@/lib/searchIndex";
 
-export const metadata: Metadata = { title: text.seo.title, description: text.seo.description, alternates: { canonical: withBasePath("/search/") }, robots: { index: false } };
+export const metadata: Metadata = { title: text.seo.title, description: text.seo.description, alternates: { canonical: withBasePath("/search/") }, robots: { index: false, follow: false } };
 
 /**
  * Search Results (Figma 4931:73092, mobile 4979:47760). The index is made here at build time; the page reads ?q=

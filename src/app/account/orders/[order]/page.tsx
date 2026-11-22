@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: accountContent.orders.orderNumber(order),
     description: "The details of a Sky Jewelry order.",
-    robots: { index: false },
+    robots: { index: false, follow: false },
   };
 }
 

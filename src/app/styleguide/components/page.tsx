@@ -1376,7 +1376,7 @@ export default async function ComponentsPage() {
             <li>Mobile menu search placeholder: Figma uses black-alpha-50, 3.36:1. Built with black-alpha-60, 4.58:1.</li>
             <li>
               Footer demo notice: a deliberate addition, not in Figma. One line under the copyright, in the same style: &ldquo;Portfolio
-              build by Rob Coven. Not the live Sky Jewelry store; products, prices and reviews are sample content.&rdquo;
+              build by Rob Coven. Not the live Sky Jewelry store; products, prices, reviews and contact details are sample content.&rdquo;
             </li>
             <li>Review Card date and Post Card meta (Home): Figma uses black-alpha-50, 3.36:1 on skin. Built with black-alpha-60, 4.58:1.</li>
             <li>
@@ -1599,7 +1599,7 @@ export default async function ComponentsPage() {
             <li>Blog List: the grid lists the six posts other than the featured one, so it has no pagination; &ldquo;You Should also Read&rdquo; shows the three newest other posts. Home&rsquo;s blog row and the Education menu keep their three posts.</li>
             <li>Education Center hero: one line under the title (&ldquo;Guides to diamonds, rings and caring for fine jewelry.&rdquo;), as the 548px text box draws it. Every resource shares Figma&rsquo;s Resource Detail hero photos (desktop: the hands; mobile: the rings and chains); each post&rsquo;s hero is a wide crop of its card photo.</li>
             <li>Post Detail &ldquo;Customize this ring&rdquo; (Button - Overlay with Sparkle) links to the ring builder&rsquo;s first step, /design-your-own/. Figma&rsquo;s prototype gives it no destination, so the link is an inference (Rob&rsquo;s decision, Nov 21).</li>
-            <li>The guarantee strip on the Education Center and Blog has no link. The brief said it links to /the-sky-guarantee/, but the frames draw no link or button in it; built as drawn and approved (Rob, Nov 21). The footer&rsquo;s &ldquo;The Sky Guarantee&rdquo; links there (it 404s until part 2).</li>
+            <li>The guarantee strip on the Education Center and Blog has no link. The brief said it links to /the-sky-guarantee/, but the frames draw no link or button in it; built as drawn and approved (Rob, Nov 21). The footer&rsquo;s &ldquo;The Sky Guarantee&rdquo; links there.</li>
             <li>Featured Education (Education Center) is Home&rsquo;s Education Center block with the page frame&rsquo;s larger heading and body, no &ldquo;view all&rdquo; button, and 24px to the cards on mobile.</li>
             <li>Fine Jewelry menu and mobile Fine Jewelry screen: &ldquo;Design Your Own Earrings&rdquo; (to /design-your-own/earrings/) is added as the last row of the Earrings column. It is not in the approved menu; the wording is from the TO DOS menu rebuild (7970:215029), and the icon is the Assets &ldquo;Band&rdquo; that frame uses for &ldquo;Start with an Earring Setting&rdquo;. The desktop panel keeps its height (Rings has more rows).</li>
             <li>Task 20, one drawn page for several links (an inference): /the-sky-guarantee/ (Figma &ldquo;Sky Guarantee&rdquo;) serves the header&rsquo;s Support, the footer&rsquo;s The Sky Guarantee and FAQs, and the &ldquo;view all faqs&rdquo; buttons on Home and the landing pages (the last two at its Sky FAQs section, #faqs). Approved (Rob, Nov 21).</li>

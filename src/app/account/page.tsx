@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: accountContent.profile.title,
   description: "Your Sky Jewelry account details and address book.",
   // A personal page: nothing for search engines.
-  robots: { index: false },
+  robots: { index: false, follow: false },
 };
 
 /** Account - Profile. Figma draws no sign-in: the account shows the mock customer (Deviations). */

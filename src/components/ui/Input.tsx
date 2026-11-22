@@ -106,7 +106,8 @@ export function Input({
             aria-invalid={error || undefined}
             aria-describedby={message ? messageId : undefined}
             className={cx(
-              "peer w-full min-w-0 bg-transparent placeholder:text-transparent focus-visible:outline-none disabled:cursor-not-allowed",
+              // A search field's own ✕ is the site's (rightIcon); Safari would add its round clear button beside it.
+              "peer w-full min-w-0 bg-transparent placeholder:text-transparent focus-visible:outline-none disabled:cursor-not-allowed [&::-webkit-search-cancel-button]:appearance-none",
               size === "md" ? "type-ui-sm-regular" : size === "sm" ? "type-ui-xs-regular" : "type-ui-xs-regular ui-desktop:type-ui-sm-regular",
               disabled && (dark ? "text-white-alpha-40" : "text-black-alpha-50"),
             )}

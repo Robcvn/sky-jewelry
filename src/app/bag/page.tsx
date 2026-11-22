@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: bagContent.heading,
   description: "The pieces in your Sky Jewelry bag.",
   // A personal, client-rendered page: nothing for search engines.
-  robots: { index: false },
+  robots: { index: false, follow: false },
 };
 
 /** The bag page. The lines come from the shopper's Shopify cart in the browser; the paired bands from the build. */

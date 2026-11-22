@@ -105,7 +105,9 @@ export function StepIndicator({
         ) : null}
       </div>
       {complete ? (
-        <div className="hidden shrink-0 flex-col gap-space-1 ui-desktop:flex">
+        // Figma's "stack" aligns its children to the right (counter axis MAX): the price, or the Unavailable badge, ends
+        // where the links end, in every builder frame.
+        <div className="hidden shrink-0 flex-col items-end gap-space-1 ui-desktop:flex">
           {error ? (
             <span className="type-overline-xs-medium flex items-center gap-space-1 text-state-error">
               <Icon name="alert" size={16} />

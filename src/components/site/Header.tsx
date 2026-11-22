@@ -152,12 +152,18 @@ function DesktopBar({ content, layout, labelSuffix, pathname, bagCount, bagLabel
     }
   };
 
-  const onBarKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Escape" && openPanel) {
+  // Escape closes the open panel and returns focus to its trigger, wherever focus is: Safari leaves it on the page after
+  // a click on a button, and a panel opened by hover never had it. Listened for on the document while a panel is open.
+  useEffect(() => {
+    if (!openPanel) return;
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
       event.preventDefault();
       close(openPanel);
-    }
-  };
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  });
 
   // Keyboard users: close when focus leaves the open trigger and its panel.
   const onBarFocus = (event: FocusEvent) => {
@@ -301,7 +307,6 @@ function DesktopBar({ content, layout, labelSuffix, pathname, bagCount, bagLabel
       ref={barRef}
       data-header-bar={bar}
       inert={!active}
-      onKeyDown={onBarKeyDown}
       onFocus={onBarFocus}
       onBlur={onBarBlur}
       onPointerEnter={() => window.clearTimeout(closeTimer.current)}
