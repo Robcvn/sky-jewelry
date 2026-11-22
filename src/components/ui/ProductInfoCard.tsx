@@ -48,7 +48,9 @@ export function ProductInfoCard({ label, value, children, note, spread = false, 
 
 // Figma's clarity bar is a monotone noise fill (size 2, density 0.4) fading out to the left, which CSS can't
 // reproduce: the bar is Figma's own 2x export (desktop 215x32 from 3565:98309, mobile 147x32 from 3587:127126),
-// trimmed of its 1px border, which the bar draws itself.
+// trimmed of its 1px border, which the bar draws itself. The desktop export ended in 18 transparent columns (a light
+// strip at the bar's right end, as some Figma instances draw it); it is cropped to its opaque 408x60, so the texture
+// meets the border on all four sides (Corrected design oversights). The mobile export is opaque edge to edge.
 const CLARITY = {
   mobile: `url("${withBasePath("/images/pdp/clarity-scale-m.webp")}")`,
   desktop: `url("${withBasePath("/images/pdp/clarity-scale-d.webp")}")`,

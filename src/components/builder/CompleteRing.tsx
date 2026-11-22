@@ -51,6 +51,7 @@ import { StoneCertificateTile, STONE_DRAWING_BG, STONE_TILE_BG } from "./StoneDe
 import { StoneDetailQualities } from "./StoneDetailQualities";
 import { StonePicture } from "./StonePicture";
 import { liveQuery, useIsClient, useQuery } from "./useQuery";
+import { useDragScroll } from "@/components/ui/useDragScroll";
 
 const text = builderContent.complete;
 const pdp = productDetailContent;
@@ -115,6 +116,7 @@ function MobileGallery({ ring, stone, name }: { ring: Tile[]; stone: Stone; name
   const [showStone, setShowStone] = useState(false);
   const [current, setCurrent] = useState(0);
   const scroller = useRef<HTMLDivElement>(null);
+  const scrollerRef = useDragScroll(scroller);
   const goTo = (index: number) => {
     const node = scroller.current;
     if (!node) return;
@@ -127,7 +129,7 @@ function MobileGallery({ ring, stone, name }: { ring: Tile[]; stone: Stone; name
         <StonePicture stone={stone} sizes={{ desktop: "50vw", mobile: "100vw" }} />
       ) : (
         <div
-          ref={scroller}
+          ref={scrollerRef}
           role="region"
           aria-label={`Photos of ${name}`}
           tabIndex={ring.length > 1 ? 0 : undefined}

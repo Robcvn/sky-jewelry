@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { productListContent } from "@/content/product-list";
 import type { Product, ProductVariant } from "@/content/products";
 import { addToBag } from "@/lib/bag";
+import { openingVariant } from "@/lib/swatches";
 import { CARD_ITEM, CARD_W } from "./SectionHeading";
 
 type Row = { _key: string; title?: string; products: Product[] };
@@ -41,7 +42,7 @@ export function ProductRows({ rows, label, itemClassName = CARD_ITEM, cardWidth 
               node: (
                 <ProductCard
                   product={product}
-                  initialVariant={product.variants[0]}
+                  initialVariant={openingVariant(product)}
                   labels={productListContent.card}
                   size="carousel"
                   busy={busy === product.slug}

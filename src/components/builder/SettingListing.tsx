@@ -334,6 +334,7 @@ export function SettingListing({ settings: allSettings, stoneFrom, stones = [] }
                     product={setting.product}
                     initialVariant={variant}
                     labels={cardLabels}
+                    metalFilter={state.metals}
                     onQuickView={(_, chosen) => setQuickView({ setting, variant: chosen, open: true })}
                     builder={{
                       title: settingTitle(setting.product),
@@ -397,6 +398,7 @@ export function SettingListing({ settings: allSettings, stoneFrom, stones = [] }
           priceNote={withStone}
           infoHref={infoHref(quickView.setting)}
           addHref={chooseHref(quickView.setting)}
+          metalFilter={state.metals}
         />
       ) : null}
     </div>

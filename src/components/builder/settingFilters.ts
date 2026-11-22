@@ -15,6 +15,7 @@
 import { MENU_ONLY_STYLES, SETTING_STYLES, type FilterStyle, type StoneShape } from "@/content/builder";
 import { metalsForParam, type MetalId } from "@/content/metals";
 import type { ProductVariant } from "@/content/products";
+import { preferStudio } from "@/lib/swatches";
 import type { RingSetting } from "@/lib/builder";
 import { parseShape } from "./ring";
 
@@ -91,9 +92,11 @@ export function applySettingFilters(settings: RingSetting[], state: SettingFilte
   const matches = settings.flatMap((setting): SettingMatch[] => {
     if (state.style && setting.style !== state.style) return [];
     if (state.ships && !(setting.product.shipsInDays !== null && setting.product.shipsInDays <= state.ships)) return [];
-    const variant = setting.product.variants.find(
+    const candidates = setting.product.variants.filter(
       (item) => (!state.metals.length || state.metals.includes(item.metal)) && (!price || (item.price >= price[0] && item.price <= price[1])),
     );
+    // Without a Metal filter the card opens on the first metal with a studio photo (swatches.ts).
+    const variant = state.metals.length ? candidates[0] : preferStudio(setting.product, candidates);
     return variant ? [{ setting, variant }] : [];
   });
   if (state.sort === "price-asc") return matches.sort((a, b) => a.variant.price - b.variant.price);

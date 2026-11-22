@@ -226,6 +226,7 @@ export function ProductListing({ category, products }: ProductListingProps) {
                   labels={content.card}
                   busy={busy === product.slug}
                   onAddToBag={onAddToBag}
+                  metalFilter={state.metals}
                   onQuickView={(item, chosen) => setQuickView({ product: item, variant: chosen, open: true })}
                 />
               </li>
@@ -287,6 +288,7 @@ export function ProductListing({ category, products }: ProductListingProps) {
           onAddToBag={onAddToBag}
           busy={busy === quickView.product.slug}
           labels={{ ...content.card, close: "Close" }}
+          metalFilter={state.metals}
         />
       ) : null}
 

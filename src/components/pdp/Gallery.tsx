@@ -10,6 +10,7 @@ import { cx } from "@/components/ui/shared";
 import { productDetailContent } from "@/content/product-detail";
 import type { Product, ProductVariant } from "@/content/products";
 import { desktopGallery, galleryPhotos, stonePhoto } from "./productFacts";
+import { useDragScroll } from "@/components/ui/useDragScroll";
 
 const { labels } = productDetailContent;
 const TILE_BG = "bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]";
@@ -63,6 +64,7 @@ export function MobileGallery({ product, variant, name }: { product: Product; va
   const spin = SHOW_360 ? product.spin : null;
   const photos = showStone && stone ? [stone] : galleryPhotos(product, variant.metal).map((image) => slotImage(image, "gallery-m"));
   const scroller = useRef<HTMLDivElement>(null);
+  const scrollerRef = useDragScroll(scroller);
   const [current, setCurrent] = useState(0);
 
   // Back to the first photo when the metal or the stone view changes (the scroller remounts at the start).
@@ -89,7 +91,7 @@ export function MobileGallery({ product, variant, name }: { product: Product; va
           <>
             <div
               key={viewKey}
-              ref={scroller}
+              ref={scrollerRef}
               role="region"
               aria-label={`Photos of ${name}`}
               tabIndex={photos.length > 1 ? 0 : undefined}

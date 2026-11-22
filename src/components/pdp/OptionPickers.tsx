@@ -7,6 +7,7 @@ import { OptionTile } from "@/components/ui/OptionTile";
 import { metalById, type MetalId } from "@/content/metals";
 import { productDetailContent } from "@/content/product-detail";
 import { formatCarat } from "@/content/products";
+import { useDragScroll } from "@/components/ui/useDragScroll";
 
 const { labels } = productDetailContent;
 
@@ -25,10 +26,11 @@ export function PickerLabel({ id, label, value }: { id: string; label: string; v
  */
 export function CaratPicker({ carats, value, onChange }: { carats: number[]; value: number | null; onChange: (carat: number) => void }) {
   const id = useId();
+  const rowRef = useDragScroll<HTMLDivElement>();
   return (
     <div className="flex flex-col gap-space-3">
       <PickerLabel id={`${id}-label`} label={labels.carat} value={value === null ? "" : formatCarat(value)} />
-      <div role="radiogroup" aria-labelledby={`${id}-label`} className="relative -mx-(--grid-margin) flex gap-space-2 overflow-x-auto px-(--grid-margin) pb-space-1 [scrollbar-width:none] ui-desktop:mx-0 ui-desktop:flex-wrap ui-desktop:overflow-visible ui-desktop:px-0 [&::-webkit-scrollbar]:hidden">
+      <div ref={rowRef} role="radiogroup" aria-labelledby={`${id}-label`} className="relative -mx-(--grid-margin) flex gap-space-2 overflow-x-auto px-(--grid-margin) pb-space-1 [scrollbar-width:none] ui-desktop:mx-0 ui-desktop:flex-wrap ui-desktop:overflow-visible ui-desktop:px-0 [&::-webkit-scrollbar]:hidden">
         {carats.map((carat) => (
           <OptionTile
             key={carat}
@@ -102,6 +104,7 @@ export function MetalPicker({ metals, value, onChange }: { metals: MetalId[]; va
  */
 export function MobileMetalPicker({ metals, value, onChange }: { metals: MetalId[]; value: MetalId; onChange: (metal: MetalId) => void }) {
   const id = useId();
+  const rowRef = useDragScroll<HTMLDivElement>();
   const [open, setOpen] = useState(false);
   const opener = useRef<HTMLButtonElement>(null);
   const back = useRef<HTMLButtonElement>(null);
@@ -165,7 +168,7 @@ export function MobileMetalPicker({ metals, value, onChange }: { metals: MetalId
         </button>
         <PickerLabel id={`${id}-label`} label={labels.metal} value={metal.label} />
       </div>
-      <div role="radiogroup" aria-labelledby={`${id}-label`} className="relative flex gap-space-2 overflow-x-auto pb-space-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div ref={rowRef} role="radiogroup" aria-labelledby={`${id}-label`} className="relative flex gap-space-2 overflow-x-auto pb-space-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {metals.map((item) => (
           <OptionTile
             key={item}

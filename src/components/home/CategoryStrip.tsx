@@ -3,15 +3,17 @@
 import { CategoryCard } from "@/components/ui/CategoryCard";
 import { Scrollbar, useScrollProgress } from "@/components/ui/Scrollbar";
 import type { CategoryStrip as CategoryStripContent } from "@/content/home";
+import { useDragScroll } from "@/components/ui/useDragScroll";
 
 /** Figma Home "Frame 230" / "stack": five Category Cards. A row of squares on desktop, a swipeable row on mobile. */
 export function CategoryStrip({ content }: { content: CategoryStripContent }) {
   const { ref, progress, scrollable } = useScrollProgress<HTMLDivElement>();
+  const dragRef = useDragScroll(ref);
 
   return (
     <nav aria-label={content.label} className="flex flex-col gap-space-6 pb-space-10 ui-desktop:pb-0">
       <div
-        ref={ref}
+        ref={dragRef}
         role="region"
         aria-label={`${content.label}, scroll for more`}
         tabIndex={scrollable ? 0 : undefined}

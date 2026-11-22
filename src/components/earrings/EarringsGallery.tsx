@@ -12,6 +12,7 @@ import { cx, withBasePath } from "@/components/ui/shared";
 import { Hint360 } from "@/components/ui/Viewer360";
 import { earringsContent } from "@/content/earrings";
 import type { Stone } from "@/lib/builder";
+import { useDragScroll } from "@/components/ui/useDragScroll";
 
 const copy = earringsContent.pair;
 const TILE_BG = "bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]";
@@ -114,13 +115,14 @@ export function EarringsDesktopGallery({ tiles }: { tiles: GalleryTile[] }) {
 export function EarringsMobileGallery({ photos, stone, name }: { photos: ImageRef[]; stone: Pick<Stone, "image" | "shape" | "title">; name: string }) {
   const [showStone, setShowStone] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
+  const scrollerRef = useDragScroll(scroller);
   return (
     <div data-earrings-mobile-gallery className={cx("relative aspect-square w-full overflow-hidden", showStone && !stone.image ? STONE_DRAWING_BG : TILE_BG)}>
       {showStone ? (
         <StonePicture stone={stone} sizes={{ desktop: "50vw", mobile: "100vw" }} />
       ) : (
         <div
-          ref={scroller}
+          ref={scrollerRef}
           role="region"
           aria-label={`Photos of ${name}`}
           tabIndex={photos.length > 1 ? 0 : undefined}

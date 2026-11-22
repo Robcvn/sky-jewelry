@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type FocusEvent, type PointerEvent, type ReactNode } from "react";
 import { IconButton } from "./IconButton";
 import { Scrollbar, useScrollProgress } from "./Scrollbar";
 import { cx } from "./shared";
+import { useDragScroll } from "./useDragScroll";
 
 type CarouselItem = { key: string; node: ReactNode };
+type Box = { left: number; right: number; top: number; bottom: number };
+const EMPTY: Box = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity };
 
 type CarouselProps = {
   /** Accessible name for the scrolling list, e.g. "Best selling engagement rings". */
@@ -52,6 +55,7 @@ export function Carousel({
   className,
 }: CarouselProps) {
   const { ref, progress, scrollable, atStart, atEnd } = useScrollProgress<HTMLDivElement>();
+  const dragRef = useDragScroll(ref);
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
   const lastPressed = useRef<"prev" | "next" | null>(null);
@@ -72,12 +76,68 @@ export function Carousel({
     node.scrollBy({ left: direction * amount, behavior: reduce ? "auto" : "smooth" });
   };
 
+  // With hoverRoom, a hovered or focused product card rises above the arrows (z-20, with its 8px shell). An arrow the
+  // card's box (with its shell and actions panel, [data-hover-shell]) overlaps is hidden while that lasts: opacity 0
+  // and no pointer events, still in the tab order, and shown again once it has focus.
+  const prevWrap = useRef<HTMLSpanElement>(null);
+  const nextWrap = useRef<HTMLSpanElement>(null);
+  const hovered = useRef<HTMLElement | null>(null);
+  const [covered, setCovered] = useState({ prev: false, next: false });
+  const itemOf = useCallback(
+    (target: EventTarget | null) => {
+      const scroller = ref.current;
+      if (!scroller || !(target instanceof Node)) return null;
+      return ([...scroller.children] as HTMLElement[]).find((item) => item.contains(target)) ?? null;
+    },
+    [ref],
+  );
+  const measure = useCallback(() => {
+    if (!hoverRoom) return;
+    requestAnimationFrame(() => {
+      const cards = [hovered.current, itemOf(document.activeElement)].filter((card): card is HTMLElement => card !== null);
+      const boxes = cards.map((card) =>
+        [card, ...card.querySelectorAll<HTMLElement>("[data-hover-shell]")]
+          .map((el) => el.getBoundingClientRect())
+          .filter((r) => r.width > 0 && r.height > 0)
+          .reduce<Box>((u, r) => ({ left: Math.min(u.left, r.left), right: Math.max(u.right, r.right), top: Math.min(u.top, r.top), bottom: Math.max(u.bottom, r.bottom) }), EMPTY),
+      );
+      const hits = (wrap: HTMLSpanElement | null) => {
+        const a = wrap?.getBoundingClientRect();
+        return Boolean(a && a.width && boxes.some((b) => b.left < a.right && b.right > a.left && b.top < a.bottom && b.bottom > a.top));
+      };
+      const next = { prev: hits(prevWrap.current), next: hits(nextWrap.current) };
+      setCovered((current) => (current.prev === next.prev && current.next === next.next ? current : next));
+    });
+  }, [hoverRoom, itemOf]);
+  useEffect(() => {
+    const scroller = ref.current;
+    if (!hoverRoom || !scroller) return;
+    scroller.addEventListener("scroll", measure, { passive: true });
+    return () => scroller.removeEventListener("scroll", measure);
+  }, [hoverRoom, measure, ref]);
+  const onPointerOver = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return;
+    hovered.current = itemOf(event.target);
+    measure();
+  };
+  const onPointerOut = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return;
+    hovered.current = itemOf(event.relatedTarget);
+    measure();
+  };
+  const onFocusChange = (event: FocusEvent) => {
+    if (event.type === "blur" && hovered.current && !hovered.current.matches(":hover")) hovered.current = null;
+    measure();
+  };
+
   const arrow = "absolute z-10 hidden -translate-y-1/2 ui-desktop:block";
+  const hidden = "ui-transition pointer-events-none opacity-0 focus-within:pointer-events-auto focus-within:opacity-100";
 
   return (
     <div className={cx("@container relative", className)}>
       <div
-        ref={ref}
+        ref={dragRef}
+        {...(hoverRoom ? { onPointerOver, onPointerOut, onFocus: onFocusChange, onBlur: onFocusChange } : {})}
         role="region"
         aria-label={`${label}, carousel`}
         tabIndex={scrollable ? 0 : undefined}
@@ -98,12 +158,12 @@ export function Carousel({
       {desktop === "carousel" ? (
         <>
           {!atStart ? (
-            <span className={arrow} style={{ top: arrowTop, left: "calc(var(--grid-margin) - 1.75rem)" }}>
+            <span ref={prevWrap} className={cx(arrow, hoverRoom && "ui-transition", covered.prev && hidden)} style={{ top: arrowTop, left: "calc(var(--grid-margin) - 1.75rem)" }}>
               <IconButton ref={prevRef} icon="chevron-left" size="lg" label={`Previous: ${label}`} onClick={() => page(-1)} />
             </span>
           ) : null}
           {!atEnd ? (
-            <span className={arrow} style={{ top: arrowTop, right: "calc(var(--grid-margin) - 1.75rem)" }}>
+            <span ref={nextWrap} className={cx(arrow, hoverRoom && "ui-transition", covered.next && hidden)} style={{ top: arrowTop, right: "calc(var(--grid-margin) - 1.75rem)" }}>
               <IconButton ref={nextRef} icon="chevron-right" size="lg" label={`Next: ${label}`} onClick={() => page(1)} />
             </span>
           ) : null}

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { formatPrice, imagesFor, variantName, type Product, type ProductVariant } from "@/content/products";
 import { Picture } from "./Picture";
 import { MetalSwatches } from "./ProductCard";
+import { openingVariant } from "@/lib/swatches";
 
 /**
  * Figma "Product Card", Type=Search (Design System 2990:11354; Search Results mobile 4979:47760): a 120px square photo
@@ -12,7 +13,7 @@ import { MetalSwatches } from "./ProductCard";
  * and the metal swatches, which switch the photo, name and price. The photo and name open the product's page.
  */
 export function ProductCardSearch({ product, title, href, priceNote }: { product: Product; title?: string; href: string | ((variant: ProductVariant) => string); priceNote?: (variant: ProductVariant) => string | null }) {
-  const [variant, setVariant] = useState(product.variants[0]);
+  const [variant, setVariant] = useState(() => openingVariant(product));
   const image = imagesFor(product, variant.metal)[0];
   const name = title ?? variantName(product, variant);
   const note = priceNote?.(variant) ?? null;

@@ -100,3 +100,18 @@ html {
 body > header [data-header-row] :is(a, button) {
   scroll-margin-top: calc(var(--sticky-header-height) * -1);
 }
+
+/*
+ * Sideways scrollers a mouse can drag (useDragScroll): the grab cursor while the row can scroll (links and buttons
+ * inside keep their own), and while dragging the grabbing cursor everywhere in the row and no text selection.
+ */
+@media (pointer: fine) {
+  [data-drag-scroll="ready"] {
+    cursor: grab;
+  }
+}
+[data-drag-scroll="dragging"],
+[data-drag-scroll="dragging"] * {
+  cursor: grabbing !important;
+  user-select: none;
+}

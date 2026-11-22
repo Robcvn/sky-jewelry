@@ -25,6 +25,7 @@ import { formatInstallment, formatPrice, imagesFor, variantName, type Product } 
 import type { EarringSetting } from "@/lib/earrings";
 import { EarringsDesktopGallery, EarringsMobileGallery, settingPhotos } from "./EarringsGallery";
 import { earringSettingsHref, pairsHref, parseEarrings } from "./routes";
+import { useDragScroll } from "@/components/ui/useDragScroll";
 
 const text = earringsContent.setting;
 const pdp = productDetailContent;
@@ -120,10 +121,11 @@ export function EarringSettingInfo({ metal, headingId = "earring-setting-info", 
  */
 function MobileMetalRow({ metals, value, onChange }: { metals: MetalId[]; value: MetalId; onChange: (metal: MetalId) => void }) {
   const id = useId();
+  const rowRef = useDragScroll<HTMLDivElement>();
   return (
     <div className="flex flex-col gap-space-2">
       <PickerLabel id={`${id}-label`} label={text.metal} value={metalById(value).label} />
-      <div role="radiogroup" aria-labelledby={`${id}-label`} className="-mx-(--grid-margin) flex gap-space-2 overflow-x-auto px-(--grid-margin) [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div ref={rowRef} role="radiogroup" aria-labelledby={`${id}-label`} className="-mx-(--grid-margin) flex gap-space-2 overflow-x-auto px-(--grid-margin) [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {metals.map((metal) => (
           <OptionTile key={metal} type="radio" name={`${id}-metal`} media={metalBadge(metal)} aria-label={metalById(metal).label} checked={value === metal} onChange={() => onChange(metal)}>
             {metalById(metal).shortLabel}

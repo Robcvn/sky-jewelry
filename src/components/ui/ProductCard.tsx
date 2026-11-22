@@ -18,6 +18,7 @@ import { Picture } from "./Picture";
 import { Swatch } from "./Swatch";
 import { cx } from "./shared";
 import { SHOW_360 } from "@/lib/features";
+import { swatchMetals } from "@/lib/swatches";
 import { DOTS_ABOVE_HINT, Hint360 } from "./Viewer360";
 
 export type ProductCardLabels = { info: string; addToBag: string; installments: string; learnMore: string };
@@ -31,19 +32,26 @@ export function variantForMetal(product: Product, current: ProductVariant, metal
   );
 }
 
-/** One swatch button per metal the product comes in, in variant order. */
+/** The product's metal swatches (swatchMetals), in variant order. */
 export function MetalSwatches({
   product,
   variant,
   onChange,
+  metalFilter,
   className,
 }: {
   product: Product;
   variant: ProductVariant;
   onChange: (variant: ProductVariant) => void;
+  /** The list's Metal filter, when it has one: a lifestyle photo's metal gets a swatch only when the filter chose it. */
+  metalFilter?: readonly MetalId[];
   className?: string;
 }) {
-  const metals = [...new Set(product.variants.map((item) => item.metal))];
+  // The metal the card opened on, per product: when the Metal filter chose it, a lifestyle photo's swatch stays.
+  const [opened, setOpened] = useState({ slug: product.slug, metal: variant.metal });
+  if (opened.slug !== product.slug) setOpened({ slug: product.slug, metal: variant.metal });
+  const openedOn = opened.slug === product.slug ? opened.metal : variant.metal;
+  const metals = swatchMetals(product, variant.metal, metalFilter?.includes(openedOn) ? openedOn : null);
   return (
     <div role="group" aria-label="Metal" className={cx("flex items-center justify-center gap-space-2 py-space-1", className)}>
       {metals.map((metal) => {
@@ -123,6 +131,26 @@ type ProductCardProps = {
   /** "grid": the product list (smaller text below 1024px). "carousel": landing page rows (desktop text sizes throughout). */
   size?: "grid" | "carousel";
   builder?: ProductCardBuilder;
+  /** The list's Metal filter (MetalSwatches). */
+  metalFilter?: readonly MetalId[];
+};
+
+/**
+ * The hover panel's spacing on narrow cards. Figma (3565:98133, a 300px card) gives Info 76px, a gap of 8, panel side
+ * padding 16, button side padding 16 and label side padding 8. At those values "Choose Setting" (the widest label)
+ * fits on one line with 4px to spare from a card of 276.5px (about a 1330px viewport on the product list). Below that,
+ * one length, --squeeze, grows from 0 at 276.5px to 8px at a 211px card (the four-column grid at 1024px) and takes the
+ * panel, button and label padding down by itself (16 to 8, 16 to 8, 8 to 0) and Info's width by 2.5 times (76 to 56).
+ * The gap stays 8. 100cqw is the card's width: the panel's wrapper is a size container. Labels never wrap. At 276.5px
+ * and wider every value is Figma's. Every card with the hover panel uses it (lists, search, Best Sellers rows, the
+ * ring and earrings builders).
+ */
+const SQUEEZE = "[--squeeze:clamp(0px,(276.5px_-_100cqw)_*_8_/_65.5,8px)]";
+const HOVER_SQUEEZE = {
+  panel: `${SQUEEZE} px-[calc(16px_-_var(--squeeze))]`,
+  info: "w-[calc(76px_-_2.5_*_var(--squeeze))]",
+  // The button's own px-space-4 and its label's px-space-2 (Button.tsx) are overridden here only.
+  button: "px-[calc(16px_-_var(--squeeze))]! [&>span]:px-[calc(8px_-_var(--squeeze))] [&>span]:whitespace-nowrap",
 };
 
 /**
@@ -133,7 +161,7 @@ type ProductCardProps = {
  * the installments line show below. The swatches switch the photo, title and price to that metal's variant.
  * Mobile: no hover; tapping the photo or title opens the quick view.
  */
-export function ProductCard({ product, initialVariant, labels, onAddToBag, onQuickView, busy = false, size = "grid", builder, plain = false }: ProductCardProps) {
+export function ProductCard({ product, initialVariant, labels, onAddToBag, onQuickView, busy = false, size = "grid", builder, plain = false, metalFilter }: ProductCardProps) {
   const carousel = size === "carousel";
   const [variant, setVariant] = useState(initialVariant);
   const [view, setView] = useState(0);
@@ -154,6 +182,7 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
       {plain ? null : (
         <span
           aria-hidden="true"
+          data-hover-shell=""
           className="pointer-events-none absolute -inset-x-space-2 -top-space-2 bottom-0 hidden rounded-t-8 border-x border-t border-black-alpha-5 bg-base-white shadow-lg ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block"
         />
       )}
@@ -209,23 +238,25 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
         ) : null}
       </div>
 
-      <MetalSwatches product={product} variant={variant} onChange={chooseVariant} className={cx("relative", carousel ? "mt-space-3 pb-space-3" : "mt-space-2 pb-space-2 ui-desktop:mt-space-3 ui-desktop:pb-space-3")} />
+      <MetalSwatches product={product} variant={variant} onChange={chooseVariant} metalFilter={metalFilter} className={cx("relative", carousel ? "mt-space-3 pb-space-3" : "mt-space-2 pb-space-2 ui-desktop:mt-space-3 ui-desktop:pb-space-3")} />
 
-      <div className={cx("absolute inset-x-0 top-full z-10 hidden", !plain && "ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block")}>
-        <div className="-mx-space-2 flex flex-col gap-space-4 rounded-b-8 border-x border-b border-black-alpha-5 bg-base-white px-space-4 pt-space-1 pb-space-4 shadow-lg">
+      {/* A size container as wide as the card, for the panel's spacing (HOVER_SQUEEZE). */}
+      <div className={cx("@container absolute inset-x-0 top-full z-10 hidden", !plain && "ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block")}>
+        {/* data-hover-shell: the carousel measures the hovered card with its shell and this panel (Carousel.tsx). */}
+        <div data-hover-shell="" className={cx("-mx-space-2 flex flex-col gap-space-4 rounded-b-8 border-x border-b border-black-alpha-5 bg-base-white pt-space-1 pb-space-4 shadow-lg", HOVER_SQUEEZE.panel)}>
           <div className="flex gap-space-2">
-            <ButtonLink href={href} size="sm" variant="secondary" className="w-19 shrink-0">
+            <ButtonLink href={href} size="sm" variant="secondary" className={cx("shrink-0", HOVER_SQUEEZE.info, HOVER_SQUEEZE.button)}>
               {labels.info}
             </ButtonLink>
             {builder ? (
-              <ButtonLink href={builder.action.href(variant)} size="sm" rightIcon="chevron-right" className="flex-1">
+              <ButtonLink href={builder.action.href(variant)} size="sm" rightIcon="chevron-right" className={cx("flex-1", HOVER_SQUEEZE.button)}>
                 {builder.action.label}
               </ButtonLink>
             ) : (
               <Button
                 size="sm"
                 rightIcon="chevron-right"
-                className="flex-1"
+                className={cx("flex-1", HOVER_SQUEEZE.button)}
                 disabled={busy || !variant.available}
                 onClick={() => onAddToBag?.(product, variant)}
               >

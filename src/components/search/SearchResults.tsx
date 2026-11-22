@@ -33,6 +33,7 @@ import { siteHeader } from "@/content/site";
 import { addToBag } from "@/lib/bag";
 import { matches, queryWords } from "@/lib/search";
 import type { SearchIndex, SearchProduct } from "@/lib/searchIndex";
+import { openingVariant } from "@/lib/swatches";
 
 const TYPES = text.types.map((type) => type.value);
 const SORTS = productListContent.sortOptions;
@@ -87,7 +88,7 @@ export function SearchResults({ index, promos }: { index: SearchIndex; promos: P
     const products = index.products.filter((item) => matches(item.haystack, words));
     if (state.sort !== "best-match") {
       // As the product lists sort: by the price the card shows (its first variant); ties keep their order.
-      const price = (item: SearchProduct) => item.product.variants[0].price;
+      const price = (item: SearchProduct) => openingVariant(item.product).price;
       products.sort((a, b) => (state.sort === "price-asc" ? price(a) - price(b) : price(b) - price(a)));
     }
     return {
@@ -298,9 +299,9 @@ function Products({ items, pages, promos }: { items: SearchProduct[]; pages: num
             <PromoSlot key={item.id} index={index} promos={promos}>
               <li>
                 {builder ? (
-                  <ProductCard product={item.product} initialVariant={item.product.variants[0]} labels={productListContent.card} builder={builder} />
+                  <ProductCard product={item.product} initialVariant={openingVariant(item.product)} labels={productListContent.card} builder={builder} />
                 ) : (
-                  <ProductCard product={item.product} initialVariant={item.product.variants[0]} labels={productListContent.card} onAddToBag={(product, variant) => addToBag(product, variant)} />
+                  <ProductCard product={item.product} initialVariant={openingVariant(item.product)} labels={productListContent.card} onAddToBag={(product, variant) => addToBag(product, variant)} />
                 )}
               </li>
             </PromoSlot>

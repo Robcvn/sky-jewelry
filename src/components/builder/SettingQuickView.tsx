@@ -13,7 +13,7 @@ import { Installments, MetalSwatches } from "@/components/ui/ProductCard";
 import { cx } from "@/components/ui/shared";
 import { DOTS_ABOVE_HINT, Hint360 } from "@/components/ui/Viewer360";
 import { builderContent, shapeIcon, shapeLabel, styleIcon, styleLabel, type StoneShape } from "@/content/builder";
-import { metalById } from "@/content/metals";
+import { metalById, type MetalId } from "@/content/metals";
 import { productListContent } from "@/content/product-list";
 import { formatPrice, imagesFor, type ProductVariant } from "@/content/products";
 import type { RingSetting } from "@/lib/builder";
@@ -39,6 +39,8 @@ type SettingQuickViewProps = {
   actionLabel?: string;
   stoneTile?: boolean;
   hint360?: boolean;
+  /** The list's Metal filter (MetalSwatches). */
+  metalFilter?: readonly MetalId[];
 };
 
 /**
@@ -49,7 +51,7 @@ type SettingQuickViewProps = {
  * Figma's 360° marker is placed on the photo, hidden while SHOW_360 is off (no 360° sequence; Deviations). The
  * frame's 360° View / Images / Video tabs are not built.
  */
-export function SettingQuickView({ setting, initialVariant, shape, open, onClose, priceNote, infoHref, addHref, actionLabel = text.addSetting, stoneTile = true, hint360 = true }: SettingQuickViewProps) {
+export function SettingQuickView({ setting, initialVariant, shape, open, onClose, priceNote, infoHref, addHref, actionLabel = text.addSetting, stoneTile = true, hint360 = true, metalFilter }: SettingQuickViewProps) {
   const id = useId();
   const { product } = setting;
   const [variant, setVariant] = useState(initialVariant);
@@ -110,6 +112,7 @@ export function SettingQuickView({ setting, initialVariant, shape, open, onClose
                     setVariant(next);
                     setView(0);
                   }}
+                  metalFilter={metalFilter}
                   className="mt-space-2"
                 />
               </div>

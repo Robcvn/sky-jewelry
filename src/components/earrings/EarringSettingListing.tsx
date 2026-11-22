@@ -217,6 +217,7 @@ export function EarringSettingListing({ settings }: { settings: EarringSetting[]
                   product={setting.product}
                   initialVariant={variant}
                   labels={cardLabels}
+                  metalFilter={state.metals}
                   onQuickView={(_, chosen) => setQuickView({ setting, variant: chosen, open: true })}
                   builder={{ title: settingTitle(setting.product), href: infoHref(setting), priceNote: () => null, action: { label: text.customize, href: infoHref(setting) } }}
                 />
@@ -273,6 +274,7 @@ export function EarringSettingListing({ settings }: { settings: EarringSetting[]
           priceNote={() => null}
           infoHref={infoHref(quickView.setting)}
           addHref={infoHref(quickView.setting)}
+          metalFilter={state.metals}
           actionLabel={text.customize}
           stoneTile={false}
           hint360={false}

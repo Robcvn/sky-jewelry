@@ -6,6 +6,7 @@ import { useIsDesktop } from "@/components/ui/useIsDesktop";
 import { Icon } from "@/components/ui/Icon";
 import { cx } from "@/components/ui/shared";
 import { announcementBar, type AnnouncementBarContent } from "@/content/site";
+import { useDragScroll } from "@/components/ui/useDragScroll";
 
 function subscribeToSeconds(onTick: () => void) {
   const timer = window.setInterval(onTick, 1000);
@@ -84,6 +85,7 @@ export function AnnouncementBar({ content = announcementBar, mode, breakpoint, l
   const isDesktop = useIsDesktop();
   // On mobile the messages are wider than the bar, so the row scrolls and needs to be reachable by keyboard.
   const scrollable = breakpoint ? breakpoint === "mobile" : !isDesktop;
+  const messagesRef = useDragScroll<HTMLDivElement>();
 
   return (
     <aside
@@ -112,6 +114,7 @@ export function AnnouncementBar({ content = announcementBar, mode, breakpoint, l
       ) : (
         <div className="relative w-full min-w-0 py-space-2 pl-space-11 ui-desktop:px-space-11">
           <div
+            ref={messagesRef}
             role={scrollable ? "group" : undefined}
             aria-label={scrollable ? "Announcement messages, scroll for more" : undefined}
             tabIndex={scrollable ? 0 : undefined}

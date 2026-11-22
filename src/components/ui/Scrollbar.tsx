@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cx } from "./shared";
+import { useDragScroll } from "./useDragScroll";
 
 type ScrollbarProps = {
   /** Scroll position from 0 to 1. */
@@ -65,11 +66,12 @@ type ScrollAreaProps = {
 /** A horizontal scroller that hides the native scrollbar and shows the Figma one below. */
 export function ScrollArea({ label, overlay = false, className, regionClassName, scrollbarClassName = "mt-space-3", children }: ScrollAreaProps) {
   const { ref, progress } = useScrollProgress<HTMLDivElement>();
+  const dragRef = useDragScroll(ref);
 
   return (
     <div className={className}>
       <div
-        ref={ref}
+        ref={dragRef}
         role="region"
         aria-label={label}
         tabIndex={0}

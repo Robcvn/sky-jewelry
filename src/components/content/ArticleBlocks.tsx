@@ -12,6 +12,7 @@ import { cx } from "@/components/ui/shared";
 import type { ArticleBlock } from "@/content/article";
 import { productListContent } from "@/content/product-list";
 import type { Product } from "@/content/products";
+import { openingVariant } from "@/lib/swatches";
 
 type GradeScaleBlock = Extract<ArticleBlock, { _type: "gradeScale" }>;
 
@@ -129,15 +130,16 @@ export function FigureAction({ label, icon, products, href }: { label: string; i
             <ul className="hidden flex-col gap-space-8 ui-desktop:flex">
               {products.map((product) => (
                 <li key={product.slug}>
-                  <ProductCard plain product={product} initialVariant={product.variants[0]} labels={productListContent.card} size="carousel" />
+                  <ProductCard plain product={product} initialVariant={openingVariant(product)} labels={productListContent.card} size="carousel" />
                 </li>
               ))}
             </ul>
-            <ScrollArea label={label} className="ui-desktop:hidden" regionClassName="px-space-5 scroll-px-space-5" scrollbarClassName="mx-space-5 mt-space-8">
+            {/* The scrollbar is inset 20px each side (w-auto: the Scrollbar's own w-full plus these margins would run 20px past the sheet). */}
+            <ScrollArea label={label} className="ui-desktop:hidden" regionClassName="px-space-5 scroll-px-space-5" scrollbarClassName="mx-space-5 mt-space-8 w-auto!">
               <ul className="flex gap-space-4">
                 {products.map((product) => (
                   <li key={product.slug} className="w-[18.125rem] shrink-0 snap-start">
-                    <ProductCard plain product={product} initialVariant={product.variants[0]} labels={productListContent.card} size="carousel" />
+                    <ProductCard plain product={product} initialVariant={openingVariant(product)} labels={productListContent.card} size="carousel" />
                   </li>
                 ))}
               </ul>

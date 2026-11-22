@@ -10,9 +10,10 @@ import { OptionTile } from "@/components/ui/OptionTile";
 import { PaginationDots } from "@/components/ui/Pagination";
 import { Picture, slotImage } from "@/components/ui/Picture";
 import { Installments, MetalSwatches, type ProductCardLabels } from "@/components/ui/ProductCard";
-import { metalById } from "@/content/metals";
+import { metalById, type MetalId } from "@/content/metals";
 import { formatCarat, formatPrice, imagesFor, productHref, variantName, type Product, type ProductVariant } from "@/content/products";
 import { MetalBadge } from "@/components/ui/MetalBadge";
+import { useDragScroll } from "@/components/ui/useDragScroll";
 
 export type QuickViewLabels = ProductCardLabels & { caratWeight: string; metal: string; stone: string; close: string };
 
@@ -24,6 +25,8 @@ type QuickViewProps = {
   onAddToBag: (product: Product, variant: ProductVariant) => void;
   busy?: boolean;
   labels: QuickViewLabels;
+  /** The list's Metal filter (MetalSwatches). */
+  metalFilter?: readonly MetalId[];
 };
 
 const SHAPE_ICON: Record<string, IconName> = { round: "round", oval: "oval", emerald: "emerald" };
@@ -34,11 +37,12 @@ const SHAPE_ICON: Record<string, IconName> = { round: "round", oval: "oval", eme
  * The Metal and Stone tiles show the current choice; in Figma their chevrons point to pickers that belong
  * to the product page, so they are not interactive here (flagged).
  */
-export function QuickView({ product, initialVariant, open, onClose, onAddToBag, busy = false, labels }: QuickViewProps) {
+export function QuickView({ product, initialVariant, open, onClose, onAddToBag, busy = false, labels, metalFilter }: QuickViewProps) {
   const id = useId();
   const [variant, setVariant] = useState(initialVariant);
   const [view, setView] = useState(0);
   const [creditOpen, setCreditOpen] = useState(false);
+  const caratRowRef = useDragScroll<HTMLDivElement>();
   const images = imagesFor(product, variant.metal);
   const image = images[Math.min(view, images.length - 1)];
   const name = variantName(product, variant);
@@ -83,7 +87,7 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
                 {name}
               </h2>
               <p className="type-ui-xs-medium">{formatPrice(variant.price)}</p>
-              <MetalSwatches product={product} variant={variant} onChange={choose} className="mt-space-2" />
+              <MetalSwatches product={product} variant={variant} onChange={choose} metalFilter={metalFilter} className="mt-space-2" />
             </div>
 
             {carats.length ? (
@@ -91,7 +95,7 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
                 <legend className="type-overline-xs-medium mb-space-3 flex gap-space-1">
                   {labels.caratWeight}:<span className="type-overline-xs-regular text-black-alpha-60">{formatCarat(variant.carat ?? carats[0])}</span>
                 </legend>
-                <div className="-mx-space-2 flex gap-space-2 overflow-x-auto px-space-2 pb-space-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div ref={caratRowRef} className="-mx-space-2 flex gap-space-2 overflow-x-auto px-space-2 pb-space-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   {carats.map((carat) => (
                     <OptionTile
                       key={carat}

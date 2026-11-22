@@ -25,6 +25,7 @@ import { formatInstallment, formatPrice, imagesFor, productHref, variantName, ty
 import type { RingSetting, StoneSummary } from "@/lib/builder";
 import { completeHref, parseRing, parseShape, ringParams, settingShapes, settingsHref, settingVariant, stoneFirst, stoneFirstStartHref, stonesHref } from "./ring";
 import { liveQuery, useIsClient, useQuery } from "./useQuery";
+import { useDragScroll } from "@/components/ui/useDragScroll";
 
 const { setting: text } = builderContent;
 const pdp = productDetailContent;
@@ -86,6 +87,7 @@ function MobileGallery({ photos, name }: { photos: Tile[]; name: string }) {
   const [worn, setWorn] = useState(false);
   const [current, setCurrent] = useState(0);
   const scroller = useRef<HTMLDivElement>(null);
+  const scrollerRef = useDragScroll(scroller);
   const shown = worn ? WORN.map((item, index) => ({ key: `worn-${index}`, ...item })) : photos;
   const goTo = (index: number) => {
     const node = scroller.current;
@@ -97,7 +99,7 @@ function MobileGallery({ photos, name }: { photos: Tile[]; name: string }) {
     <div className={cx("relative aspect-square w-full overflow-hidden", TILE_BG)}>
       <div
         key={String(worn)}
-        ref={scroller}
+        ref={scrollerRef}
         role="region"
         aria-label={`Photos of ${name}`}
         tabIndex={shown.length > 1 ? 0 : undefined}
@@ -240,6 +242,7 @@ function MobileOptions({
 }) {
   const id = useId();
   const [open, setOpen] = useState<"metal" | "stone" | null>(null);
+  const rowRef = useDragScroll<HTMLDivElement>();
   const back = useRef<HTMLButtonElement>(null);
   const openers = useRef<Record<string, HTMLButtonElement | null>>({});
   const last = useRef<"metal" | "stone" | null>(null);
@@ -275,7 +278,7 @@ function MobileOptions({
           </button>
           <PickerLabel id={`${id}-label`} label={isMetal ? pdp.labels.metal : pdp.labels.stone} value={isMetal ? metalById(metal).label : shapeLabel(shape)} />
         </div>
-        <div role="radiogroup" aria-labelledby={`${id}-label`} className="relative -mx-(--grid-margin) flex gap-space-2 overflow-x-auto px-(--grid-margin) pb-space-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div ref={rowRef} role="radiogroup" aria-labelledby={`${id}-label`} className="relative -mx-(--grid-margin) flex gap-space-2 overflow-x-auto px-(--grid-margin) pb-space-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {isMetal
             ? metals.map((item) => (
                 <OptionTile key={item} type="radio" name={`${id}-metal`} media={metalBadge(item)} aria-label={metalById(item).label} checked={metal === item} onChange={() => onMetal(item)}>
@@ -355,6 +358,7 @@ function BandCard({ product }: { product: Product }) {
 /** "Perfectly Paired Wedding Bands" (Figma 3565:100694), under the desktop gallery: a row of three cards that pages sideways. */
 export function PairedBands({ bands }: { bands: Product[] }) {
   const { ref, atStart, atEnd, scrollable } = useScrollProgress<HTMLUListElement>();
+  const dragRef = useDragScroll(ref);
   const page = (direction: 1 | -1) => {
     const node = ref.current;
     if (!node) return;
@@ -369,7 +373,7 @@ export function PairedBands({ bands }: { bands: Product[] }) {
       </h2>
       {/* A size container, so the arrows can centre on the square photos (a third of the row wide). */}
       <div className="@container relative">
-        <ul ref={ref} tabIndex={0} aria-label={text.paired} className="flex gap-space-4 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <ul ref={dragRef} tabIndex={0} aria-label={text.paired} className="flex gap-space-4 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {bands.map((band) => (
             <li key={band.slug} className="w-[calc((100%-2rem)/3)] shrink-0">
               <BandCard product={band} />

@@ -11,3 +11,12 @@
  * sequence (Product.spin). The "360° View / Images / Video" tab rows of the builder frames are not built either way.
  */
 export const SHOW_360 = false;
+
+/**
+ * Metal swatches: one per distinct photo (Task 26, on trial). On: a product's metals that share a main photo (14K and
+ * 18K of a colour, white gold and platinum) share one swatch; a card opened without a Metal filter starts on the first
+ * metal with a studio photo, and a lifestyle photo (LIFESTYLE_PHOTOS in swatches.ts) gets a swatch beside a studio
+ * photo only when the Metal filter chose that metal. Off (this one line): one swatch per metal, opening on the first
+ * variant, as before.
+ */
+export const GROUP_SWATCHES_BY_PHOTO = true;

@@ -3,6 +3,7 @@
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Icon, type IconName } from "./Icon";
 import { cx, type PreviewState } from "./shared";
+import { useDragScroll } from "./useDragScroll";
 
 type TabSize = "md" | "sm" | "xs";
 type TabVariant = "pill" | "line";
@@ -128,6 +129,7 @@ export function Tabs({
 }: TabsProps) {
   const id = useId();
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
+  const listRef = useDragScroll<HTMLDivElement>();
   const firstEnabled = items.find((item) => !item.disabled)?.id;
   const [internalValue, setInternalValue] = useState(defaultValue ?? firstEnabled);
   const selected = value ?? internalValue;
@@ -160,6 +162,7 @@ export function Tabs({
   return (
     <div className={className}>
       <div
+        ref={listRef}
         role="tablist"
         aria-label={label}
         className={cx(

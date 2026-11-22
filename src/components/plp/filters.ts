@@ -16,6 +16,7 @@
 import type { DiamondType } from "@/content/catalog-seed";
 import { METALS, metalById, metalsForParam, type MetalId } from "@/content/metals";
 import type { FineJewelryCategory, Product, ProductVariant } from "@/content/products";
+import { preferStudio } from "@/lib/swatches";
 
 export type Range = [number, number];
 
@@ -131,12 +132,14 @@ export function applyFilters(products: Product[], state: FilterState, bounds: Bo
     if (state.diamond.length && !(product.diamondType && state.diamond.includes(product.diamondType))) return [];
     if (state.length.length && !(product.length && state.length.includes(product.length))) return [];
     if (state.ships && !(product.shipsInDays !== null && product.shipsInDays <= state.ships)) return [];
-    const variant = product.variants.find(
+    const candidates = product.variants.filter(
       (item) =>
         (!state.metals.length || state.metals.includes(item.metal)) &&
         (!carat || (item.carat !== null && inRange(item.carat, carat))) &&
         (!price || inRange(item.price, price)),
     );
+    // Without a Metal filter the card opens on the first metal with a studio photo (swatches.ts).
+    const variant = state.metals.length ? candidates[0] : preferStudio(product, candidates);
     return variant ? [{ product, variant }] : [];
   });
 
