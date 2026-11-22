@@ -31,6 +31,9 @@ export type ShopifyProduct = {
 
 export type ShopifyCollection = { id: string; handle: string; title: string; description: string };
 
+/** A collection as the listing pages read it: handle, title and the handles of its products. */
+export type ShopifyCollectionMembers = { handle: string; title: string; products: string[] };
+
 type DiscountAllocation = { discountedAmount: Money };
 
 export type CartAttribute = { key: string; value: string };

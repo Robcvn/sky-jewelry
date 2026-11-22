@@ -14,7 +14,8 @@
     "shopify:earrings": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-earrings-import.mjs",
     "images:products": "node scripts/build-product-images.mjs",
     "images:gallery": "node scripts/build-product-images.mjs --gallery",
-    "sanity:import-file": "node --import ./scripts/lib/register-ts.mjs scripts/build-sanity-import.mjs"
+    "sanity:import-file": "node --import ./scripts/lib/register-ts.mjs scripts/build-sanity-import.mjs",
+    "catalog:hash": "node --import ./scripts/lib/register-ts.mjs scripts/catalog-hash.mjs"
   },
   "dependencies": {
     "next": "16.4.6",

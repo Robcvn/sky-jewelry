@@ -22,6 +22,7 @@ import type {
   CartLineUpdateInput,
   ShopifyCart,
   ShopifyCollection,
+  ShopifyCollectionMembers,
   ShopifyProduct,
 } from "./types";
 
@@ -57,13 +58,22 @@ export async function getCollectionProducts(handle: string, first = 100) {
   return data.collection;
 }
 
-/** Handles of the products in a collection, or null when the collection doesn't exist (or isn't on the Headless channel). */
-export async function getCollectionProductHandles(handle: string, first = 250) {
-  const data = await shopifyFetch<{ collection: { handle: string; products: { nodes: Array<{ handle: string }> } } | null }>(
+/**
+ * A collection's handle, title and the handles of its products, or null when the collection doesn't exist (or isn't on
+ * the Headless channel).
+ */
+export async function getCollectionMembers(handle: string, first = 250): Promise<ShopifyCollectionMembers | null> {
+  const data = await shopifyFetch<{ collection: { handle: string; title: string; products: { nodes: Array<{ handle: string }> } } | null }>(
     COLLECTION_HANDLES_QUERY,
     { handle, first },
   );
-  return data.collection ? data.collection.products.nodes.map((product) => product.handle) : null;
+  const collection = data.collection;
+  return collection ? { handle: collection.handle, title: collection.title, products: collection.products.nodes.map((product) => product.handle) } : null;
+}
+
+/** Handles of the products in a collection, or null when the collection doesn't exist (or isn't on the Headless channel). */
+export async function getCollectionProductHandles(handle: string, first = 250) {
+  return (await getCollectionMembers(handle, first))?.products ?? null;
 }
 
 /**

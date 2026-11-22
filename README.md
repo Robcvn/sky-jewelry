@@ -58,6 +58,8 @@ For the GitHub Pages build, add the same two values to the build environment (fo
 
 **Fresh data on every build.** Next saves build-time fetch responses in `.next/cache/fetch-cache` and would reuse them on later builds, so a change in Shopify would never show. The `prebuild` script clears that folder first, so always build with `npm run build` (not `npx next build`).
 
+**Catalogue check.** Every build writes `catalog-hash.txt` at the site's root: a hash of the Shopify data it was built from (`src/lib/shopify/fingerprint.ts`). Once an hour, `.github/workflows/catalog-check.yml` computes the store's hash (`npm run catalog:hash`) and starts a deploy when it differs from the live site's, once per catalogue: if it already started a deploy for that hash and no deploy has succeeded since, even when that deploy failed, it starts nothing. `npm run catalog:hash -- --print` shows exactly what is hashed.
+
 **Product photos.** `npm run images:products` turns `shopify/images/*.jpg` into the WebP sizes the cards use (`public/images/products/`) and writes `src/content/product-image-manifest.ts`. The site matches each Shopify image to its local WebP by file name, so the photos stay pre-sized and lazy-loaded.
 
 **Filters in Shopify data.** Options: `Metal` (e.g. "14K Yellow Gold") and `Carat Weight` (e.g. "0.80ct"), with a price per variant. Tags: `fine-jewelry`, `style:<sub-type>` (the menu's ?type=), `diamond:natural|lab-grown`, `shape:<shape>`, `length:<inches>` and `ships-in:<days>`. The number in the SKU (`SKY-R01-...`) is the "Best Match" order.

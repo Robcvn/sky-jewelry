@@ -2,19 +2,45 @@
 # Secrets: FONTS_DEPLOY_KEY (read-only deploy key for Robcvn/sky-jewelry-fonts), NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
 # NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN. Pages must use "GitHub Actions" as its source.
 # The editorial content comes from Sanity (project 74lb1xq2, dataset production, public read: no token).
+# Runs on a push to main, from "Run workflow" in the Actions tab, when the Sanity webhook asks for a rebuild, and when the
+# hourly catalogue check (catalog-check.yml) finds a Shopify change, since the site reads both only at build time.
 name: Deploy to GitHub Pages
+# The Actions list names each run by its cause: a push by its commit message, a dispatched run by its source. A rebuild
+# the catalogue check starts also names its catalogue: the check finds its earlier deploys by that name.
+run-name: >-
+  ${{ github.event_name == 'push' && github.event.head_commit.message
+  || inputs.source == 'sanity' && 'Rebuild: Sanity publish'
+  || inputs.source == 'shopify' && inputs.catalog_hash && format('Rebuild: Shopify product change (catalogue {0})', inputs.catalog_hash)
+  || inputs.source == 'shopify' && 'Rebuild: Shopify product change'
+  || 'Manual deploy' }}
 
 on:
   push:
     branches: [main]
+  # "Run workflow" in the Actions tab (source: manual), and GitHub's "create a workflow dispatch event" endpoint for this
+  # file: the Sanity webhook calls it with {"ref": "main", "inputs": {"source": "sanity"}}, and the catalogue check with
+  # source "shopify" and its catalog_hash.
   workflow_dispatch:
+    inputs:
+      source:
+        description: "What asked for this deploy: manual, sanity or shopify"
+        required: false
+        type: string
+        default: manual
+      catalog_hash:
+        description: "Set by the catalogue check: the first 12 characters of the catalogue hash this rebuild is for"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# One deploy at a time; a run in progress finishes before the next starts.
+# One deploy at a time, whatever started it: a run in progress always finishes, and at most one more waits. A newer run
+# takes the waiting run's place (GitHub lists the replaced run as cancelled), so a burst of Sanity publishes or Shopify
+# changes ends with one deploy that reads the latest content.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -56,6 +82,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # A Shopify product change takes about a minute to reach the Storefront API, and a build in that minute reads the
+      # old catalogue. So a Shopify rebuild waits 90 seconds first.
+      - name: Wait for the Shopify change to reach the Storefront API
+        if: inputs.source == 'shopify'
+        run: sleep 90
 
       - name: Build the static site
         shell: bash

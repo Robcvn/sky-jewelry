@@ -1,0 +1,140 @@
+# Catalogue check: once an hour, starts a deploy when the Shopify catalogue has changed since the live site was built.
+# (Shopify Flow can't send HTTP requests from the development store, so the store can't ask for a rebuild itself.)
+#   1. The store's catalogue hash: scripts/catalog-hash.mjs reads the Storefront data a build reads and hashes it
+#      (src/lib/shopify/fingerprint.ts).
+#   2. The live site's: catalog-hash.txt, which every build writes from the catalogue it used.
+#   3. Same hash: nothing to do. Different: start deploy.yml with source "shopify", named after the store's hash.
+# One deploy per catalogue: the check starts nothing when it already started a deploy for this hash and no deploy has
+# succeeded since, whatever that deploy's result; it finds its deploys by their names. So when that deploy fails (the
+# catalogue guards stop a deploy after a product is added or removed, until their counts are updated), the hourly check
+# stays green instead of starting a failing deploy every hour; the next catalogue change, a push or a manual deploy
+# starts the next one. A catalogue that changes back, or that a later deploy moved the site away from, is deployed again.
+# If the store or the live hash file can't be read, the check fails and starts nothing.
+# Secrets: NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN and NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN, as for deploy.yml. No other token:
+# the workflow's own GITHUB_TOKEN starts the deploy.
+name: Catalogue check
+
+on:
+  schedule:
+    # Hourly at :23. GitHub can start scheduled runs late, most of all around :00.
+    - cron: "23 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write # list deploy.yml's runs and start it
+  contents: read
+
+# One check at a time, so two checks can't both start a deploy for the same catalogue.
+concurrency:
+  group: catalog-check
+  cancel-in-progress: false
+
+env:
+  # The live site: this repository's GitHub Pages site, under deploy.yml's base path.
+  SITE_URL: https://robcvn.github.io/sky-jewelry
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the site
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      # The hash script imports the site's TypeScript (scripts/lib/register-ts.mjs), which uses the typescript package.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Read the catalogue hash from Shopify
+        id: store
+        shell: bash
+        env:
+          NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN: ${{ secrets.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN }}
+          NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN: ${{ secrets.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN }}
+        run: |
+          # The script prints the hash on stdout, a summary or the error on stderr, and exits 1 when it can't read the store.
+          if ! hash="$(npm run --silent catalog:hash)"; then
+            echo "::error::Could not read the catalogue from Shopify (reason above). No deploy started."
+            exit 1
+          fi
+          if [[ ! "$hash" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "::error::The hash script didn't print a catalogue hash. No deploy started."
+            exit 1
+          fi
+          echo "Store catalogue hash: $hash"
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+
+      - name: Read the catalogue hash of the live site
+        id: live
+        shell: bash
+        run: |
+          url="$SITE_URL/catalog-hash.txt"
+          # A query string and no-cache, so the Pages CDN (which caches files for up to 10 minutes) serves the current file.
+          if ! body="$(curl --fail --silent --show-error --location --max-time 30 --retry 2 --retry-connrefused \
+            --header 'Cache-Control: no-cache' "$url?check=$GITHUB_RUN_ID")"; then
+            echo "::error::Could not read $url (above). A missing hash file is an error, not a change: no deploy started."
+            exit 1
+          fi
+          hash="$(printf '%s' "$body" | tr -d '[:space:]')"
+          if [[ ! "$hash" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "::error::$url doesn't hold a catalogue hash (it reads: $(printf '%s' "$body" | head -c 100 | tr -cd '[:alnum:] :()._-')). No deploy started."
+            exit 1
+          fi
+          echo "Live site catalogue hash: $hash"
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+
+      - name: Compare, and start a deploy for a new catalogue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STORE_HASH: ${{ steps.store.outputs.hash }}
+          LIVE_HASH: ${{ steps.live.outputs.hash }}
+        run: |
+          if [ "$STORE_HASH" = "$LIVE_HASH" ]; then
+            echo "The store and the live site have the same catalogue ($STORE_HASH). No deploy needed."
+            exit 0
+          fi
+          short="${STORE_HASH:0:12}"
+          echo "The store's catalogue (${short}…) differs from the live site's (${LIVE_HASH:0:12}…)."
+
+          # deploy.yml names a run started with catalog_hash "Rebuild: Shopify product change (catalogue <catalog_hash>)".
+          # last_attempt prints, tab-separated, the newest deploy run that the check started (its catalog_hash) or that
+          # succeeded (an empty hash): "<hash>\t<url>\t<status[, conclusion]>". Nothing when there is none in the last $1.
+          last_attempt() {
+            local runs
+            runs="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy.yml --limit "$1" --json displayTitle,status,conclusion,url)" || return 1
+            jq -r '[.[] | ((.displayTitle | capture("\\(catalogue (?<hash>[0-9a-f]{12})\\)$")) // null) as $tag
+              | select($tag != null or .conclusion == "success")
+              | [($tag.hash // ""), .url, (.status + (if .conclusion != "" then ", " + .conclusion else "" end))]][0] // empty
+              | @tsv' <<<"$runs"
+          }
+          if ! attempt="$(last_attempt 200)"; then
+            echo "::error::Could not list deploy.yml's runs, so the check can't tell whether this catalogue already has a deploy. No deploy started."
+            exit 1
+          fi
+          IFS=$'\t' read -r attempt_hash attempt_url attempt_state <<<"$attempt" || true
+          # One deploy per catalogue: the check already started one for this catalogue and no deploy has succeeded since.
+          if [ "$attempt_hash" = "$short" ]; then
+            echo "::notice::The check already started a deploy for catalogue $short ($attempt_url, $attempt_state) and no deploy has succeeded since. Not starting another: the next catalogue change, a push or a manual deploy will."
+            exit 0
+          fi
+
+          gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main -f source=shopify -f catalog_hash="$short"
+          # The new run shows in the list a few seconds after the request. If it never shows under its name, the next check
+          # couldn't find it either and would start another, so that is an error.
+          for try in $(seq 1 12); do
+            sleep 5
+            started="$(last_attempt 20)" || started=""
+            if [ "${started%%$'\t'*}" = "$short" ]; then
+              echo "Started a deploy for catalogue $short: $(cut -f2 <<<"$started")"
+              exit 0
+            fi
+          done
+          echo "::error::Asked GitHub to start deploy.yml for catalogue $short, but no run named after it appeared within a minute. Check the Actions tab before the next hourly check."
+          exit 1

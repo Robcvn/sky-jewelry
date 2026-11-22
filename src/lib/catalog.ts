@@ -5,8 +5,9 @@
  * (CATALOG_PAGE items), since the store may hold more than one request reads and the site would deploy with
  * products silently missing.
  */
-import type { Product } from "@/content/products";
-import { getCollectionProductHandles, getProducts, shopifyConfig, type ShopifyProduct } from "@/lib/shopify";
+import { FINE_JEWELRY_CATEGORIES, type Product } from "@/content/products";
+import { getCollectionMembers, getProducts, shopifyConfig, type ShopifyCollectionMembers, type ShopifyProduct } from "@/lib/shopify";
+import { catalogHash, type CatalogSnapshot } from "@/lib/shopify/fingerprint";
 import { mapShopifyProduct } from "@/lib/shopify/mapProduct";
 import { getMockProducts } from "./mockCatalog";
 
@@ -74,6 +75,18 @@ export function pickProducts(products: Product[], handles: string[]) {
 
 const byRank = (a: Product, b: Product) => a.rank - b.rank || a.name.localeCompare(b.name);
 
+const collectionReads = new Map<string, Promise<ShopifyCollectionMembers | null>>();
+
+/** A listing collection, read once per build worker like the catalogue, so every page and the hash file share it. */
+function collectionMembers(handle: string) {
+  let read = collectionReads.get(handle);
+  if (!read) {
+    read = getCollectionMembers(handle, CATALOG_PAGE);
+    collectionReads.set(handle, read);
+  }
+  return read;
+}
+
 /**
  * Products for a listing page, in "Best Match" order. Uses the Shopify collection with the category's handle
  * (e.g. "rings") when it exists; otherwise, and for the mock catalogue, the products whose type matches.
@@ -82,7 +95,7 @@ export async function getCategoryProducts(category: string): Promise<{ products:
   const { products, source } = await getCatalog();
   if (source === "shopify") {
     try {
-      const handles = await getCollectionProductHandles(category, CATALOG_PAGE);
+      const handles = (await collectionMembers(category))?.products ?? null;
       checkPage(`The "${category}" collection request`, handles?.length ?? 0);
       if (handles?.length) {
         const inCollection = products.filter((product) => handles.includes(product.slug)).sort(byRank);
@@ -103,4 +116,44 @@ export async function getCategoryProducts(category: string): Promise<{ products:
   }
   console.info(`[catalog] ${category}: ${ofType.length} products by product type${source === "shopify" ? ' (no "' + category + '" collection yet)' : ""}.`);
   return { products: ofType, from: "product type" };
+}
+
+/* ---------- The catalogue fingerprint (src/lib/shopify/fingerprint.ts) ---------- */
+
+/**
+ * The fingerprint of the Shopify data this build used: the catalogue request's products and the listing collections,
+ * from the same reads its pages got. A reason instead when the build didn't read all of it from Shopify (the mock
+ * catalogue, or a collection read that failed); the deploy's catalogue check stops such a build anyway.
+ */
+export async function getCatalogHash(): Promise<{ hash: string } | { reason: string }> {
+  const { source, raw } = await getCatalog();
+  if (source !== "shopify") return { reason: "this build used the mock catalogue" };
+  try {
+    const collections = await Promise.all(FINE_JEWELRY_CATEGORIES.map(async (handle) => ({ handle, collection: await collectionMembers(handle) })));
+    return { hash: await catalogHash({ products: raw, collections }) };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    // Worded for the deploy's catalogue check ("collection lookup failed"), so this build doesn't go live.
+    console.warn(`[catalog] catalog-hash.txt: collection lookup failed (${message}).`);
+    return { reason: `a collection read failed (${message})` };
+  }
+}
+
+/**
+ * The Storefront data a build reads, with the same requests, straight from the store and with no fallback: whatever
+ * would make a build fall back to the mock catalogue or stop throws instead. For scripts/catalog-hash.mjs.
+ */
+export async function readCatalogFromStore(): Promise<CatalogSnapshot> {
+  if (!shopifyConfig()) throw new Error("Shopify is not configured (NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN and NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN)");
+  const products = await getProducts({ first: CATALOG_PAGE });
+  checkPage("The Shopify products request", products.length);
+  if (!products.some((product) => mapShopifyProduct(product) !== null)) throw new Error("Shopify returned no products the site can list");
+  const collections = await Promise.all(
+    FINE_JEWELRY_CATEGORIES.map(async (handle) => {
+      const collection = await getCollectionMembers(handle, CATALOG_PAGE);
+      checkPage(`The "${handle}" collection request`, collection?.products.length ?? 0);
+      return { handle, collection };
+    }),
+  );
+  return { products, collections };
 }
