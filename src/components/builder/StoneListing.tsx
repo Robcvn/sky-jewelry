@@ -121,6 +121,8 @@ export type StoneListingVariant = {
   card: (stone: Stone, context: { ring: Ring; settingPrice: number | null; onQuickView: (stone: Stone) => void }) => ReactNode;
   /** The earrings frame draws Advanced Filters open, and pads the page 48px top and bottom on desktop too. */
   advancedOpen: boolean;
+  /** The open row's diamond dropdowns in the frame's order (the earrings frame puts Polish last; Task 30, ea-stones-1440-7). */
+  advancedOrder?: (typeof ADVANCED_KEYS)["diamond"];
   containerClassName: string;
   /** Its open Advanced Filters row sits 16px under the toggle, and the grid 24px under the results row (the ring's frame: 24 and 40). */
   advancedClassName: string;
@@ -453,7 +455,7 @@ export function StoneListing({ stones, settings, variant }: StoneListingProps) {
             <span aria-hidden="true" className="h-px flex-1 bg-secondary-gold" />
           </div>
           <div id={`${id}-advanced`} hidden={!advancedOpen} className={cx("items-center justify-between gap-space-4", advancedOpen && "flex")}>
-            <div className="flex flex-wrap items-center gap-2.5">{ADVANCED_KEYS[kind].map(advancedDropdown)}</div>
+            <div className="flex flex-wrap items-center gap-2.5">{(kind === "diamond" && variant?.advancedOrder ? variant.advancedOrder : ADVANCED_KEYS[kind]).map(advancedDropdown)}</div>
             {activeCount ? (
               <TextButton variant="caps" size="sm" leadingIcon="close" onClick={clearAll}>
                 {listCopy.clearFilters}

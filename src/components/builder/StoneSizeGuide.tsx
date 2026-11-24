@@ -27,7 +27,11 @@ const altFor = (carat: GuideCarat) => `A hand with blue nails wearing a round di
  * - Everything is absolutely placed in the square tile, so nothing moves. The toggle is marked data-no-drag-scroll
  *   and pans vertically only (touch-pan-y), so a press or tap on it never drags or swipes a scroller around it.
  */
-export function StoneSizeGuideTile({ className }: { className?: string }) {
+/**
+ * `stoneFirst`: the stone-first Stone Info frame (5440:30981) sets the desktop badge in the overline style ("SHOWN WITH
+ * 2.50 CT"), where the setting-first frame sets it in sentence case (Task 30, sf-stoneinfo-1440-2).
+ */
+export function StoneSizeGuideTile({ className, stoneFirst = false }: { className?: string; stoneFirst?: boolean }) {
   const id = useId();
   const [selected, setSelected] = useState<GuideCarat>(FIGMA_CARAT);
   // The photo shown, and the one it replaced (which fades out over it).
@@ -81,11 +85,18 @@ export function StoneSizeGuideTile({ className }: { className?: string }) {
         />
       ))}
       <div aria-hidden="true" className="absolute inset-x-0 top-space-4 z-3 flex justify-center">
-        {/* Desktop: sentence case in ui-xs/medium. Mobile: the overline style, as each frame draws it. */}
+        {/* Desktop: sentence case in ui-xs/medium (stone first: the overline style). Mobile: the overline style, as each
+            frame draws it. */}
         <span className="hidden ui-desktop:inline-flex">
-          <Badge overlay size="xs" className="min-h-space-6">
-            {`Shown with ${twoPlaces(shown)}ct`}
-          </Badge>
+          {stoneFirst ? (
+            <Badge overlay size="sm" className="min-h-space-6">
+              {`Shown with ${twoPlaces(shown)} ct`}
+            </Badge>
+          ) : (
+            <Badge overlay size="xs" className="min-h-space-6">
+              {`Shown with ${twoPlaces(shown)}ct`}
+            </Badge>
+          )}
         </span>
         <span className="inline-flex ui-desktop:hidden">
           <Badge overlay size="sm" className="min-h-space-6">
@@ -98,13 +109,16 @@ export function StoneSizeGuideTile({ className }: { className?: string }) {
           role="radiogroup"
           aria-label="Carat size shown on the hand"
           data-no-drag-scroll
-          className="flex w-full max-w-[19.3125rem] touch-pan-y rounded-full border border-white-alpha-20 bg-white-alpha-10 p-[3px] backdrop-blur-md ui-desktop:w-auto"
+          // Figma "Tabs - Overlay" (5440:30981, mobile 6683:68723): a 309px bar, 16px in from each side of the tile at both
+          // widths, holding 58px Tab Items with the label 8px in from the left (Task 30, sf-stoneinfo-1440-1 / -390-5).
+          className="flex w-full max-w-[19.3125rem] touch-pan-y rounded-full border border-white-alpha-20 bg-white-alpha-10 p-[3px] backdrop-blur-md"
         >
           {GUIDE_CARATS.map((carat) => (
             <label
               key={carat}
               className={cx(
-                "type-ui-2xs-medium ui-transition flex h-space-6 flex-1 cursor-pointer items-center justify-center rounded-full px-space-2 ui-desktop:flex-none",
+                // 58px items, as drawn; they share a narrower bar (the tile is 237px wide at 1024) rather than overflow it.
+                "type-ui-2xs-medium ui-transition flex h-space-6 w-[3.625rem] min-w-0 cursor-pointer items-center rounded-full px-space-2",
                 "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-1 has-[:focus-visible]:outline-primary-leather",
                 carat === selected ? "bg-secondary-skin text-primary-leather" : "text-base-white",
               )}

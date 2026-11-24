@@ -41,11 +41,13 @@ export async function PostView({ post }: { post: BlogPost }) {
         />
         <div className="site-container pt-space-8 pb-space-11 ui-desktop:pt-space-11 ui-desktop:pb-space-15">
           <div className="mx-auto max-w-[51.5rem]">
-            <ArticleBody body={post.body} kind="post" products={products} />
+            <ArticleBody body={post.body} kind="post" products={products} story={story} />
           </div>
         </div>
       </article>
-      <BestSellersSection content={contentBestSellers} />
+      {/* Post Detail and the story frames (3565:102063, 6287:176402) draw the next arrow 21px below the photos' centre; Our
+          Story's frame centres it, as the other pages do. The frames disagree (Open questions; Task 30). */}
+      <BestSellersSection content={contentBestSellers} hairline arrowDrop="1.3125rem" />
       <BlogRow
         content={{
           _type: "blogRow",
@@ -54,6 +56,7 @@ export async function PostView({ post }: { post: BlogPost }) {
           cta: { label: page.viewAll, href: story ? storiesHref : "/blog/" },
           postIds: others.map((item) => item._id),
         }}
+        fill="ivory"
       />
     </main>
   );

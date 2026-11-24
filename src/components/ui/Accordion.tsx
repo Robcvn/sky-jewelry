@@ -55,7 +55,9 @@ export function AccordionItem({
           aria-controls={`${id}-panel`}
           data-state={previewState}
           onClick={toggle}
-          className="ui-transition flex w-full cursor-pointer items-center gap-space-5 py-space-5 text-left text-primary-leather ui-hover:text-black-alpha-60 ui-desktop:gap-space-8 ui-desktop:py-space-8"
+          // The chevron sits on the question's first line, not centred on a two-line question (Figma's mobile FAQs, Home
+          // 3587:124551 and Sky Guarantee 3587:129907: the icon's top is the title's top; Task 30, sup-390-14).
+          className="ui-transition flex w-full cursor-pointer items-start gap-space-5 py-space-5 text-left text-primary-leather ui-hover:text-black-alpha-60 ui-desktop:gap-space-8 ui-desktop:py-space-8"
         >
           <span className="flex min-w-0 flex-1 items-center gap-space-2 ui-desktop:gap-space-3">
             {icon ? <Icon name={icon} size={24} className="ui-desktop:size-space-8" /> : null}

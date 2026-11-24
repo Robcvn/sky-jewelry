@@ -29,6 +29,8 @@ export function PairListing({ pairs, settings }: { pairs: StonePair[]; settings:
       variant={{
         pageSize: { desktop: 14, mobile: 12 },
         advancedOpen: true,
+        // Figma's earrings Stones frame (3565:98188): Symmetry, Fluorescence, Table, Depth, L/W Ratio, then Polish.
+        advancedOrder: ["symmetry", "fluor", "table", "depth", "ratio", "polish"],
         containerClassName: "py-space-11",
         advancedClassName: "gap-space-4",
         resultsClassName: "ui-desktop:-mt-space-4",

@@ -43,8 +43,10 @@ export function ModelTile({ images, name, badge, sizes }: { images: ImageRef[]; 
     <div data-model-tile className={cx("relative aspect-square overflow-hidden rounded-4", TILE_BG)}>
       <Picture image={image} sizes={sizes} className={cx("size-full object-cover", !worn && "mix-blend-multiply")} />
       {badge ? (
+        // Figma's Step 3 (3565:99574) draws a light Badge here: skin fill, black-alpha-20 outline, leather ui-xs-medium,
+        // 24 tall (Task 30, ea-complete-1440-5).
         <span className="absolute inset-x-0 top-space-4 flex justify-center">
-          <Badge overlay size="xs" className="min-h-space-6">
+          <Badge size="xs" className="min-h-space-6">
             {badge}
           </Badge>
         </span>
@@ -196,7 +198,8 @@ export function PairStoneViews({ stone, name, variant }: { stone: Stone; name: s
   ];
   return (
     <div className="flex flex-col gap-space-2">
-      <div className={cx("relative aspect-square overflow-hidden", mobile ? "" : "rounded-4", view === "photo" && photoBg)}>
+      {/* Square corners: on mobile the photo runs edge to edge; on desktop the stone's card clips it (PairDetail). */}
+      <div className={cx("relative aspect-square overflow-hidden", view === "photo" && photoBg)}>
         {view === "photo" ? (
           <>
             <StonePicture stone={stone} priority sizes={{ desktop: "(width >= 90rem) 20.2rem, 23vw", mobile: "100vw" }} />

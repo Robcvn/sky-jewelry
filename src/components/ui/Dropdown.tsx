@@ -36,6 +36,11 @@ type DropdownProps = {
   previewState?: PreviewState;
   /** Shown before the value in regular weight, e.g. "Sort by" gives "Sort by:  Best Match" (value in medium). */
   valuePrefix?: string;
+  /**
+   * The Education and Blog frames' dropdowns (3565:101629, 3565:101703, 6963:54748): the whole "Topic: All Topics" in
+   * Regular with one space after the colon, the gold border kept while open, and the panel up to 360px tall (Task 30).
+   */
+  plain?: boolean;
   /** "auto" sizes the control to its text, as the filter bar's dropdowns do. */
   width?: "full" | "auto";
   /** Panel width class (default: the control's width, at least 280px), border tone and alignment. */
@@ -59,7 +64,7 @@ const SIZE = {
 
 const OVERLAY_XS = { box: "min-h-space-8 gap-space-1 px-space-3", clearGap: "gap-1.5", text: "type-ui-xs-regular px-space-1", icon: 16, chevron: 16, clear: 12, rule: "h-space-3" };
 
-function shellColors(overlay: boolean, error: boolean, disabled: boolean) {
+function shellColors(overlay: boolean, error: boolean, disabled: boolean, plain = false) {
   if (overlay) {
     if (disabled) return "border-white-alpha-20 bg-white-alpha-0 text-white-alpha-50 [--dropdown-icon:var(--color-white-alpha-50)]";
     return cx(
@@ -72,7 +77,9 @@ function shellColors(overlay: boolean, error: boolean, disabled: boolean) {
     "bg-secondary-skin text-primary-leather [--dropdown-icon:var(--color-primary-leather)]",
     error
       ? "border-state-error"
-      : "border-secondary-gold ui-hover:border-black-alpha-50 ui-active:border-primary-leather data-[open=true]:border-primary-leather",
+      : plain
+        ? "border-secondary-gold ui-hover:border-black-alpha-50"
+        : "border-secondary-gold ui-hover:border-black-alpha-50 ui-active:border-primary-leather data-[open=true]:border-primary-leather",
   );
 }
 
@@ -97,6 +104,7 @@ export function Dropdown({
   defaultOpen = false,
   previewState,
   valuePrefix,
+  plain = false,
   width = "full",
   panelWidth,
   panelTone = "gold",
@@ -268,7 +276,11 @@ export function Dropdown({
       onClick={() => choose(index)}
       className={cx(
         "ui-transition type-ui-sm-medium flex cursor-pointer items-center gap-0.5 rounded-4 py-space-2 pr-space-4 pl-space-2 text-primary-leather",
-        (index === activeIndex || option.value === selectedValue) && "bg-secondary-ivory",
+        // The chosen option is shaded; the keyboard position only while the keyboard is in use, so a menu opened with a
+        // click shows no shaded option, as Figma draws it (Task 30, edudd-1440-2). The pointer's option shades on hover.
+        option.value === selectedValue
+          ? "bg-secondary-ivory"
+          : cx("ui-hover:bg-secondary-ivory", index === activeIndex && "[:root[data-input=keyboard]_&]:bg-secondary-ivory"),
       )}
     >
       {option.icon ? <Icon name={option.icon} size={20} /> : null}
@@ -300,7 +312,7 @@ export function Dropdown({
           overlay ? "has-[[data-trigger]:focus-visible]:outline-base-white" : "has-[[data-trigger]:focus-visible]:outline-primary-leather",
           spec.box,
           showClear && spec.clearGap,
-          shellColors(overlay, error, disabled),
+          shellColors(overlay, error, disabled, plain),
         )}
       >
         {showClear ? (
@@ -335,7 +347,9 @@ export function Dropdown({
         >
           {leadingIcon && !showClear ? <Icon name={leadingIcon} size={spec.icon} className="text-(--dropdown-icon)" /> : null}
           <span id={`${id}-value`} className={cx("min-w-0 flex-1 truncate", spec.text)}>
-            {valuePrefix ? (
+            {valuePrefix && plain ? (
+              `${valuePrefix}: ${selectedLabel ?? placeholder}`
+            ) : valuePrefix ? (
               <>
                 {valuePrefix}:{"\u00a0 "}
                 <span className="font-medium tracking-[-0.01em]">{selectedLabel ?? placeholder}</span>
@@ -376,7 +390,8 @@ export function Dropdown({
         <div
           hidden={!open}
           className={cx(
-            "absolute top-full z-30 mt-space-2 max-h-80 overflow-y-auto rounded-4 border border-secondary-gold bg-secondary-skin shadow-lg",
+            "absolute top-full z-30 mt-space-2 overflow-y-auto rounded-4 border border-secondary-gold bg-secondary-skin shadow-lg",
+            plain ? "max-h-90" : "max-h-80",
             panelWidth ? cx(panelWidth, panelAlign === "end" ? "right-0" : "left-0") : "inset-x-0",
           )}
         >

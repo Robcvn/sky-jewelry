@@ -7,8 +7,12 @@ import type { BlogRow as BlogRowContent } from "@/content/home";
 import { getEditorialContent } from "@/lib/content";
 import { SECTION_HEADING, SECTION_HEADING_EM, SECTION_Y } from "./styles";
 
-/** Figma Home section 10: the latest three blog posts. A row on desktop, swipeable on mobile. */
-export async function BlogRow({ content }: { content: BlogRowContent }) {
+/**
+ * Figma Home section 10: the latest three blog posts. A row on desktop, swipeable on mobile. Home draws it on the page
+ * colour; Post Detail's "You Should also Read" (3565:102075, mobile 3587:130103, story 6287:176493) fills it with
+ * secondary/ivory, so PostView passes fill="ivory".
+ */
+export async function BlogRow({ content, fill }: { content: BlogRowContent; fill?: "ivory" }) {
   const { blogPosts } = await getEditorialContent();
   const headingId = `${content._key}-heading`;
   const posts = content.postIds.map((id) => blogPosts.find((post) => post._id === id)).filter((post) => post !== undefined);
@@ -19,7 +23,7 @@ export async function BlogRow({ content }: { content: BlogRowContent }) {
   );
 
   return (
-    <section aria-labelledby={headingId} className={`flex flex-col gap-space-6 ui-desktop:gap-space-11 ${SECTION_Y}`}>
+    <section aria-labelledby={headingId} className={`flex flex-col gap-space-6 ui-desktop:gap-space-11 ${SECTION_Y} ${fill === "ivory" ? "bg-secondary-ivory" : ""}`}>
       <div className="site-container flex items-end justify-between gap-space-6 text-primary-leather">
         <div className="flex flex-col gap-space-2">
           {content.overline ? <p className="type-overline-sm-medium">{content.overline}</p> : null}

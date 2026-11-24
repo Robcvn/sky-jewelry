@@ -174,8 +174,13 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
               type="search"
               autoComplete="off"
               enterKeyHint="search"
-              placeholder={content.searchPanel.mobilePlaceholder}
-              className="type-ui-sm-regular min-h-space-12 w-full min-w-0 flex-1 bg-transparent px-space-5 text-primary-leather placeholder:text-black-alpha-60 focus-visible:-outline-offset-2 [&::-webkit-search-cancel-button]:appearance-none"
+              // In use (Nav / Search 4979:47688) the field is Figma's 56px band: "Jewelry, news, Blog etc." in gold
+              // heading-caps-sm, and the query in the same caps style. At rest (Nav / Main) it keeps the small "Search".
+              placeholder={searching ? content.searchPanel.placeholder : content.searchPanel.mobilePlaceholder}
+              className={cx(
+                "w-full min-w-0 flex-1 bg-transparent px-space-5 text-primary-leather focus-visible:-outline-offset-2 [&::-webkit-search-cancel-button]:appearance-none",
+                searching ? "type-heading-caps-sm min-h-space-12 placeholder:text-secondary-gold" : "type-ui-sm-regular min-h-space-12 placeholder:text-black-alpha-60",
+              )}
             />
             {/* The search screen draws an Arrow Right at the field's end (submit). */}
             {searching ? (
@@ -188,7 +193,7 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
           {searching ? (
             // Figma: "Popular searches" (overline-xs) and five Nav Item - Child rows (MD, 34 tall), 20 in, 16 apart.
             <nav data-search-area aria-label={`${searchContent.empty.popularHeading}${labelSuffix}`} className="flex flex-col gap-space-4 p-space-5">
-              <p className="type-overline-xs-medium">{searchContent.empty.popularHeading}</p>
+              <p className="type-overline-xs-medium text-black-alpha-50">{searchContent.empty.popularHeading}</p>
               <ul className="flex flex-col">
                 {searchContent.empty.popular.map((term) => (
                   <li key={term}>

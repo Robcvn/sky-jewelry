@@ -10,6 +10,9 @@ import { PostCard } from "@/components/ui/PostCard";
 import { ScrollArea } from "@/components/ui/Scrollbar";
 import { cx } from "@/components/ui/shared";
 
+/** Mobile swipe rows that run on past the right margin to the screen's edge, as the Education frames draw them. */
+const BLEED = "-mr-(--grid-margin) ui-desktop:mr-0 ui-desktop:overflow-visible";
+
 export type ListItem = {
   id: string;
   href: string;
@@ -108,6 +111,7 @@ export function ContentList({ kind, items, topics, pageSize, labels }: ContentLi
       width="auto"
       label="Topic"
       valuePrefix="Topic"
+      plain
       displayValue={topicDisplay}
       options={topicOptions}
       value={topicValue}
@@ -125,6 +129,7 @@ export function ContentList({ kind, items, topics, pageSize, labels }: ContentLi
       width="auto"
       label="Sort by"
       valuePrefix="Sort by"
+      plain
       options={SORTS}
       value={state.sort}
       onChange={(sort) => set({ sort: sort as "latest" | "oldest" })}
@@ -143,9 +148,10 @@ export function ContentList({ kind, items, topics, pageSize, labels }: ContentLi
             {labels.topicsLabel}
           </p>
           <div className="flex flex-col gap-space-4">
-            {/* Figma: six 195 x 90 tiles across the row on desktop; a swipe row of 112 x 66 tiles with a scrollbar on mobile. */}
-            <ScrollArea label={labels.topicsLabel ?? "Topics"} regionClassName="ui-desktop:overflow-visible" scrollbarClassName="mt-space-4 ui-desktop:hidden">
-              <div role="radiogroup" aria-labelledby="topics-label" className="flex gap-space-2 ui-desktop:w-full ui-desktop:gap-space-4">
+            {/* Figma: six 195 x 90 tiles across the row on desktop; a swipe row of 112 x 66 tiles with a scrollbar on mobile,
+                running on past the right margin to the screen's edge (3587:129570; the scrollbar keeps the column width). */}
+            <ScrollArea label={labels.topicsLabel ?? "Topics"} regionClassName={BLEED} scrollbarClassName="mt-space-4 ui-desktop:hidden">
+              <div role="radiogroup" aria-labelledby="topics-label" className="flex w-max gap-space-2 pr-(--grid-margin) ui-desktop:w-full ui-desktop:gap-space-4 ui-desktop:pr-0">
                 <TopicTile icon="grid-box-large" checked={!state.topic} onChange={() => set({ topic: null, subtopics: [] })}>
                   {labels.allTopics}
                 </TopicTile>
@@ -157,8 +163,9 @@ export function ContentList({ kind, items, topics, pageSize, labels }: ContentLi
               </div>
             </ScrollArea>
             {topic?.subtopics?.length ? (
-              <ScrollArea label={`${topic.label} subtopics`} regionClassName="ui-desktop:overflow-visible" scrollbarClassName="mt-space-4 ui-desktop:hidden">
-                <div role="group" aria-label={`${topic.label} subtopics`} className="flex gap-space-2 ui-desktop:flex-wrap">
+              // Mobile (7074:91849): the badges run to the screen's edge too, with no scrollbar under them.
+              <ScrollArea label={`${topic.label} subtopics`} regionClassName={BLEED} scrollbarClassName="hidden">
+                <div role="group" aria-label={`${topic.label} subtopics`} className="flex w-max gap-space-2 pr-(--grid-margin) ui-desktop:w-auto ui-desktop:flex-wrap ui-desktop:pr-0">
                   {topic.subtopics.map((sub) => {
                     const on = state.subtopics.includes(sub.id);
                     return (
@@ -168,8 +175,9 @@ export function ContentList({ kind, items, topics, pageSize, labels }: ContentLi
                         aria-pressed={on}
                         onClick={() => set({ subtopics: on ? state.subtopics.filter((id) => id !== sub.id) : [...state.subtopics, sub.id] })}
                         className={cx(
-                          // Figma "Badge" as a toggle: 22px on desktop, 30px on mobile; chosen ones have the leather outline.
-                          "type-overline-xs-medium ui-transition-fast inline-flex min-h-[1.875rem] shrink-0 cursor-pointer items-center rounded-full border bg-secondary-skin px-space-3 whitespace-nowrap ui-desktop:min-h-[1.375rem] ui-desktop:px-2.5",
+                          // Figma "Badge" as a toggle: on desktop the 22px caps pill; on mobile (7074:91849) a 30px chip with 4px
+                          // corners and the label as typed (ui-2xs-medium). Chosen ones have the leather outline.
+                          "type-ui-2xs-medium ui-transition-fast inline-flex min-h-[1.875rem] shrink-0 cursor-pointer items-center rounded-4 border bg-secondary-skin px-space-3 whitespace-nowrap ui-desktop:type-overline-xs-medium ui-desktop:min-h-[1.375rem] ui-desktop:rounded-full ui-desktop:px-2.5",
                           on ? "border-primary-leather" : "border-black-alpha-20 hover:border-black-alpha-50",
                         )}
                       >

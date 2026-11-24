@@ -207,7 +207,7 @@ export const educationResources: EducationResource[] = [
     topic: "diamonds",
     subtopic: "the-4cs",
     date: "2026-11-03",
-    excerpt: "Why proportions, symmetry and polish matter more to sparkle than any other grade, and what to look for on a report.",
+    excerpt: "Why proportions, symmetry and polish matter more to sparkle than any other grade, and what to check on a report.",
     subtitle: "Proportions, symmetry and polish, and why cut matters more to sparkle than any other grade.",
     image: FACE,
     navLabel: "Diamond Cut",

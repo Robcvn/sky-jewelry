@@ -26,13 +26,14 @@ const pdp = productDetailContent;
 /** Each stone's name, price and figures under its views (Figma 3565:99246: heading-sm, ui-xs, then the four figures). */
 function StoneCaption({ stone, variant }: { stone: Stone; variant: "desktop" | "mobile" }) {
   return (
-    <div className="flex flex-col gap-space-3 text-center text-primary-leather ui-desktop:py-space-3">
+    <div className="flex flex-col gap-space-3 text-center text-primary-leather ui-desktop:pt-space-3">
       <div className="flex flex-col gap-1">
         <p className="type-heading-sm">
           {shapeLabel(stone.shape)}
           <span className="sr-only">: {stone.title}</span>
         </p>
-        <p className="type-ui-xs-regular">{formatPrice(stone.price)}</p>
+        {/* Figma: the price in ui-xs-medium (3565:99246; Task 30, ea-stonesinfo-1440-4). */}
+        <p className="type-ui-xs-medium">{formatPrice(stone.price)}</p>
       </div>
       <StoneStats stone={stone} size={variant === "mobile" ? "sheet" : "card"} />
     </div>
@@ -92,7 +93,9 @@ export function PairDetail({ pair }: { pair: StonePair }) {
           {/* Two 323px stacks 24 apart: 670 of the 694px column. */}
           <div data-pair-gallery className="grid w-[calc(100%-var(--spacing-space-6))] grid-cols-2 gap-x-space-6">
             {pair.stones.map((stone, index) => (
-              <div key={index} data-pair-stone={index + 1} className="flex flex-col gap-space-2">
+              // Figma: each stone in a card (3565:99083 'stack', 323 wide): a 1px black-alpha-10 outline with 8px corners that
+              // clips the photo's top corners, 16px under the figures (Task 30, ea-stonesinfo-1440-3).
+              <div key={index} data-pair-stone={index + 1} className="flex flex-col gap-space-2 overflow-hidden rounded-8 border border-black-alpha-10 pb-space-4">
                 <PairStoneViews stone={stone} name={`${text.tabs[index]}: ${stone.title}`} variant="desktop" />
                 <StoneCaption stone={stone} variant="desktop" />
               </div>

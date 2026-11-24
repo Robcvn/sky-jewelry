@@ -39,11 +39,13 @@ export default async function BlogPage() {
   return (
     <main id="main-content" tabIndex={-1} className="flex-1">
       <div className="site-container flex flex-col pt-space-11 text-primary-leather ui-desktop:pt-space-15">
-        <header className="flex flex-col gap-space-3 ui-desktop:gap-space-4">
+        {/* Figma's title stack (3565:101707, mobile 3587:129658): centred, with a 1px gold rule 24 / 40px under the line
+            (the stroke inside that padding) and 24 / 48px above the featured post. */}
+        <header className="flex flex-col items-center gap-space-3 border-b border-secondary-gold pb-[calc(var(--spacing-space-6)-1px)] text-center ui-desktop:gap-space-4 ui-desktop:pb-[calc(var(--spacing-space-10)-1px)]">
           <h1 className="type-heading-caps-lg ui-desktop:type-heading-caps-2xl">{page.title}</h1>
           <p className="type-body-sm-regular ui-desktop:type-body-lg-regular">{page.body}</p>
         </header>
-        <div className="mt-space-11 ui-desktop:mt-space-16">
+        <div className="mt-space-6 ui-desktop:mt-space-11">
           <FeaturedPost
             title={featured.title}
             excerpt={featured.excerpt}
@@ -59,7 +61,7 @@ export default async function BlogPage() {
           <ContentList kind="blog" items={items} topics={topics} pageSize={page.pageSize} labels={{ allTopics: page.allTopics, results: "Posts" }} />
         </section>
       </div>
-      <GuaranteeIconsSection content={guaranteeIcons("guarantee")} />
+      <GuaranteeIconsSection content={guaranteeIcons("guarantee")} fill="ivory" />
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SECTION_HEADING, SECTION_HEADING_EM, SECTION_Y } from "@/components/home/styles";
 import { BestSellersSection } from "@/components/sections/BestSellers";
+import { TOP_HAIRLINE } from "@/components/sections/SectionHeading";
 import { ButtonText, HeroButtonText } from "@/components/ui/Button";
 import { Picture } from "@/components/ui/Picture";
 import { RichText } from "@/components/ui/RichText";
@@ -71,11 +72,15 @@ export default async function OurStoryPage() {
           <Picture image={apart.image} sizes={SQUARE_SIZES} className="absolute inset-0 size-full object-cover" />
         </div>
         <div className="flex flex-1 flex-col items-start">
-          <h2 id="apart-heading" className={SECTION_HEADING}>
-            <RichText value={apart.heading} emClassName={SECTION_HEADING_EM} />
-          </h2>
-          <p className="type-p-md-regular mt-space-4 ui-desktop:type-p-lg-regular">{apart.body}</p>
-          <dl className="mt-space-10 flex flex-col gap-space-6 ui-desktop:mt-space-15">
+          {/* Desktop: Figma's heading group (Frame 282) has a 1px black-alpha-20 rule along its foot, 40px under the intro
+              and 40px above the first item (Task 30, story-1440-4). No mobile frame, so mobile keeps the 40px gap. */}
+          <div className="flex flex-col items-start ui-desktop:self-stretch ui-desktop:border-b ui-desktop:border-black-alpha-20 ui-desktop:pb-[calc(var(--spacing-space-10)-1px)]">
+            <h2 id="apart-heading" className={SECTION_HEADING}>
+              <RichText value={apart.heading} emClassName={SECTION_HEADING_EM} />
+            </h2>
+            <p className="type-p-md-regular mt-space-4 ui-desktop:type-p-lg-regular">{apart.body}</p>
+          </div>
+          <dl className="mt-space-10 flex flex-col gap-space-6">
             {apart.items.map((item) => (
               <div key={item._key} className="flex flex-col gap-space-4">
                 <dt className="type-overline-sm-medium ui-desktop:type-overline-md-medium">{item.label}</dt>
@@ -86,14 +91,15 @@ export default async function OurStoryPage() {
         </div>
       </section>
 
-      <section aria-labelledby="foundations-heading" className={cx("site-container flex flex-col gap-space-6 text-primary-leather ui-desktop:gap-space-7", SECTION_Y)}>
+      {/* Figma draws a full-width black-alpha-20 hairline along the top of The Foundations (5110:36333). */}
+      <section aria-labelledby="foundations-heading" className={cx("site-container flex flex-col gap-space-6 text-primary-leather ui-desktop:gap-space-7", SECTION_Y, TOP_HAIRLINE)}>
         <p className="type-overline-sm-medium ui-desktop:type-overline-md-medium">{foundations.overline}</p>
         <h2 id="foundations-heading" className="type-heading-lg max-w-[72rem] ui-desktop:type-heading-2xl">
           {foundations.statement}
         </h2>
       </section>
 
-      <BestSellersSection content={contentBestSellers} />
+      <BestSellersSection content={contentBestSellers} hairline />
     </main>
   );
 }

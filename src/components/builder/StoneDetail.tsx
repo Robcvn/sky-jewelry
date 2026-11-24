@@ -67,7 +67,7 @@ export function StoneDetail({ stone }: { stone: Stone }) {
               <StonePicture stone={stone} priority sizes={{ desktop: "25vw", mobile: "100vw" }} />
               <Hint360 className="bottom-space-4" />
             </div>
-            {diamond ? <StoneSizeGuideTile /> : null}
+            {diamond ? <StoneSizeGuideTile stoneFirst={first} /> : null}
             <StoneCertificateTile stone={stone} />
           </div>
         </div>
@@ -235,9 +235,10 @@ export function StoneInfoSection({
           spread
           className={infoHeight(cx(mobileRow2 === "earrings" ? "h-[9.375rem]" : "h-[10.25rem]", "ui-desktop:h-[10.375rem]"), cx(mobileRow2 === "earrings" ? "min-h-[9.375rem]" : "min-h-[10.25rem]", "ui-desktop:min-h-[10.375rem]"))}
         >
-          {/* Figma's ruler drawing is of a round stone: shown for round stones, between the value and the ratio. */}
+          {/* Figma's ruler drawing is of a round stone: shown for round stones, between the value and the ratio. On
+              mobile every frame draws it 70px from the card's top (Task 30, sf-stoneinfo-390-10). */}
           {stone.shape === "round" ? (
-            <span className="block pt-space-3 ui-desktop:pt-1.5">
+            <span className="block pt-1 ui-desktop:pt-1.5">
               <DimensionsDiagram />
             </span>
           ) : null}

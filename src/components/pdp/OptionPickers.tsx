@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { cx } from "@/components/ui/shared";
 import { metalBadge } from "@/components/plp/FilterControls";
 import { Icon } from "@/components/ui/Icon";
 import { OptionTile } from "@/components/ui/OptionTile";
@@ -12,9 +13,9 @@ import { useDragScroll } from "@/components/ui/useDragScroll";
 const { labels } = productDetailContent;
 
 /** Figma "Input Label": "CARAT WEIGHT:  1.00", the value in regular black-alpha-60. */
-export function PickerLabel({ id, label, value }: { id: string; label: string; value: string }) {
+export function PickerLabel({ id, label, value, className }: { id: string; label: string; value: string; className?: string }) {
   return (
-    <p id={id} className="type-overline-xs-medium flex gap-space-2 text-primary-leather">
+    <p id={id} className={cx("type-overline-xs-medium flex gap-space-2 text-primary-leather", className)}>
       {label}:<span className="type-overline-xs-regular text-black-alpha-60">{value}</span>
     </p>
   );

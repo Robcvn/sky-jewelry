@@ -35,7 +35,8 @@ export function SupportFaqs({ items, openOnDesktop }: { items: Array<{ _key: str
 export function SectionJump({ label, sections }: { label: string; sections: Array<{ id: string; label: string }> }) {
   const [value, setValue] = useState(sections[0]?.id ?? "");
   return (
-    <div className="ui-desktop:hidden">
+    // Figma: no line above the menu, a leather line under it, then the next section's own black-alpha-20 rule.
+    <div className="relative pb-px after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-black-alpha-20 ui-desktop:hidden">
       <Dropdown
         label={label}
         options={sections.map((section) => ({ value: section.id, label: section.label }))}
@@ -47,7 +48,7 @@ export function SectionJump({ label, sections }: { label: string; sections: Arra
           window.history.replaceState(window.history.state, "", `#${id}`);
           target.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
         }}
-        className="[&>div:first-of-type]:rounded-none [&>div:first-of-type]:border-x-0"
+        className="[&>div:first-of-type]:rounded-none [&>div:first-of-type]:border-x-0 [&>div:first-of-type]:border-t-transparent [&>div:first-of-type]:border-b-primary-leather"
       />
     </div>
   );

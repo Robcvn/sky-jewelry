@@ -124,7 +124,8 @@ function MobileMetalRow({ metals, value, onChange }: { metals: MetalId[]; value:
   const rowRef = useDragScroll<HTMLDivElement>();
   return (
     <div className="flex flex-col gap-space-2">
-      <PickerLabel id={`${id}-label`} label={text.metal} value={metalById(value).label} />
+      {/* Figma centres the label over the tiles (3587:127535; Task 30, ea-settinginfo-390-5). */}
+      <PickerLabel id={`${id}-label`} label={text.metal} value={metalById(value).label} className="justify-center" />
       <div ref={rowRef} role="radiogroup" aria-labelledby={`${id}-label`} className="-mx-(--grid-margin) flex gap-space-2 overflow-x-auto px-(--grid-margin) [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {metals.map((metal) => (
           <OptionTile key={metal} type="radio" name={`${id}-metal`} media={metalBadge(metal)} aria-label={metalById(metal).label} checked={value === metal} onChange={() => onChange(metal)}>

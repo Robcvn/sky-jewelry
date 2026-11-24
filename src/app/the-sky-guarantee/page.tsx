@@ -18,13 +18,19 @@ export async function generateMetadata(): Promise<Metadata> {
 const H2 = "type-heading-lg scroll-mt-space-6 ui-desktop:type-heading-2xl";
 const INTRO = "type-p-md-regular mt-space-4 ui-desktop:mt-space-6";
 
+/**
+ * The support frames stroke the cards' icons in primary/hazel, except Product Repair and Text Us, which they leave in
+ * leather (3565:101916, 3587:129907); built as drawn (Task 30, sup-1440-5 / sup-390-9).
+ */
+const iconTone = (card: SupportCard) => (card.icon === "repair" || card.icon === "text-message" ? "leather" : "hazel");
+
 function Cards({ cards }: { cards: SupportCard[] }) {
   return (
     // Figma: three 264px cards across the 824 column on desktop, two 167px cards on mobile, 16px apart.
     <ul className="mt-space-8 grid grid-cols-2 gap-space-4 ui-desktop:mt-space-10 ui-desktop:grid-cols-3">
       {cards.map((card) => (
         <li key={card._key}>
-          <IconCard icon={card.icon} title={card.title} body={card.body} action={card.action} />
+          <IconCard icon={card.icon} title={card.title} body={card.body} action={card.action} iconTone={iconTone(card)} />
         </li>
       ))}
     </ul>
@@ -61,8 +67,9 @@ export default async function SupportPage() {
               {contact.heading}
             </h2>
             <h3 className="type-heading-md mt-space-6">{contact.locationsHeading}</h3>
-            <p className="type-body-md-regular mt-space-10">{contact.address}</p>
-            <p className="type-overline-xs-medium mt-space-4">{contact.hoursLabel}</p>
+            {/* Figma: a 1px black-alpha-10 rule 24px under "Our Locations" and 16px above the address. */}
+            <p className="type-body-md-regular mt-space-6 border-t border-black-alpha-10 pt-[calc(var(--spacing-space-4)-1px)]">{contact.address}</p>
+            <p className="type-overline-xs-medium mt-space-4 text-black-alpha-50">{contact.hoursLabel}</p>
             <p className="type-body-sm-regular mt-space-2">
               {contact.hours.map((line) => (
                 <span key={line} className="block">
@@ -73,7 +80,7 @@ export default async function SupportPage() {
             <ul className="mt-space-6 grid grid-cols-2 gap-space-4">
               {contact.cards.map((card) => (
                 <li key={card._key}>
-                  <IconCard icon={card.icon} title={card.title} body={card.body} action={card.action} />
+                  <IconCard icon={card.icon} title={card.title} body={card.body} action={card.action} iconTone={iconTone(card)} />
                 </li>
               ))}
             </ul>
@@ -83,7 +90,13 @@ export default async function SupportPage() {
               {contact.fields.map((field) => (
                 <Input key={field._key} label={field.label} type={field.type} autoComplete={field.autoComplete} name={field._key} />
               ))}
-              <TextArea label={contact.messageLabel} name="message" rows={6} className="[&>div]:min-h-[10.5rem]" />
+              {/* The frame sets "Your Message" as the fields above it: ui-sm, 18px from the top and 20px in. */}
+              <TextArea
+                label={contact.messageLabel}
+                name="message"
+                rows={6}
+                className="[&_label]:type-ui-sm-regular [&>div]:min-h-[10.5rem] [&_label]:top-[1.0625rem] [&_label]:left-[1.1875rem]"
+              />
             </div>
             <div className="mt-space-6">
               <ButtonText size="sm">{contact.submit}</ButtonText>

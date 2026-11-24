@@ -91,7 +91,8 @@ const story = (input: StoryInput): BlogPost => {
       p("love-2", input.love[1]),
       h3("choosing", input.choosingHeading),
       p("choosing-1", input.choosing),
-      { _type: "figure", _key: "products", image: { desktop: first.four3, alt: first.alt }, products: { label: "Featured Products", handles: input.products } },
+      // The Stories frame (6287:176402) draws this photo 824 x 680 on desktop, as Post Detail's necklace (Task 30).
+      { _type: "figure", _key: "products", shape: "tall", image: { desktop: first.four3, alt: first.alt }, products: { label: "Featured Products", handles: input.products } },
       h2("ring", "The Ring"),
       p("ring-1", "Their pieces, at a glance."),
       { _type: "table", _key: "ring-table", caption: `${input.title}: their pieces`, columns: ["Piece", "Style", "Metal"], rows: input.rows },

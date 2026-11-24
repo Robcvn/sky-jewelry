@@ -65,16 +65,32 @@ export function IconBlock({ icon, label, lines, body, layout = "stacked", asHead
  * body); SM below it (16 / 12 padding, 4 gap, ui-xs title, ui-2xs body). `action` is a Text Button with nothing to
  * connect to yet: drawn, but inert (Held for review).
  */
-export function IconCard({ icon, title, body, action, headingLevel = 3 }: { icon: IconName; title: string; body: string; action?: string; headingLevel?: 3 | 4 }) {
+export function IconCard({
+  icon,
+  title,
+  body,
+  action,
+  headingLevel = 3,
+  iconTone = "leather",
+}: {
+  icon: IconName;
+  title: string;
+  body: string;
+  action?: string;
+  headingLevel?: 3 | 4;
+  /** The support frames stroke most of these icons in primary/hazel (Task 30, sup-1440-5). */
+  iconTone?: "leather" | "hazel";
+}) {
   const Heading = `h${headingLevel}` as "h3" | "h4";
   return (
     <div className="flex h-full flex-col items-center gap-space-1 rounded-8 border border-secondary-gold bg-secondary-skin px-space-3 py-space-4 text-center text-primary-leather ui-desktop:gap-space-2 ui-desktop:px-space-4 ui-desktop:py-space-6">
-      <Icon name={icon} size={48} />
+      <Icon name={icon} size={48} className={iconTone === "hazel" ? "text-primary-hazel" : undefined} />
       <Heading className="type-ui-xs-medium ui-desktop:type-ui-sm-medium">{title}</Heading>
       <p className="type-ui-2xs-regular break-words ui-desktop:type-ui-xs-regular">{body}</p>
       {action ? (
-        // Desktop draws a Chevron Right after the label; mobile none.
-        <span className="mt-space-1 inline-flex items-center gap-space-1 text-primary-leather ui-desktop:mt-space-2">
+        // Desktop draws a Chevron Right after the label; mobile none. Pinned to the card's foot, so the links of a row line
+        // up when one card's text is shorter (3587:129907; Task 30, sup-390-8).
+        <span className="mt-auto inline-flex items-center gap-space-1 pt-space-1 text-primary-leather ui-desktop:pt-space-2">
           <TextButtonText size="sm" variant="caps">
             {action}
           </TextButtonText>

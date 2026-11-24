@@ -3,7 +3,8 @@ import { cx } from "@/components/ui/shared";
 import { TableScroll } from "@/components/ui/TableScroll";
 import type { ArticleBlock } from "@/content/article";
 import type { Product } from "@/content/products";
-import { ARTICLE_SIZES, FigureAction, Gallery, GradeScale, Qualities } from "./ArticleBlocks";
+import { FigureAction, Gallery, GradeScale, Qualities } from "./ArticleBlocks";
+import { ARTICLE_SIZES, BULLET_ITEM, BULLET_LIST } from "./articleStyles";
 
 type Kind = "resource" | "post";
 
@@ -27,12 +28,15 @@ function spaceAbove(block: ArticleBlock, previous: ArticleBlock | undefined, kin
   if (block._type === "heading" || block._type === "qualities") {
     return block._type !== "qualities" && block.level !== 2 ? "mt-space-8 ui-desktop:mt-space-11" : kind === "resource" ? "mt-space-8 ui-desktop:mt-space-12" : "mt-space-8 ui-desktop:mt-space-11";
   }
+  // Consecutive paragraphs are one Figma text box with its paragraph spacing, 20px on desktop (post 3565:102017: a
+  // seven-line box of p-lg is 228 tall); separate boxes, as after a heading, stay 24 apart.
+  if (block._type === "paragraph" && previous._type === "paragraph") return "mt-space-4 ui-desktop:mt-space-5";
   if (block._type === "paragraph" || block._type === "list") return "mt-space-4 ui-desktop:mt-space-6";
   return "mt-space-8 ui-desktop:mt-space-11";
 }
 
 /** The article text of a resource or post: its blocks in order, with the type and spacing of the frame it comes from. */
-export function ArticleBody({ body, kind, products = {} }: { body: ArticleBlock[]; kind: Kind; products?: Record<string, Product[]> }) {
+export function ArticleBody({ body, kind, products = {}, story = false }: { body: ArticleBlock[]; kind: Kind; products?: Record<string, Product[]>; story?: boolean }) {
   return (
     <div className="flex flex-col text-primary-leather">
       {body.map((block, index) => {
@@ -61,7 +65,7 @@ export function ArticleBody({ body, kind, products = {} }: { body: ArticleBlock[
                   {block.products ? (
                     <FigureAction label={block.products.label} icon="plus" products={block.products.handles.flatMap((handle) => products[handle] ?? [])} />
                   ) : block.action ? (
-                    <FigureAction label={block.action.label} icon={block.action.icon} href={block.action.href} />
+                    <FigureAction label={block.action.label} icon={block.action.icon} href={block.action.href} trailing={story} />
                   ) : null}
                 </div>
                 {block.caption ? <figcaption className="type-body-sm-medium ui-desktop:type-body-md-medium">{block.caption}</figcaption> : null}
@@ -81,49 +85,63 @@ export function ArticleBody({ body, kind, products = {} }: { body: ArticleBlock[
             );
           case "list":
             return (
-              <div key={block._key} className={cx("flex flex-col gap-space-3 ui-desktop:gap-space-4", space)}>
-                {block.label ? <p className="type-ui-xs-medium">{block.label}</p> : null}
-                <ul className="type-p-md-regular list-disc pl-space-6">
+              // Figma: the label is an overline (overline-sm, capitals), 24px above the items on desktop.
+              <div key={block._key} className={cx("flex flex-col gap-space-3 ui-desktop:gap-space-6", space)}>
+                {block.label ? <p className="type-overline-sm-medium">{block.label}</p> : null}
+                <ul role="list" className={cx("type-p-md-regular", BULLET_LIST)}>
                   {block.items.map((item) => (
-                    <li key={item}>{item}</li>
+                    <li key={item} className={BULLET_ITEM}>
+                      {item}
+                    </li>
                   ))}
                 </ul>
               </div>
             );
           case "table":
             return (
-              // Figma draws the cells as "Tag" (MD, Primary): bordered skin cells, 32px header row and 36px rows; the last column is double width.
-              // The mobile frame has no table, so it keeps its desktop layout and scrolls sideways there (a focusable region).
+              // Figma (Frame 250, 3565:102017): a 1px gold outline with 8px corners around the cells; the header row filled
+              // secondary/ivory, 32px tall; 36px rows on skin; one 1px black-alpha-20 line between cells (header cells ruled
+              // on the right, body cells on the top and right). The last column is double width. The mobile frame has no
+              // table, so it keeps its desktop layout and scrolls sideways there (a focusable region).
               <TableScroll key={block._key} label={block.caption} className={space}>
-                <table className="w-full min-w-[34rem] border-collapse text-left text-primary-leather">
-                  <caption className="sr-only">{block.caption}</caption>
-                  <thead>
-                    <tr>
-                      {block.columns.map((column, columnIndex) => (
-                        <th key={column} scope="col" className={cx("type-overline-2xs-medium h-space-8 border border-black-alpha-20 bg-secondary-skin px-space-3", columnIndex === block.columns.length - 1 ? "w-2/5" : "w-1/5")}>
-                          {column}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {block.rows.map((row) => (
-                      <tr key={row[0]}>
-                        {row.map((cell, cellIndex) =>
-                          cellIndex === 0 ? (
-                            <th key={cellIndex} scope="row" className="type-ui-xs-regular h-space-9 border border-black-alpha-20 bg-secondary-skin px-space-3 font-normal">
-                              {cell}
-                            </th>
-                          ) : (
-                            <td key={cellIndex} className="type-ui-xs-regular h-space-9 border border-black-alpha-20 bg-secondary-skin px-space-3">
-                              {cell}
-                            </td>
-                          ),
-                        )}
+                <div className="min-w-[34rem] overflow-hidden rounded-8 border border-secondary-gold">
+                  <table className="w-full border-separate border-spacing-0 text-left text-primary-leather">
+                    <caption className="sr-only">{block.caption}</caption>
+                    <thead>
+                      <tr>
+                        {block.columns.map((column, columnIndex) => (
+                          <th
+                            key={column}
+                            scope="col"
+                            className={cx(
+                              "type-overline-2xs-medium h-space-8 border-black-alpha-20 bg-secondary-ivory px-space-3 not-last:border-r",
+                              columnIndex === block.columns.length - 1 ? "w-2/5" : "w-1/5",
+                            )}
+                          >
+                            {column}
+                          </th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {block.rows.map((row) => (
+                        <tr key={row[0]}>
+                          {row.map((cell, cellIndex) =>
+                            cellIndex === 0 ? (
+                              <th key={cellIndex} scope="row" className="type-ui-xs-regular h-space-9 border-t border-black-alpha-20 bg-secondary-skin px-space-3 font-normal not-last:border-r">
+                                {cell}
+                              </th>
+                            ) : (
+                              <td key={cellIndex} className="type-ui-xs-regular h-space-9 border-t border-black-alpha-20 bg-secondary-skin px-space-3 not-last:border-r">
+                                {cell}
+                              </td>
+                            ),
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </TableScroll>
             );
           case "qualities":

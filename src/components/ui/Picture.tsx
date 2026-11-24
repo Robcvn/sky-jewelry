@@ -36,6 +36,32 @@ type PictureProps = {
   className?: string;
 };
 
+/** Splits a sizes value on its top-level commas (a min() or calc() keeps its own). */
+const sizeEntries = (value: string) => {
+  const entries: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < value.length; i++) {
+    if (value[i] === "(") depth++;
+    else if (value[i] === ")") depth--;
+    else if (value[i] === "," && depth === 0) {
+      entries.push(value.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  entries.push(value.slice(start).trim());
+  return entries;
+};
+
+/**
+ * One sizes value for an <img> with no separate mobile crop: the desktop entries from 64rem, then the mobile value.
+ * A desktop value may already hold conditions ("(width >= 90rem) 20rem, 23vw"); only its unconditioned entry takes the
+ * 64rem condition. Prefixing the whole value gave "(width >= 64rem) (width >= 90rem) 20rem, …", which is invalid, so
+ * browsers skipped to the next entry and loaded the desktop width on phones (audit round 5, res-390-8; Task 30).
+ */
+export const joinSizes = (desktop: string, mobile: string) =>
+  [...sizeEntries(desktop).map((entry) => (entry.startsWith("(") ? entry : `(width >= 64rem) ${entry}`)), mobile].join(", ");
+
 /**
  * Pre-generated WebP crops at 1x and 2x of the size Figma renders (see src/content/image-manifest.ts).
  * The site is a static export with unoptimised images, so next/image cannot make these variants itself,
@@ -59,7 +85,7 @@ export function Picture({ image, sizes, priority = false, className }: PicturePr
       <img
         src={withBasePath(base.src)}
         srcSet={srcSet(mobile)}
-        sizes={image.mobile ? sizes.mobile : `(width >= 64rem) ${sizes.desktop}, ${sizes.mobile}`}
+        sizes={image.mobile ? sizes.mobile : joinSizes(sizes.desktop, sizes.mobile)}
         width={base.w}
         height={base.h}
         alt={image.alt}

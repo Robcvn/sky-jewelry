@@ -29,9 +29,10 @@ export function GradeScale({ block }: { block: GradeScaleBlock }) {
     <div className="flex flex-col">
       <div className="relative aspect-[4/3] overflow-hidden rounded-4 bg-secondary-ivory">
         <Picture image={block.image} sizes={{ desktop: "(width >= 90rem) 51.5rem, 57vw", mobile: "calc(100vw - 40px)" }} className="absolute inset-0 size-full object-cover" />
+        {/* Figma's loupe ring is faint: a 4px #fcfcfa stroke at 10% (res-1440-6; Task 30). */}
         {block.loupe ? (
           // Figma: 310 at (124, 73) on the 824 x 618 photo; 132 at (53, 31) on the 350 x 263 one: the same place, larger on desktop.
-          <span className="absolute top-[11.8%] left-[15.1%] block aspect-square w-[37.7%] overflow-hidden rounded-full border-2 border-base-white shadow-lg ui-desktop:left-[15%] ui-desktop:w-[37.6%]">
+          <span className="absolute top-[11.8%] left-[15.1%] block aspect-square w-[37.7%] overflow-hidden rounded-full border-4 border-white-alpha-10 shadow-lg ui-desktop:left-[15%] ui-desktop:w-[37.6%]">
             <Picture image={block.loupe} sizes={{ desktop: "310px", mobile: "132px" }} className="size-full object-cover" />
           </span>
         ) : null}
@@ -57,7 +58,12 @@ export function GradeScale({ block }: { block: GradeScaleBlock }) {
  * 4142:71912: a sheet from the bottom with the cards in a swipe row). With `href` it is a link ("Customize this ring" goes
  * to the ring builder's first step, an inference: Figma gives it no destination). With neither it is drawn but inert.
  */
-export function FigureAction({ label, icon, products, href }: { label: string; icon: "plus" | "sparkle"; products?: Product[]; href?: string }) {
+/**
+ * `trailing`: the customer story frame (6287:176402) puts the link's icon after the label, where Post Detail's frame
+ * puts it before; each page follows its own frame (Open questions; Task 30, cstory-1440-7). Desktop only: there is no
+ * mobile story frame.
+ */
+export function FigureAction({ label, icon, products, href, trailing = false }: { label: string; icon: "plus" | "sparkle"; products?: Product[]; href?: string; trailing?: boolean }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const place = "absolute bottom-space-4 left-space-4 ui-desktop:bottom-space-6 ui-desktop:left-space-6";
@@ -70,7 +76,7 @@ export function FigureAction({ label, icon, products, href }: { label: string; i
           </ButtonLink>
         </span>
         <span className="hidden ui-desktop:flex">
-          <ButtonLink href={href} overlay size="md" leftIcon={icon}>
+          <ButtonLink href={href} overlay size="md" leftIcon={trailing ? undefined : icon} rightIcon={trailing ? icon : undefined}>
             {label}
           </ButtonLink>
         </span>
@@ -161,7 +167,8 @@ export function Qualities({ heading }: { heading: string }) {
         {heading}
       </h2>
       <div className="flex flex-col gap-space-6 rounded-8 border border-black-alpha-15 bg-base-white p-[calc(var(--spacing-space-8)-1px)] text-primary-leather">
-        <CccPanel tab={tab} onTabChange={setTab} />
+        {/* The card's 16:9 frame is 427.5 tall where the modal's is 234; the drawings keep the modal's size. */}
+        <CccPanel tab={tab} onTabChange={setTab} drawingScale={234 / 427.5} />
       </div>
     </section>
   );
@@ -251,17 +258,17 @@ export function SectionNav({ label, sections, floating = true }: { label: string
           className="ui-transition type-ui-xs-regular flex min-h-space-10 cursor-pointer items-center gap-space-1 rounded-4 border border-secondary-gold bg-secondary-skin px-space-3 text-primary-leather shadow-lg"
         >
           <span className="px-space-1">
-            {label}: <span className="font-medium">{current?.label}</span>
+            {/* Figma (4142:57639): one Regular run, "The 4C's: Diamond Cut", and a Chevron Up on the closed button, whose
+                menu opens upwards (Task 30, ressub-390-1 / -2). */}
+            {label}: {current?.label}
           </span>
-          <Icon name={open ? "chevron-up" : "chevron-down"} size={16} />
+          <Icon name={open ? "chevron-down" : "chevron-up"} size={16} />
         </button>
       </div>
     </>
   );
 }
 
-/** A picture whose slot is the article column: 824 wide on desktop, the content width on mobile. */
-export const ARTICLE_SIZES = { desktop: "(width >= 90rem) 51.5rem, 57vw", mobile: "calc(100vw - 40px)" };
 
 /** The three colour samples: a row of three on desktop, a swipe row of 289px photos with a scrollbar on mobile. */
 export function Gallery({ items, label }: { items: Array<{ _key: string; image: ImageRef; caption: string }>; label: string }) {

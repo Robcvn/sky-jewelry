@@ -22,7 +22,8 @@ function HeroPhoto({ image }: { image: ImageRef }) {
 
 /**
  * Education Center top (3565:101629, mobile 3587:129570). Desktop: the 1440 x 600 photo with the title (caps-3xl) and
- * line (body-lg) centred 80px from its foot. Mobile: no photo; the title (caps-lg) and line (body-sm) on the page.
+ * line (body-lg) centred 80px from its foot. Mobile: no photo; the title (caps-lg) and line (body-sm) centred on the
+ * page, with a 1px gold rule 24px under them (7117:90706; the resources follow 24px under the rule).
  */
 export function EducationHero({ title, body, image }: { title: string; body: string; image: ImageRef }) {
   // One heading for both layouts: over the photo from 1024px, on the page below it.
@@ -31,9 +32,11 @@ export function EducationHero({ title, body, image }: { title: string; body: str
       <div className="absolute inset-0 -z-10 hidden ui-desktop:block">
         <HeroPhoto image={image} />
       </div>
-      <div className="site-container flex flex-col gap-space-3 pt-space-11 ui-desktop:w-auto ui-desktop:max-w-[51.25rem] ui-desktop:items-center ui-desktop:gap-space-6 ui-desktop:px-space-6 ui-desktop:pt-0 ui-desktop:pb-space-15 ui-desktop:text-center">
-        <h1 className="type-heading-caps-lg ui-desktop:type-heading-caps-3xl ui-desktop:text-base-white">{title}</h1>
-        <p className="type-body-sm-regular ui-desktop:type-body-lg-regular ui-desktop:max-w-[34.25rem] ui-desktop:text-secondary-ivory">{body}</p>
+      <div className="site-container pt-space-11 ui-desktop:w-auto ui-desktop:max-w-[51.25rem] ui-desktop:px-space-6 ui-desktop:pt-0 ui-desktop:pb-space-15">
+        <div className="flex flex-col items-center gap-space-3 border-b border-secondary-gold pb-[calc(var(--spacing-space-6)-1px)] text-center ui-desktop:gap-space-6 ui-desktop:border-b-0 ui-desktop:pb-0">
+          <h1 className="type-heading-caps-lg ui-desktop:type-heading-caps-3xl ui-desktop:text-base-white">{title}</h1>
+          <p className="type-body-sm-regular ui-desktop:type-body-lg-regular ui-desktop:max-w-[34.25rem] ui-desktop:text-secondary-ivory">{body}</p>
+        </div>
       </div>
     </header>
   );
@@ -85,7 +88,8 @@ export function PostHeader({ title, topic, date, readTime, image, back }: { titl
       )}
       <h1 className="type-heading-caps-lg mt-space-4 max-w-[51.25rem] ui-desktop:type-heading-caps-2xl">{title}</h1>
       {date ? (
-        <p className="type-overline-xs-medium mt-space-4 flex items-center gap-space-4">
+        // Figma: the date line in black-alpha-50 (3565:102017, 3587:130026; Task 30, post-1440-1).
+        <p className="type-overline-xs-medium mt-space-4 flex items-center gap-space-4 text-black-alpha-50">
           <time dateTime={date}>{formatDate(date)}</time>
           <span aria-hidden="true" className="h-3.5 w-px bg-black-alpha-20" />
           <span>{readTime}</span>
@@ -170,7 +174,8 @@ export function TitleHero({ title, body, image }: { title: { desktop: RichSpan[]
             <RichText value={title.mobile} emClassName="type-heading-italic-xl" />
           </span>
           <span className="hidden ui-desktop:inline">
-            <RichText value={title.desktop} emClassName="type-heading-italic-3xl" />
+            {/* Figma breaks the desktop title before its italic word ("SKY JEWELRY" / "Support", 820 x 144). */}
+            <RichText value={title.desktop} emClassName="type-heading-italic-3xl block" />
           </span>
         </h1>
         <p className="type-body-sm-regular max-w-[25rem] text-secondary-ivory ui-desktop:type-body-lg-regular">{body}</p>

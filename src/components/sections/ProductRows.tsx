@@ -16,7 +16,20 @@ type Row = { _key: string; title?: string; products: Product[] };
  * Best-seller rows of the product list's Product Card (with its desktop hover state), one carousel per row.
  * Mobile taps open the same quick-view sheet as the product list; Add to Bag uses the Shopify cart.
  */
-export function ProductRows({ rows, label, itemClassName = CARD_ITEM, cardWidth = CARD_W }: { rows: Row[]; label: string; itemClassName?: string; cardWidth?: string }) {
+export function ProductRows({
+  rows,
+  label,
+  itemClassName = CARD_ITEM,
+  cardWidth = CARD_W,
+  arrowDrop,
+}: {
+  rows: Row[];
+  label: string;
+  itemClassName?: string;
+  cardWidth?: string;
+  /** How far below the photos' centre the arrows sit, where a frame draws them lower (e.g. "1.3125rem"). */
+  arrowDrop?: string;
+}) {
   const [quickView, setQuickView] = useState<{ product: Product; variant: ProductVariant; open: boolean } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -35,7 +48,7 @@ export function ProductRows({ rows, label, itemClassName = CARD_ITEM, cardWidth 
           <Carousel
             label={row.title ?? label}
             itemClassName={itemClassName}
-            arrowTop={`calc(${cardWidth} / 2)`}
+            arrowTop={arrowDrop ? `calc(${cardWidth} / 2 + ${arrowDrop})` : `calc(${cardWidth} / 2)`}
             hoverRoom
             items={row.products.map((product) => ({
               key: product.slug,

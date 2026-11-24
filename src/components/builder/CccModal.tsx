@@ -93,7 +93,12 @@ export function CccModal({ open, onClose, tab, onTabChange }: CccModalProps) {
  * The explainer itself: the pill tabs, what the grade measures, the drawing, the grade scale and what the chosen grade
  * means. The modal above shows it; Resource Detail shows it inline as "Your Diamond's Qualities" (3565:101773).
  */
-export function CccPanel({ tab, onTabChange }: { tab: CccTab; onTabChange: (tab: CccTab) => void }) {
+/**
+ * `drawingScale` resizes the drawings against the frame for a wider panel: the drawings keep the size the modal draws
+ * them at (Resource Detail's card, 3565:101773, draws the Cut diamond 137px tall in a 427.5px frame, where the modal's
+ * is 138 in 234; Task 30, res-1440-9).
+ */
+export function CccPanel({ tab, onTabChange, drawingScale = 1 }: { tab: CccTab; onTabChange: (tab: CccTab) => void; drawingScale?: number }) {
   const id = useId();
   const [grade, setGrade] = useState<Record<CccTab, string>>({ cut: TABS.cut.initial, color: TABS.color.initial, clarity: TABS.clarity.initial });
   const current = TABS[tab];
@@ -117,7 +122,7 @@ export function CccPanel({ tab, onTabChange }: { tab: CccTab; onTabChange: (tab:
           width={267}
           height={198}
           className="h-(--drawing) w-auto max-w-none"
-          style={{ "--drawing": `${current.illustration.height}%` } as CSSProperties}
+          style={{ "--drawing": `${current.illustration.height * drawingScale}%` } as CSSProperties}
         />
       </div>
       <div className="flex flex-col gap-space-2 ui-desktop:gap-space-4">

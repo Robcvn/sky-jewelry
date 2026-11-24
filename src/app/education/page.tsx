@@ -39,7 +39,7 @@ export default async function EducationCenterPage() {
   return (
     <main id="main-content" tabIndex={-1} className="flex-1">
       <EducationHero title={page.title} body={page.body} image={page.hero.image} />
-      <section aria-label="Resources" className="site-container pt-space-11 ui-desktop:pt-space-15">
+      <section aria-label="Resources" className="site-container pt-space-6 ui-desktop:pt-space-15">
         <ContentList kind="education" items={items} topics={educationTopics} pageSize={page.pageSize} labels={{ allTopics: page.allTopics, topicsLabel: page.topicsLabel, results: "Resources" }} />
       </section>
       <div className="pt-space-17 pb-space-11 ui-desktop:pt-space-19 ui-desktop:pb-space-15">
@@ -59,7 +59,7 @@ export default async function EducationCenterPage() {
           }}
         />
       </div>
-      <GuaranteeIconsSection content={guaranteeIcons("guarantee")} />
+      <GuaranteeIconsSection content={guaranteeIcons("guarantee")} fill="ivory" />
     </main>
   );
 }

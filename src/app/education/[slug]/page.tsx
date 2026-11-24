@@ -50,14 +50,17 @@ export default async function ResourcePage({ params }: { params: Promise<{ slug:
           <div className="flex min-w-0 flex-col">
             <ArticleBody body={resource.body} kind="resource" />
             {next ? (
-              <div className="mt-space-14 ui-desktop:mt-space-17">
+              // Figma draws a rule along the row's top: 32 / 48px under the article and 40 / 48px above the photo (the
+              // stroke inside that padding). Desktop: #1b1413 at 15%. Mobile: #e5e7eb, a grey outside the palette,
+              // built with the nearest token, black-alpha-10 (Task 30, res-1440-11 / res-390-7).
+              <div className="mt-space-8 border-t border-black-alpha-10 pt-[calc(var(--spacing-space-10)-1px)] ui-desktop:mt-space-11 ui-desktop:border-black-alpha-15 ui-desktop:pt-[calc(var(--spacing-space-11)-1px)]">
                 <NextResource label={page.detail.next} title={next.title} body={next.excerpt} href={resourceHref(next)} image={page.detail.nextImage} cta={page.detail.readNow} />
               </div>
             ) : null}
           </div>
         </div>
       </article>
-      <BestSellersSection content={contentBestSellers} />
+      <BestSellersSection content={contentBestSellers} hairline />
     </main>
   );
 }

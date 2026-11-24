@@ -34,14 +34,17 @@ export function PromoCard({ promo, breakpoint, className }: PromoCardProps) {
       <span
         aria-hidden="true"
         className={cx(
-          "absolute inset-0 bg-linear-to-b from-transparent from-25%",
-          wide ? "to-black/40 to-75%" : "to-black/30 to-[67.75%]",
+          // Figma: black from clear at 25% to full at 67.75% (wide: 75%), on a layer at 30% (desktop, 3565:101315) or
+          // 40% (mobile 3587:125332, and the wide cards). Built with the black-alpha tokens; to-black/30 had no colour
+          // after the token reset, so the overlay was clear (audit round 5, sf-setting-1440-7; Task 30).
+          "absolute inset-0 bg-linear-to-b from-black-alpha-0 from-25%",
+          wide ? "to-black-alpha-40 to-75%" : desktop ? "to-black-alpha-30 to-[67.75%]" : "to-black-alpha-40 to-[67.75%]",
         )}
       />
       <div className={cx("relative flex flex-col items-center", desktop ? (wide ? "gap-space-4 p-space-6" : "gap-space-4 px-space-4 py-space-6") : "gap-space-3 p-space-3")}>
         <div className={cx("flex flex-col items-center", desktop ? "gap-space-2" : "gap-space-1", wide && desktop && "max-w-100")}>
           <h3 className={desktop ? (wide ? "type-heading-caps-md" : "type-heading-caps-sm") : "type-heading-caps-xs"}>{promo.title}</h3>
-          <p className={cx("text-secondary-ivory", desktop ? (wide ? "type-body-sm-regular" : "type-body-xs-regular") : "type-body-2xs-regular")}>{promo.body}</p>
+          <p className={cx("text-secondary-ivory", desktop ? (wide ? "type-body-sm-regular" : "type-body-xs-regular") : "type-ui-2xs-regular")}>{promo.body}</p>
         </div>
         <ButtonLink href={promo.cta.href} size={desktop ? "sm" : "xs"} variant="secondary" overlay>
           {promo.cta.label}

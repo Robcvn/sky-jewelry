@@ -345,7 +345,8 @@ function BandCard({ product }: { product: Product }) {
         <Picture image={imagesFor(product, variant.metal)[0]} sizes={{ desktop: "(width >= 90rem) 13.75rem, 15vw", mobile: "45vw" }} className="size-full object-cover mix-blend-multiply" />
       </div>
       <div className="flex flex-col gap-space-1 px-space-2 pt-space-3">
-        <h3 className="type-heading-xs">
+        {/* Desktop: heading-sm (22/26), as the setting page's and Step 3's frames draw the band's name (Task 30). */}
+        <h3 className="type-heading-xs ui-desktop:type-heading-sm">
           <Link href={variantHref(product, variant)} className="rounded-4 after:absolute after:inset-0">
             {name}
           </Link>
@@ -358,7 +359,11 @@ function BandCard({ product }: { product: Product }) {
 }
 
 /** "Perfectly Paired Wedding Bands" (Figma 3565:100694), under the desktop gallery: a row of three cards that pages sideways. */
-export function PairedBands({ bands }: { bands: Product[] }) {
+/**
+ * `lowerArrows`: the stone-first setting page's frame (5440:30785) draws the 32px arrows 53px below the photos' centre;
+ * the other frames centre them on the photos (frames disagree, Open questions; Task 30, sf-settinginfo-1440-7).
+ */
+export function PairedBands({ bands, lowerArrows = false }: { bands: Product[]; lowerArrows?: boolean }) {
   const { ref, atStart, atEnd, scrollable } = useScrollProgress<HTMLUListElement>();
   const dragRef = useDragScroll(ref);
   const page = (direction: 1 | -1) => {
@@ -367,7 +372,10 @@ export function PairedBands({ bands }: { bands: Product[] }) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     node.scrollBy({ left: direction * node.clientWidth, behavior: reduce ? "auto" : "smooth" });
   };
-  const arrow = "ui-transition absolute top-[calc((100cqw-2rem)/6)] z-10 flex size-space-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-secondary-gold bg-secondary-skin text-primary-leather hover:border-primary-leather";
+  const arrow = cx(
+    lowerArrows ? "top-[calc((100cqw-2rem)/6+3.3125rem)]" : "top-[calc((100cqw-2rem)/6)]",
+    "ui-transition absolute z-10 flex size-space-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-secondary-gold bg-secondary-skin text-primary-leather hover:border-primary-leather",
+  );
   return (
     <section aria-labelledby="builder-paired" className="flex flex-col gap-space-6">
       <h2 id="builder-paired" className="type-heading-md text-center text-primary-leather">
@@ -444,15 +452,18 @@ export function SettingDetail({ setting, bands, stones = [] }: { setting: RingSe
 
   const quickCheckout = (
     // Drawn, but its flow belongs to part 2: shown as designed, not interactive (Held for review).
-    <div className="flex flex-col gap-space-4 rounded-4 border border-black-alpha-20 bg-secondary-skin p-[calc(var(--spacing-space-5)-1px)] text-primary-leather">
+    // Figma: padding 20 on desktop; on mobile (3587:125815, 6683:68628) padding 16, a 20px chevron and the body in
+    // body-xs (12/18), 108 tall (Task 30, sf-settinginfo-390-5).
+    <div className="flex flex-col gap-space-4 rounded-4 border border-black-alpha-20 bg-secondary-skin p-[calc(var(--spacing-space-4)-1px)] text-primary-leather ui-desktop:p-[calc(var(--spacing-space-5)-1px)]">
       <div className="flex items-start gap-space-6">
         <p className="type-heading-sm flex flex-1 items-start gap-space-2">
           <Icon name="quick-checkout" size={24} className="shrink-0 text-primary-hazel" />
           {text.quickCheckout.title}
         </p>
-        <Icon name="chevron-down" size={24} />
+        <Icon name="chevron-down" size={20} className="mt-0.5 ui-desktop:hidden" />
+        <Icon name="chevron-down" size={24} className="hidden ui-desktop:block" />
       </div>
-      <p className="type-body-sm-regular">{text.quickCheckout.body}</p>
+      <p className="type-body-xs-regular ui-desktop:type-body-sm-regular">{text.quickCheckout.body}</p>
     </div>
   );
 
@@ -500,7 +511,7 @@ export function SettingDetail({ setting, bands, stones = [] }: { setting: RingSe
         {/* Figma's images frame pads its right side 24px at 1440 (the tile grid is 694 of the 718 column); the 1140 frame has none. */}
         <div className="sticky top-(--sticky-header-height) flex flex-col gap-space-11 py-space-15 min-[80rem]:pr-space-6">
           <DesktopGallery tiles={tiles} />
-          {bands.length ? <PairedBands bands={bands} /> : null}
+          {bands.length ? <PairedBands bands={bands} lowerArrows={first} /> : null}
         </div>
       </div>
       <div className="ui-desktop:hidden">
@@ -640,6 +651,9 @@ export function SettingInfoSection({
 }) {
   const { specs } = setting;
   const desktopOnly = mobileCards === "three" ? "hidden ui-desktop:flex" : undefined;
+  // Width and Approx. TCW on mobile: 144 tall on the setting page (3587:125815, stone first 6683:68628), 120 on Step 3
+  // (6579:208256). The frames disagree, so each page follows its own (Open questions; Task 30, sf-settinginfo-390-8).
+  const sizeCard = cx("h-full ui-desktop:min-h-36", mobileCards === "three" ? "min-h-30" : "min-h-36");
   return (
     <section aria-labelledby={headingId} className={cx("flex flex-col gap-space-5 border-t border-secondary-gold ui-desktop:gap-space-8 ui-desktop:pt-space-8", className ?? "pt-space-6")}>
       <h2 id={headingId} className="type-heading-sm flex items-center gap-space-2 text-primary-leather ui-desktop:type-heading-md ui-desktop:gap-space-3">
@@ -651,9 +665,9 @@ export function SettingInfoSection({
         <ProductInfoCard label={pdp.labels.metal} value={metalById(metal).label} note={pdp.metalNote} gap="md" className="col-span-2">
           <CompositionChart parts={metalComposition[metal]} />
         </ProductInfoCard>
-        <ProductInfoCard label={text.cards.width.label} value={`${specs.width.toFixed(1)}mm`} note={text.cards.width.note} spread className="h-full min-h-[7.75rem] ui-desktop:min-h-36" />
+        <ProductInfoCard label={text.cards.width.label} value={`${specs.width.toFixed(1)}mm`} note={text.cards.width.note} spread className={sizeCard} />
         {specs.tcw > 0 ? (
-          <ProductInfoCard label={text.cards.tcw.label} value={`${specs.tcw.toFixed(2)} ct`} note={text.cards.tcw.note} spread className="h-full min-h-[7.75rem] ui-desktop:min-h-36" />
+          <ProductInfoCard label={text.cards.tcw.label} value={`${specs.tcw.toFixed(2)} ct`} note={text.cards.tcw.note} spread className={sizeCard} />
         ) : null}
         {specs.tcw > 0 ? (
           <ProductInfoCard

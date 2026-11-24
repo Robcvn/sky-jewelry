@@ -74,11 +74,15 @@ export function TileCarouselSection({ content }: { content: TileCarousel }) {
   );
 }
 
-/** "Sky Jewelry Guarantee": five Icon Blocks with a title and a line, in a row (desktop) or stacked rows (mobile). */
-export function GuaranteeIconsSection({ content }: { content: GuaranteeIcons }) {
+/**
+ * "Sky Jewelry Guarantee": five Icon Blocks with a title and a line, in a row (desktop) or stacked rows (mobile).
+ * The landing pages draw it on the page colour; the Education Center and Blog List frames fill it with secondary/ivory
+ * (3565:101761), so those pages pass fill="ivory".
+ */
+export function GuaranteeIconsSection({ content, fill = "skin" }: { content: GuaranteeIcons; fill?: "skin" | "ivory" }) {
   const headingId = `${content._key}-heading`;
   return (
-    <section aria-labelledby={headingId} className={`bg-secondary-skin ${LANDING_SECTION}`}>
+    <section aria-labelledby={headingId} className={`${fill === "ivory" ? "bg-secondary-ivory" : "bg-secondary-skin"} ${LANDING_SECTION}`}>
       {/* Figma's mobile overline here is 12/16 (overline-sm) on both breakpoints. */}
       <SectionHeading id={headingId} overline={content.overline} heading={content.heading} overlineSize="sm" />
       <ul className="site-container flex flex-col items-center gap-space-6 ui-desktop:flex-row ui-desktop:items-start">

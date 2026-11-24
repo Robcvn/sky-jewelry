@@ -12,7 +12,6 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { Icon } from "@/components/ui/Icon";
-import { Input } from "@/components/ui/Input";
 import { DialogShell, dialogPanelMotion } from "@/components/ui/Modal";
 import { PostCard } from "@/components/ui/PostCard";
 import { ProductCard } from "@/components/ui/ProductCard";
@@ -150,12 +149,16 @@ export function SearchResults({ index, promos }: { index: SearchIndex; promos: P
     <>
       {band}
       <div className="site-container pt-space-11 pb-space-11 text-primary-leather ui-desktop:pt-space-15 ui-desktop:pb-space-15">
-        <h1 ref={headingRef} tabIndex={-1} aria-live="polite" className="type-heading-caps-lg text-center">
-          <RichText value={text.heading(total, state.q)} emClassName="type-heading-italic-lg" />
+        {/* Figma: caps-lg (36/40) on desktop, caps-md (28/32) on mobile (4979:47760). */}
+        <h1 ref={headingRef} tabIndex={-1} aria-live="polite" className="type-heading-caps-md text-center ui-desktop:type-heading-caps-lg">
+          <RichText value={text.heading(total, state.q)} emClassName="type-heading-italic-md ui-desktop:type-heading-italic-lg" />
         </h1>
 
+        {/* Desktop: a gold rule 40px under the heading (4931:73092, Line 11), then 24px to the type chips. */}
+        <hr aria-hidden="true" className="mt-space-10 hidden border-secondary-gold ui-desktop:block" />
+
         {/* Desktop: the four type chips (a chosen one has the leather outline and ×), Clear Filters, and Sort by on the right. */}
-        <div className="mt-space-13 hidden items-center justify-between gap-space-6 ui-desktop:flex">
+        <div className="mt-space-6 hidden items-center justify-between gap-space-6 ui-desktop:flex">
           <div className="flex items-center gap-space-6">
             <div role="group" aria-label="Filter by type" className="flex items-center gap-space-3">
               {text.types.map((type) => {
@@ -198,10 +201,18 @@ export function SearchResults({ index, promos }: { index: SearchIndex; promos: P
 
         {/* Mobile: Filters (n), opening the filter sheet, then the chosen types as removable Tags. */}
         <div className="mt-space-5 flex flex-col gap-space-2 ui-desktop:hidden">
-          <Button variant="secondary" size="sm" leftIcon="filter" aria-haspopup="dialog" onClick={() => setSheetOpen(true)} className="w-full">
+          {/* Figma (4979:47760): a 350 x 40 button with 4px corners, the Filter icon and "Filters (2)" in ui-xs-regular,
+              as the product list's mobile Filters button, not the caps pill. */}
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            onClick={() => setSheetOpen(true)}
+            className="ui-transition type-ui-xs-regular flex min-h-space-10 w-full cursor-pointer items-center justify-center gap-space-2 rounded-4 border border-secondary-gold bg-secondary-skin px-space-4 text-primary-leather hover:border-black-alpha-50"
+          >
+            <Icon name="filter" size={16} />
             {text.filters}
             {state.types.length ? ` (${state.types.length})` : ""}
-          </Button>
+          </button>
           {state.types.length ? (
             <ul className="flex flex-wrap gap-space-2">
               {text.types
@@ -259,12 +270,12 @@ export function SearchResults({ index, promos }: { index: SearchIndex; promos: P
   );
 }
 
-/** Each section: a gold rule, then its heading (heading-lg; mobile heading-md) 40 / 24 under it, the cards 40 / 24 under that. */
+/** Each section: a gold rule, then its heading (heading-caps-lg; mobile heading-caps-md, Figma's caps styles) 40 / 24 under it, the cards 40 / 24 under that. */
 function Section({ type, label, children }: { type: SearchType; label: string; children: React.ReactNode }) {
   const id = `search-${type}`;
   return (
     <section aria-labelledby={id} data-search-section={type} className="border-t border-secondary-gold pt-space-6 ui-desktop:pt-space-10">
-      <h2 id={id} className="type-heading-md ui-desktop:type-heading-lg">
+      <h2 id={id} className="type-heading-caps-md ui-desktop:type-heading-caps-lg">
         {label}
       </h2>
       <div className="mt-space-6 ui-desktop:mt-space-10">{children}</div>
@@ -397,7 +408,8 @@ function Stories({ items, pages }: { items: SearchIndex["stories"]; pages: numbe
 function Faqs({ items, pages }: { items: SearchIndex["faqs"]; pages: number }) {
   return (
     <>
-      <div className="hidden ui-desktop:block">
+      {/* Desktop (4931:73092): the section's gold rule above the heading, and no rule above the first question. */}
+      <div className="hidden ui-desktop:block [&>div>div:first-child]:shadow-[inset_0_-1px_0_var(--color-secondary-gold)]">
         <SupportFaqs items={items.slice(0, count("faqs", pages, "desktop")).map((item) => ({ _key: item.id, question: item.question, answer: item.answer }))} openOnDesktop={1} />
       </div>
       <div className="ui-desktop:hidden">
@@ -408,34 +420,50 @@ function Faqs({ items, pages }: { items: SearchIndex["faqs"]; pages: number }) {
 }
 
 /** Mobile: the search screen's field (4979:47688) with the query; its × clears the field, Search runs it. */
+/**
+ * Mobile search band (Nav / Search 4979:47760): a 56px secondary/ivory band with a leather rule under it and the query
+ * in heading-caps-sm (BD Megalona 22/26, capitals), 16px in; no visible label. The clear button stays at the end.
+ */
 function MobileSearchField({ query }: { query: string }) {
   const id = useId();
   const onSubmit = useSearchSubmit();
   const ref = useRef<HTMLInputElement>(null);
   return (
-    <form role="search" aria-label={text.label} action={withBasePath("/search/")} method="get" onSubmit={onSubmit} className="ui-desktop:hidden">
+    <form
+      role="search"
+      aria-label={text.label}
+      action={withBasePath("/search/")}
+      method="get"
+      onSubmit={onSubmit}
+      className="flex h-space-12 items-center gap-space-2 border-b border-primary-leather bg-secondary-ivory px-space-4 text-primary-leather ui-desktop:hidden"
+    >
       <label htmlFor={id} className="sr-only">
         {text.label}
       </label>
-      <Input
+      <input
         ref={ref}
         id={id}
         name="q"
         type="search"
-        label={siteHeader.searchPanel.mobilePlaceholder}
         defaultValue={query}
         enterKeyHint="search"
         autoComplete="off"
-        rightIcon="close"
-        rightIconLabel={text.clearLabel}
-        onRightIconClick={() => {
+        placeholder={siteHeader.searchPanel.placeholder}
+        className="type-heading-caps-sm min-w-0 flex-1 self-stretch bg-transparent text-primary-leather placeholder:text-secondary-gold focus-visible:-outline-offset-2 [&::-webkit-search-cancel-button]:appearance-none"
+      />
+      <button
+        type="button"
+        aria-label={text.clearLabel}
+        onClick={() => {
           if (ref.current) {
             ref.current.value = "";
             ref.current.focus();
           }
         }}
-        className="[&>div]:rounded-none [&>div]:border-x-0 [&>div]:border-t-0"
-      />
+        className="ui-transition-fast flex size-space-6 shrink-0 cursor-pointer items-center justify-center hover:text-black-alpha-60"
+      >
+        <Icon name="close" size={24} />
+      </button>
     </form>
   );
 }

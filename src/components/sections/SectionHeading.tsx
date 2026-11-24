@@ -38,4 +38,7 @@ export function SectionHeading({
 }
 
 /** Section spacing on the landing pages: 48/80 padding, 24/48 from the heading to the content. */
+/** Figma's full-width 1px black-alpha-20 line along a section's top edge, drawn inside it (a stroke, so no layout shift). */
+export const TOP_HAIRLINE = "relative before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-black-alpha-20";
+
 export const LANDING_SECTION = "flex flex-col gap-space-6 py-space-11 ui-desktop:gap-space-11 ui-desktop:py-space-15";
