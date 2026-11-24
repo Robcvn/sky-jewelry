@@ -45,6 +45,9 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
   // "Nav / Search" (4979:47688): with the search field in use, the menu's links give way to Popular searches. It stays
   // until focus leaves the search area with the field empty (so a tap on a term isn't lost).
   const [searching, setSearching] = useState(false);
+  // Keyboard only: Tab from the last popular search (field empty) closes the search screen and goes on to the first
+  // category, so forward Tab reaches every item. Focused once the main nav shows again.
+  const focusFirstCategory = useRef(false);
   const category = content.primary.find((link) => link._key === shown);
 
   // Scroll lock and first focus for the real (fixed) menu.
@@ -58,6 +61,12 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
       root.style.overflow = previous;
     };
   }, [inline]);
+
+  useEffect(() => {
+    if (searching || !focusFirstCategory.current) return;
+    focusFirstCategory.current = false;
+    categoryRefs.current.get(content.primary[0]?._key)?.focus();
+  }, [searching, content.primary]);
 
   // After drilling in, focus the back button; after going back, focus the category it came from.
   useEffect(() => {
@@ -86,18 +95,29 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
       return;
     }
     if (event.key !== "Tab" || !dialogRef.current) return;
-    // Focus trap: inert screens are skipped, so this only cycles through the visible screen.
+    // Focus trap: only what is showing counts. Inert screens (the one slid away) and hidden parts (the main and More
+    // navs while the search screen shows, since Task 21) are skipped, so Tab and Shift+Tab cycle through the visible
+    // screen. Focus that isn't on one of those (it shouldn't be) is brought back in.
     const items = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-      (element) => !element.closest("[inert]"),
+      (element) => !element.closest("[inert], [hidden]") && element.getClientRects().length > 0,
     );
-    const first = items[0];
-    const last = items[items.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
+    if (!items.length) return;
+    const index = items.indexOf(document.activeElement as HTMLElement);
+    // Forward Tab past the search screen: from its last item (the last popular search) with the field empty, close it and
+    // move on to the first category (the main nav comes back). With text in the field, Tab keeps cycling as below.
+    const field = dialogRef.current.querySelector<HTMLInputElement>("form[role=search] input");
+    if (searching && !event.shiftKey && index === items.length - 1 && !field?.value) {
       event.preventDefault();
-      last?.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
+      focusFirstCategory.current = true;
+      setSearching(false);
+      return;
+    }
+    if (event.shiftKey && index <= 0) {
       event.preventDefault();
-      first?.focus();
+      items[items.length - 1].focus();
+    } else if (!event.shiftKey && (index === -1 || index === items.length - 1)) {
+      event.preventDefault();
+      items[0].focus();
     }
   };
 
