@@ -101,12 +101,16 @@ export function PaginationDots({
   overlay = false,
   className,
 }: PaginationDotsProps) {
+  // Each dot's button is its hit area (Task 29): 24 tall and 14 wide, the 8px dot plus half the 6px gap on each side,
+  // so neighbours meet without overlapping. The 8px dot is drawn inside, centred, exactly where it was; the pill's
+  // padding is 3px less across and 8px less down, so the pill keeps its size. (A ::after hit area worked for taps but
+  // axe measures the button.) The focus ring stays round the dot.
   return (
     <div
       role="group"
       aria-label={label}
       className={cx(
-        "inline-flex items-center gap-1.5 rounded-full border px-space-3 py-space-2 backdrop-blur-md",
+        "inline-flex items-center rounded-full border px-[9px] backdrop-blur-md",
         overlay ? "border-white-alpha-10 bg-white-alpha-10" : "border-black-alpha-5 bg-black-alpha-2",
         className,
       )}
@@ -118,15 +122,18 @@ export function PaginationDots({
           aria-label={itemLabel(index)}
           aria-current={index === current ? "true" : undefined}
           onClick={() => onSelect?.(index)}
-          className={cx(
-            "ui-transition relative size-space-2 cursor-pointer rounded-full after:absolute after:-inset-x-[3px] after:-inset-y-space-2",
-            overlay
-              ? cx("ui-focus:outline-base-white", index === current ? "bg-secondary-skin" : "bg-white-alpha-30")
-              : index === current
-                ? "bg-primary-leather"
-                : "bg-black-alpha-20",
-          )}
-        />
+          className="group/dot flex h-space-6 w-3.5 shrink-0 cursor-pointer items-center justify-center focus-visible:outline-none"
+        >
+          <span
+            aria-hidden="true"
+            className={cx(
+              "ui-transition size-space-2 rounded-full group-focus-visible/dot:outline-2 group-focus-visible/dot:outline-offset-2",
+              overlay
+                ? cx("group-focus-visible/dot:outline-base-white", index === current ? "bg-secondary-skin" : "bg-white-alpha-30")
+                : cx("group-focus-visible/dot:outline-primary-leather", index === current ? "bg-primary-leather" : "bg-black-alpha-20"),
+            )}
+          />
+        </button>
       ))}
     </div>
   );

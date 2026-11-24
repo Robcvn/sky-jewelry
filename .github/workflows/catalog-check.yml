@@ -118,7 +118,12 @@ jobs:
             echo "::error::Could not list deploy.yml's runs, so the check can't tell whether this catalogue already has a deploy. No deploy started."
             exit 1
           fi
-          IFS=$'\t' read -r attempt_hash attempt_url attempt_state <<<"$attempt" || true
+          # Split on the tabs by hand: read with IFS=$'\t' treats tab as whitespace and drops the empty hash of a plain
+          # success, which shifted the url into attempt_hash.
+          attempt_hash="${attempt%%$'\t'*}"
+          attempt_rest="${attempt#*$'\t'}"
+          attempt_url="${attempt_rest%%$'\t'*}"
+          attempt_state="${attempt_rest#*$'\t'}"
           # One deploy per catalogue: the check already started one for this catalogue and no deploy has succeeded since.
           if [ "$attempt_hash" = "$short" ]; then
             echo "::notice::The check already started a deploy for catalogue $short ($attempt_url, $attempt_state) and no deploy has succeeded since. Not starting another: the next catalogue change, a push or a manual deploy will."

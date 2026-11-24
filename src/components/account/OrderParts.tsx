@@ -142,12 +142,14 @@ export function OrderCard({ order, compact = false, headingLevel = "h3" }: Order
 /**
  * Figma "Product Order Detail" (Design System 3047:24488): photo (136px desktop, 120px mobile), name and price, the
  * attribute rows, and Download Certificate where the product page shows View Certificate. There are no certificate
- * files, so it is shown, inert (Held for review).
+ * files, so it is shown, inert (Held for review). The photo is square, as the Design System, the 1280 frame and the mobile
+ * frame draw it; on Order Details in the 1440 frame's layout (the page's "order" container at 800px or wider) it is
+ * rounded 4px, as that frame draws it (Task 29).
  */
 export function ProductOrderDetail({ line }: { line: ResolvedOrderLine }) {
   return (
     <li className="flex items-center gap-space-4">
-      <OrderPhoto line={line} className="size-[7.5rem] ui-desktop:size-[8.5rem]" sizes={{ desktop: "136px", mobile: "120px" }} />
+      <OrderPhoto line={line} className="size-[7.5rem] ui-desktop:size-[8.5rem] @min-[50rem]/order:rounded-4" sizes={{ desktop: "136px", mobile: "120px" }} />
       <div className="flex min-w-0 flex-1 flex-col gap-space-2">
         <div className="flex flex-col gap-1 ui-desktop:flex-row ui-desktop:items-center ui-desktop:gap-space-2">
           <h3 className="type-heading-xs ui-desktop:type-heading-sm min-w-0 ui-desktop:flex-1">{line.name}</h3>

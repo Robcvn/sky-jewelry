@@ -30,7 +30,8 @@ export function IconBlock({ icon, label, lines, body, layout = "stacked", asHead
     <div
       className={cx(
         "flex flex-1 text-primary-leather",
-        row ? "flex-row items-start gap-space-1 ui-desktop:flex-col ui-desktop:items-center ui-desktop:gap-space-2 ui-desktop:text-center" : "flex-col items-center gap-space-2 text-center",
+        // Stacked: Figma's Type=Default puts 4px between icon and text at Size=SM (mobile), 8px at MD (desktop).
+        row ? "flex-row items-start gap-space-1 ui-desktop:flex-col ui-desktop:items-center ui-desktop:gap-space-2 ui-desktop:text-center" : "flex-col items-center gap-space-1 text-center ui-desktop:gap-space-2",
         className,
       )}
     >

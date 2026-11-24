@@ -25,7 +25,7 @@ import { variantHref } from "@/components/pdp/productFacts";
 import { formatInstallment, formatPrice, imagesFor, variantName, type Product } from "@/content/products";
 import type { RingSetting, StoneSummary } from "@/lib/builder";
 import { completeHref, parseRing, parseShape, ringParams, settingShapes, settingsHref, settingVariant, stoneFirst, stoneFirstStartHref, stonesHref } from "./ring";
-import { liveQuery, useIsClient, useQuery } from "./useQuery";
+import { liveQuery, redirectTo, useIsClient, useQuery } from "./useQuery";
 import { useDragScroll } from "@/components/ui/useDragScroll";
 
 const { setting: text } = builderContent;
@@ -435,7 +435,7 @@ export function SettingDetail({ setting, bands, stones = [] }: { setting: RingSe
   useEffect(() => {
     if (!isClient) return;
     const live = parseRing(liveQuery());
-    if (stoneFirst(live) && !stones.some((stone) => stone.handle === live.stone)) router.replace(stoneFirstStartHref(live));
+    if (stoneFirst(live) && !stones.some((stone) => stone.handle === live.stone)) redirectTo(router, stoneFirstStartHref(live));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient, first, chosen]);
 

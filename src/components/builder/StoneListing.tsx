@@ -327,14 +327,12 @@ export function StoneListing({ stones, settings, variant }: StoneListingProps) {
             value={origin}
             onChange={(next) => setState({ ...state, origin: next as StoneOrigin, numbers: {}, page: 1 })}
             items={copy.origins.map((item) => ({ id: item.value, label: item.label }))}
-            // The shared Tabs draw their border outside Figma's 48px box (50 tall); -my-px keeps what follows on Figma's lines.
-            className={size === "md" ? "-my-px hidden ui-desktop:block" : "-my-px ui-desktop:hidden"}
+            className={size === "md" ? "hidden ui-desktop:block" : "ui-desktop:hidden"}
           />
         ))}
 
         {/* Desktop shape tiles: Figma "Radio Button" MD, 104 x 90, 8px apart. A second press on the chosen shape clears it. */}
-        {/* -my-px: the shared Radio Button is 92 tall for Figma's 90 (its border sits outside the padding). */}
-        <fieldset className="-my-px hidden w-full min-w-0 ui-desktop:block">
+        <fieldset className="hidden w-full min-w-0 ui-desktop:block">
           <legend className="sr-only">{copy.shapeLegend}</legend>
           {/* 104px tiles at 1440; below about 1300 the ten share the row and narrow instead of overflowing. */}
           <div className="flex justify-center gap-space-2">

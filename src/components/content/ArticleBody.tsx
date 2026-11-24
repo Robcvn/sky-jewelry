@@ -1,5 +1,6 @@
 import { Picture } from "@/components/ui/Picture";
 import { cx } from "@/components/ui/shared";
+import { TableScroll } from "@/components/ui/TableScroll";
 import type { ArticleBlock } from "@/content/article";
 import type { Product } from "@/content/products";
 import { ARTICLE_SIZES, FigureAction, Gallery, GradeScale, Qualities } from "./ArticleBlocks";
@@ -92,8 +93,8 @@ export function ArticleBody({ body, kind, products = {} }: { body: ArticleBlock[
           case "table":
             return (
               // Figma draws the cells as "Tag" (MD, Primary): bordered skin cells, 32px header row and 36px rows; the last column is double width.
-              // The mobile frame has no table, so it keeps its desktop layout and scrolls sideways there.
-              <div key={block._key} className={cx("overflow-x-auto", space)}>
+              // The mobile frame has no table, so it keeps its desktop layout and scrolls sideways there (a focusable region).
+              <TableScroll key={block._key} label={block.caption} className={space}>
                 <table className="w-full min-w-[34rem] border-collapse text-left text-primary-leather">
                   <caption className="sr-only">{block.caption}</caption>
                   <thead>
@@ -123,7 +124,7 @@ export function ArticleBody({ body, kind, products = {} }: { body: ArticleBlock[
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </TableScroll>
             );
           case "qualities":
             return (

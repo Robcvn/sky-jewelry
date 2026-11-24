@@ -1,73 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sky Jewelry
 
-## Getting Started
+A full jewelry storefront built from a Figma design and matched to it at desktop (1440) and mobile (390). Portfolio project by Rob Coven.
 
-First, run the development server:
+**Live demo:** https://robcvn.github.io/sky-jewelry/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## What's in it
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Product lists, product pages, a bag and account pages
+- A ring builder (start with a setting or a stone) and an earrings builder
+- Education center, blog, search, and a landing page per category
+- Editorial content editable in Sanity; products and the bag run on Shopify
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Next.js (App Router, static export) · TypeScript · Tailwind CSS · Shopify Storefront API · Sanity · GitHub Pages
 
-## Learn More
+## How it works
 
-To learn more about Next.js, take a look at the following resources:
+- Pages are generated at build time from the Shopify catalogue and Sanity content.
+- GitHub Actions redeploys on every push to main, when content is published in Sanity, and when the catalogue changes (checked hourly).
+- `/styleguide/components` shows every component and lists each place the build differs from the design, with the reason.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Run it locally
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    npm install
+    npm run dev
 
-## Deploy on Vercel
+Copy `.env.example` to `.env.local` and fill in the Shopify values to connect Shopify and Sanity; without them the site uses the sample data in the repo. The heading font (BD Megalona) is licensed and not included: add its seven `.woff2` files to `src/fonts/bd-megalona/` (names in `src/fonts/index.ts`) first.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Demo notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Shopify (headless)
-
-Products and prices come from a Shopify development store through the Storefront API, read once at build time. The site stays a static export. Checkout is simulated on the site; shoppers are never sent to Shopify's checkout, and no payment details are handled.
-
-**Environment variables.** Copy `.env.example` to `.env.local` (never committed) and fill in:
-
-| Variable | Value |
-| --- | --- |
-| `NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN` | The store's `.myshopify.com` domain |
-| `NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN` | The Headless channel's public Storefront API access token |
-
-For the GitHub Pages build, add the same two values to the build environment (for example, repository secrets passed to `npm run build`).
-
-**Code.** `src/lib/shopify/` holds the typed client (API version in `config.ts`), the queries, the cart functions and the mapper from Shopify products to the site's `Product` type. `src/lib/catalog.ts` loads the catalogue once per build and picks each listing page's products. `src/lib/bag.ts` is the browser-side bag: Add to Bag creates a Shopify cart on first use and keeps its id in localStorage.
-
-**Catalogue source.** `src/content/catalog-seed.ts` is the single source for the sample catalogue: it generates the import CSV, and the mock catalogue is the same data run through the same mapper as real Shopify data, so the site looks the same before and after an import. Product photos are only ones that exist in Figma, kept in `shopify/images/`.
-
-**Fallback.** If the variables are missing, Shopify can't be reached, or it returns no products, the build uses the mock catalogue and prints a `[catalog] WARNING` line. A Fine Jewelry page whose category has no products in Shopify yet also falls back, with its own warning. The build never fails because of the store.
-
-**Collections.** Each Fine Jewelry page (`/fine-jewelry/rings/`, `necklaces`, `earrings`, `bracelets`) uses the Shopify collection with that handle when it exists and is on the Headless channel; otherwise it uses the products whose product type matches. The build log says which.
-
-**Fresh data on every build.** Next saves build-time fetch responses in `.next/cache/fetch-cache` and would reuse them on later builds, so a change in Shopify would never show. The `prebuild` script clears that folder first, so always build with `npm run build` (not `npx next build`).
-
-**Catalogue check.** Every build writes `catalog-hash.txt` at the site's root: a hash of the Shopify data it was built from (`src/lib/shopify/fingerprint.ts`). Once an hour, `.github/workflows/catalog-check.yml` computes the store's hash (`npm run catalog:hash`) and starts a deploy when it differs from the live site's, once per catalogue: if it already started a deploy for that hash and no deploy has succeeded since, even when that deploy failed, it starts nothing. `npm run catalog:hash -- --print` shows exactly what is hashed.
-
-**Product photos.** `npm run images:products` turns `shopify/images/*.jpg` into the WebP sizes the cards use (`public/images/products/`) and writes `src/content/product-image-manifest.ts`. The site matches each Shopify image to its local WebP by file name, so the photos stay pre-sized and lazy-loaded.
-
-**Filters in Shopify data.** Options: `Metal` (e.g. "14K Yellow Gold") and `Carat Weight` (e.g. "0.80ct"), with a price per variant. Tags: `fine-jewelry`, `style:<sub-type>` (the menu's ?type=), `diamond:natural|lab-grown`, `shape:<shape>`, `length:<inches>` and `ships-in:<days>`. The number in the SKU (`SKY-R01-...`) is the "Best Match" order.
-
-**Re-importing the seed products.**
-
-1. Run `npm run shopify:seed` to regenerate `shopify/products-seed.csv` from `src/content/catalog-seed.ts`, and `npm run images:products` if photos changed.
-2. Make sure the product photos in `shopify/images/` are pushed to GitHub. Shopify downloads them from their public raw URLs during the import. To use another host, set `SEED_IMAGE_BASE` when running the script.
-3. In the Shopify admin, go to **Products → Import**, choose the CSV, and tick **Overwrite products with matching handles** to update existing ones.
-4. Select the imported products and include them in the **Headless** sales channel. The CSV only controls the Online Store channel.
-5. Rebuild the site.
+This is a demonstration, not a store. Products, prices, reviews and contact details are sample content, and checkout is switched off.

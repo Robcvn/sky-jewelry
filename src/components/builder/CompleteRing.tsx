@@ -50,7 +50,7 @@ import { StoneInfoSection } from "./StoneDetail";
 import { StoneCertificateTile, STONE_DRAWING_BG, STONE_TILE_BG } from "./StoneDetailGallery";
 import { StoneDetailQualities } from "./StoneDetailQualities";
 import { StonePicture } from "./StonePicture";
-import { liveQuery, useIsClient, useQuery } from "./useQuery";
+import { liveQuery, redirectTo, useIsClient, useQuery } from "./useQuery";
 import { useDragScroll } from "@/components/ui/useDragScroll";
 
 const text = builderContent.complete;
@@ -243,10 +243,10 @@ export function CompleteRing({ settings, stones, bands, children }: CompleteRing
     const liveSetting = settings.find((item) => item.handle === live.setting) ?? null;
     const liveStone = stones.find((item) => item.handle === live.stone) ?? null;
     if (stoneFirst(live)) {
-      if (!liveStone) router.replace(stoneFirstStartHref(live));
-      else if (!liveSetting) router.replace(settingsHref({ ...live, stone: liveStone.handle, shape: liveStone.shape as Ring["shape"] }));
-    } else if (!liveSetting) router.replace(settingsHref(live));
-    else if (!liveStone) router.replace(stonesHref({ ...live, setting: liveSetting.handle }));
+      if (!liveStone) redirectTo(router, stoneFirstStartHref(live));
+      else if (!liveSetting) redirectTo(router, settingsHref({ ...live, stone: liveStone.handle, shape: liveStone.shape as Ring["shape"] }));
+    } else if (!liveSetting) redirectTo(router, settingsHref(live));
+    else if (!liveStone) redirectTo(router, stonesHref({ ...live, setting: liveSetting.handle }));
     // The ring is read from the URL; re-run when it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient, search, setting, stone]);

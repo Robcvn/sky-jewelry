@@ -169,7 +169,8 @@ export function Tabs({
           "flex max-w-full overflow-x-auto",
           variant === "pill"
             ? cx(
-                "w-fit rounded-full border p-space-1",
+                // Figma's 1px stroke is inside its 4px padding (Tabs 48 / 40 / 32 tall): 3px beside the border.
+                "w-fit rounded-full border p-[3px]",
                 overlay ? "border-white-alpha-20 bg-white-alpha-10 backdrop-blur-md" : "border-secondary-gold",
               )
             : cx(size === "md" ? "gap-space-10" : "gap-space-6", divider && "w-full justify-center border-b border-black-alpha-20"),

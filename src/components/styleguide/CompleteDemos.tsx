@@ -117,10 +117,16 @@ export function CompleteDemos({ setting, stone }: { setting: RingSetting; stone:
   return (
     <div className="flex flex-col gap-space-10 text-primary-leather">
       <Demo label="Step bar on Step 3 (Figma 6579:194415): both earlier steps complete, Complete Ring current">
-        <BuilderSteps current={3} settings={[setting.product]} stone={stone} ring={ring} />
+        {/* Full width below 1024, as on the page: inside the style guide's margins the steps are too narrow for their names. */}
+        <div className="mx-[calc(var(--grid-margin)*-1)] ui-desktop:mx-0">
+          <BuilderSteps current={3} settings={[setting.product]} stone={stone} ring={ring} />
+        </div>
       </Demo>
       <Demo label="Stone unavailable (7412:102902): step 2 struck through, Unavailable, Select New Stone">
-        <BuilderSteps current={3} settings={[setting.product]} stone={stone} ring={ring} stoneUnavailable />
+        {/* Full width below 1024, as on the page: inside the style guide's margins the steps are too narrow for their names. */}
+        <div className="mx-[calc(var(--grid-margin)*-1)] ui-desktop:mx-0">
+          <BuilderSteps current={3} settings={[setting.product]} stone={stone} ring={ring} stoneUnavailable />
+        </div>
       </Demo>
 
       <div className="flex flex-wrap items-start gap-space-6">

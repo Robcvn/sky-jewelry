@@ -50,8 +50,11 @@ type QualityCardProps = {
   title: string;
   grade: string;
   options: string[];
-  /** The drawing and its height as a percentage of the panel, per layout (Figma sizes each one per frame). */
-  illustration: { src: string; height: { mobile: number; desktop: number } };
+  /**
+   * The drawing and its height as a percentage of the panel, per layout (Figma sizes each one per frame). size is the
+   * SVG's own width and height, so the lazy-loaded drawing has its final width before it loads.
+   */
+  illustration: { src: string; size: { width: number; height: number }; height: { mobile: number; desktop: number } };
   description: string;
   className?: string;
 };
@@ -70,12 +73,15 @@ export function QualityCard({ title, grade, options, illustration, description, 
         <span className="text-primary-hazel">{grade}</span>
       </h3>
       <div className="flex aspect-video items-center justify-center overflow-hidden rounded-4 border border-black-alpha-5 bg-secondary-skin">
+        {/* Lazy: always below the fold. React preloads any eager <img>, and a list page that prefetched this page then
+            preloaded the three diagrams without using them ("preloaded but not used", Task 29). */}
         {/* eslint-disable-next-line @next/next/no-img-element -- a static SVG diagram exported from Figma */}
         <img
           src={withBasePath(illustration.src)}
           alt=""
-          width={267}
-          height={198}
+          width={illustration.size.width}
+          height={illustration.size.height}
+          loading="lazy"
           className="h-(--drawing-m) w-auto max-w-none ui-desktop:h-(--drawing-d)"
           style={{ "--drawing-m": `${illustration.height.mobile}%`, "--drawing-d": `${illustration.height.desktop}%` } as CSSProperties}
         />

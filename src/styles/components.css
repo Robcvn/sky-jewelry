@@ -126,6 +126,26 @@ body > header [data-header-row] :is(a, button) {
 }
 
 /*
+ * The focus ring for keyboard users only (Task 29). While the last input was a pointer (FocusModality: a tap, a click
+ * or a mouse press), no control shows a focus outline: not the global ring (globals.css), not a control's own
+ * (focus-visible: utilities on checkboxes and slider thumbs), not a wrapper that outlines a focused child (has-[...]:
+ * tiles, swatches, option cards, the dropdown box), not a part inside a focused control that draws its ring
+ * (group-focus-visible: the pagination dot) and not a radio's indicator (peer-focus-visible). So the close button
+ * a tap-opened dialog focuses, and the opener focus returns to, show no ring on iOS, which counts that moved focus as
+ * :focus-visible. Text fields keep their own focus styling whatever the input was. Outlines on this site are only ever
+ * focus rings (the style guide's forced Focus states, data-state="focus", are left alone). Unlayered, so it wins over the
+ * utilities layer. Keep the text-field selector in step with FocusModality.
+ */
+:root[data-input="pointer"] {
+  & :focus-visible:not(input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="image"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])):not([data-state="focus"]),
+  & :focus-visible:not(input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="image"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])) ~ *:not([data-state="focus"]),
+  & :focus-visible:not(input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="image"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])) :not([data-state="focus"]),
+  & :has(:focus-visible:not(input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="image"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"]))):not([data-state="focus"]) {
+    outline: none;
+  }
+}
+
+/*
  * Product cards (Task 28): a card rises and shows its hover shell and panel for keyboard focus inside it, never for
  * focus left by a mouse press or a drag. FocusModality sets data-input on <html> from the last input. focus-within (not
  * :has(:focus-visible)) so the panel stays up while Tab moves between the card's controls.

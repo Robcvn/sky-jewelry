@@ -26,7 +26,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 /**
  * Account - Order Details (3565:98015; 1280px 4430:61649; mobile 3587:124461). The Order Price card sits beside the
  * pieces when the page column is at least 800px wide (the 1440 frame, 822px) and below them when narrower (the 1280
- * frame, 716px).
+ * frame, 716px). The same switch rounds the piece photos 4px, as the 1440 frame draws them; the 1280 and mobile frames
+ * draw them square (Task 29, Open questions).
  */
 export default async function AccountOrderDetails({ params }: Params) {
   const { order: number } = await params;
@@ -43,8 +44,8 @@ export default async function AccountOrderDetails({ params }: Params) {
           <BackToOrders />
           <OrderCard order={order} compact headingLevel="h2" />
           {/* Figma: 32px under the card on desktop, where the rest of the page is 40 apart. */}
-          <div className="@container ui-desktop:-mt-space-2">
-            <div className="flex flex-col gap-space-6 @min-[50rem]:grid @min-[50rem]:grid-cols-[minmax(0,1fr)_18.25rem] @min-[50rem]:items-start @min-[50rem]:gap-space-13">
+          <div className="@container/order ui-desktop:-mt-space-2">
+            <div className="flex flex-col gap-space-6 @min-[50rem]/order:grid @min-[50rem]/order:grid-cols-[minmax(0,1fr)_18.25rem] @min-[50rem]/order:items-start @min-[50rem]/order:gap-space-13">
               <section aria-labelledby="order-pieces">
                 <h2 id="order-pieces" className="sr-only">
                   {d.pieces}

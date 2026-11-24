@@ -99,7 +99,8 @@ export const orders: Order[] = [
     lines: [
       { _key: "a", handle: "round-halo-lab-grown-ring", metal: "14k-rose-gold", carat: 1, quantity: 1, price: 1390 },
       { _key: "b", handle: "four-prong-solitaire-lab-grown-stud-earrings", metal: "14k-yellow-gold", carat: 1, quantity: 1, price: 1250 },
-      { _key: "c", handle: "beaded-bezel-lab-grown-tennis-bracelet", metal: "14k-yellow-gold", carat: 1.5, quantity: 1, price: 2450 },
+      // 2.00ct: the store has 1.00, 2.00 and 3.00 (Task 29). The price is the order's, so the totals stay as they were.
+      { _key: "c", handle: "beaded-bezel-lab-grown-tennis-bracelet", metal: "14k-yellow-gold", carat: 2, quantity: 1, price: 2450 },
     ],
     shipping: 20,
     discount: 100,

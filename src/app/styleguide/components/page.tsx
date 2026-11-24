@@ -696,11 +696,14 @@ export default async function ComponentsPage() {
           </Group>
           <Group title="Product Info Card">
             <div className="grid w-[31.625rem] max-w-full grid-cols-2 items-start gap-space-3">
-              <Item label="Chart (metal composition, from data)">
-                <ProductInfoCard label="Metal" value="14K Yellow Gold" note="Percentages by weight." gap="md">
-                  <CompositionChart parts={metalComposition["14k-yellow-gold"]} />
-                </ProductInfoCard>
-              </Item>
+              {/* Full width, as on the product page: half the grid is too narrow for the legend at 390 (Task 29). */}
+              <div className="col-span-2">
+                <Item label="Chart (metal composition, from data)">
+                  <ProductInfoCard label="Metal" value="14K Yellow Gold" note="Percentages by weight." gap="md">
+                    <CompositionChart parts={metalComposition["14k-yellow-gold"]} />
+                  </ProductInfoCard>
+                </Item>
+              </div>
               <Item label="Default (stat)"><ProductInfoCard label="Carat" value="0.80" note="The weight of the center stone." /></Item>
               <Item label="Scale, Color">
                 <ProductInfoCard label="Color" value="I" note="Nearly colorless"><InfoScale kind="color" position={0.58} label="Color I" /></ProductInfoCard>
@@ -1006,8 +1009,9 @@ export default async function ComponentsPage() {
           </Group>
           <Group title="Pagination Dots">
             <p className="type-body-sm-regular mb-space-4 max-w-[40rem]">
-              Rule: any carousel using dots must also offer previous and next buttons or swipe. The dots alone are too small and close
-              together to meet the WCAG 2.2 target size.
+              Rule: any carousel using dots must also offer previous and next buttons or swipe. Each dot&rsquo;s hit area is 24px tall and
+              14px wide (the 8px dot plus half the 6px gap each side, Task 29), the most the drawn spacing allows; that is still under
+              the WCAG 2.2 target size of 24 by 24.
             </p>
             <Item label="Type=Dots, Color=Default"><PaginationDotsDemo /></Item>
           </Group>
@@ -1136,7 +1140,7 @@ export default async function ComponentsPage() {
                 <Item label="Product Card (product list). Desktop hover or focus shows the shell, image dots, Info, Add to Bag and installments">
                   <ProductCardDemo product={productCardSample} />
                 </Item>
-                <Item label="Product Card, Type=Search (Search Results mobile): 120px photo, name, price, swatches">
+                <Item label="Product Card, Type=Search (Search Results mobile): 120px photo, name (in full; a long one wraps and the card grows), price, swatches">
                   <div className="w-[21.875rem]">
                     <ProductCardSearch product={productCardSample} href="#cards" />
                   </div>
@@ -1359,7 +1363,7 @@ export default async function ComponentsPage() {
               Dropdown - Overlay, Size=XS, Selected=True: the Figma frame is broken, with dividers missing, the wrong length or pasted as
               images. Built with the SM and MD pattern: a 1px white-alpha-20 divider, 12px tall at XS.
             </li>
-            <li>Focus rings: Figma defines no focus state. A 2px ring is added, leather on light surfaces and white on overlays.</li>
+            <li>Focus rings: Figma defines no focus state. A 2px ring is added, leather on light surfaces and white on overlays. It shows only while the last input was the keyboard (Task 29): after a tap or a click no control shows it, including the close button a dialog moves focus to and the button focus returns to when it closes (iOS counted those as focus-visible). Tab, and a dialog opened from the keyboard, show it as before. Text fields keep their own focus styling whatever the input.</li>
             <li>Tab Item hover: Figma uses black-alpha-50, 3.42:1 on secondary/skin, which fails AA. Built with black-alpha-60, 4.70:1.</li>
             <li>Pagination Number hover text: Figma hard-codes #1f2937, which is not a token. Built with base/black #141829, 14.29:1 on peach.</li>
             <li>Nav Item hover: Figma uses black-alpha-50, 3.34:1 on ivory, which fails AA. Built with black-alpha-60, 4.56:1.</li>
@@ -1601,7 +1605,7 @@ export default async function ComponentsPage() {
             <li>Sort: Figma draws the closed &ldquo;Sort by: Latest&rdquo; only. Its menu offers Latest and Oldest. Approved (Rob, Nov 21).</li>
             <li>The 4Cs, Diamond Color: Figma shows the same three photos under Colorless and again under Near Colorless. Built once, after Colorless, captioned Colorless D to F, Near colorless G to J and Faint color K to M.</li>
             <li>The 4Cs grade scales: the line under the clarity slider describes the chosen grade (Figma: one static caption). The carat slider has a line too (the approximate diameter of a well-cut round diamond at that weight); Figma draws none there.</li>
-            <li>Post Detail, mobile: the frame leaves out the H4, the labelled list and the table that desktop draws. They are part of the same article, so they show on mobile too (the table scrolls sideways). Approved (Rob, Nov 21).</li>
+            <li>Post Detail, mobile: the frame leaves out the H4, the labelled list and the table that desktop draws. They are part of the same article, so they show on mobile too (the table scrolls sideways: while it scrolls it is a labelled region that takes keyboard focus and scrolls with the arrow keys, Task 29). Approved (Rob, Nov 21).</li>
             <li>Blog List: the grid lists the six posts other than the featured one, so it has no pagination; &ldquo;You Should also Read&rdquo; shows the three newest other posts. Home&rsquo;s blog row and the Education menu keep their three posts.</li>
             <li>Education Center hero: one line under the title (&ldquo;Guides to diamonds, rings and caring for fine jewelry.&rdquo;), as the 548px text box draws it. Every resource shares Figma&rsquo;s Resource Detail hero photos (desktop: the hands; mobile: the rings and chains); each post&rsquo;s hero is a wide crop of its card photo.</li>
             <li>Post Detail &ldquo;Customize this ring&rdquo; (Button - Overlay with Sparkle) links to the ring builder&rsquo;s first step, /design-your-own/. Figma&rsquo;s prototype gives it no destination, so the link is an inference (Rob&rsquo;s decision, Nov 21).</li>
@@ -1868,8 +1872,13 @@ export default async function ComponentsPage() {
           </ul>
         </Section>
 
-        <Section id="kept-as-figma" title="Kept as Figma despite low contrast">
+        <Section id="kept-as-figma" title="Kept as Figma">
           <ul className="type-body-sm-regular flex max-w-[48rem] list-disc flex-col gap-space-2 pl-space-5">
+            <li>
+              Pagination Dots, target size: each dot&rsquo;s hit area is 14 by 24 (the 8px dot plus half the 6px gap each side), the most
+              Figma&rsquo;s dot spacing allows. axe flags it (target-size) because 24 by 24 cannot fit in the drawn spacing. Kept by decision:
+              the galleries also swipe.
+            </li>
             <li>
               Pagination Dots, inactive: black-alpha-20, 1.53:1. Not text, and the current dot is high contrast. Any carousel using dots
               must also offer previous and next buttons or swipe.
@@ -1989,8 +1998,10 @@ export default async function ComponentsPage() {
             <li>Address cards: should a saved address show its company and phone number?</li>
             <li>How should orders that aren&rsquo;t delivered yet look?</li>
             <li>
-              Order Details photos: the 1440 frame rounds them 4px; the 1280 frame, the mobile frame and the Design System&rsquo;s Product
-              Order Detail don&rsquo;t. Built square. Which is right?
+              Order Details photos: the 1440 frame (3565:98015) rounds them 4px; the 1280 frame (4430:61649), the mobile frame
+              (3587:124461) and the Design System&rsquo;s Product Order Detail draw them square. Built as each frame draws them: rounded 4px
+              in the 1440 frame&rsquo;s layout (the Order Price card beside the pieces), square in the 1280 and mobile layouts. Which is
+              meant?
             </li>
             <li>Photos are needed for Channel Set, Halo, Side-Stone and Eternity before they can be listed in the builder.</li>
             <li>Stone first, &ldquo;Choose your Setting&rdquo; (desktop Modal - Ring Size 7 5440:36621, mobile Modal - Setting Type 6683:73402): the prototype opens it from Select Stone and Select Your Setting, but its Pendant Setting card leads nowhere and no pendant builder is drawn. Not built; Select Stone goes straight to the ring settings. Recommendation: drop it until a pendant builder is designed.</li>

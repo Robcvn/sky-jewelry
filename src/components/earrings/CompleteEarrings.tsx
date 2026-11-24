@@ -7,7 +7,7 @@ import { TotalPrice } from "@/components/builder/CompleteRing";
 import { DropHintModal } from "@/components/builder/DropHintModal";
 import { settingTitle, settingVariant } from "@/components/builder/ring";
 import { RingConfigChoice } from "@/components/builder/RingConfigChoice";
-import { liveQuery, useIsClient, useQuery } from "@/components/builder/useQuery";
+import { liveQuery, redirectTo, useIsClient, useQuery } from "@/components/builder/useQuery";
 import { Accordion, AccordionItem } from "@/components/ui/Accordion";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -73,8 +73,8 @@ export function CompleteEarrings({ settings, pairs, children }: CompleteEarrings
     const live = parseEarrings(liveQuery());
     const liveSetting = settings.find((item) => item.handle === live.setting) ?? null;
     const livePair = liveSetting ? (pairs.find((item) => item.handle === live.stone) ?? null) : null;
-    if (!liveSetting) router.replace(earringSettingsHref());
-    else if (!livePair) router.replace(pairsHref({ ...live, setting: liveSetting.handle }));
+    if (!liveSetting) redirectTo(router, earringSettingsHref());
+    else if (!livePair) redirectTo(router, pairsHref({ ...live, setting: liveSetting.handle }));
     // The earrings are read from the URL; re-run when it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient, search, setting, pair]);

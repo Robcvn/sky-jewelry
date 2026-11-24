@@ -40,8 +40,9 @@ export function Badge({
       className={cx(
         "inline-flex items-center gap-0.5 rounded-full border",
         // MD keeps Figma's 32px minimum. SM and XS hug their content (Figma: 4px padding, so 24px with the 16px icon and
-        // 22px without); the padding is 1px less beside the 1px border, as Figma's stroke is inside.
-        size === "md" ? "min-h-space-8 px-space-3" : cx("py-[3px]", compactPadding),
+        // 22px without); the padding is 1px less beside the 1px border, as Figma's stroke is inside. Badge - Overlay SM
+        // and XS keep Figma's 24px minimum height, so the 14px upper-case SM label is 24 tall too.
+        size === "md" ? "min-h-space-8 px-space-3" : cx("py-[3px]", compactPadding, overlay && "min-h-space-6"),
         size === "xs" ? "type-ui-xs-medium" : "type-overline-xs-medium",
         color,
         className,

@@ -112,7 +112,8 @@ export function RadioButton({ size = "md", icon = "plus", previewState, classNam
         TILE,
         "gap-space-1 has-checked:border-primary-leather has-checked:bg-secondary-skin",
         size === "md"
-          ? "w-24 border-transparent bg-secondary-skin px-space-2 py-space-3 ui-hover:not-has-checked:bg-secondary-ivory"
+          ? // 96 x 90 as Figma: its 1px stroke is inside the 12px padding, so 11px beside the border.
+            "w-24 border-transparent bg-secondary-skin px-space-2 py-[11px] ui-hover:not-has-checked:bg-secondary-ivory"
           : "size-space-15 justify-center border-black-alpha-20 bg-secondary-skin p-space-2 ui-pressed:not-has-checked:border-black-alpha-0 ui-pressed:not-has-checked:bg-secondary-ivory",
         className,
       )}

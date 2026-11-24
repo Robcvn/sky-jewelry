@@ -105,8 +105,8 @@ export function CccPanel({ tab, onTabChange }: { tab: CccTab; onTabChange: (tab:
         onChange={(next) => onTabChange(next as CccTab)}
         items={(Object.keys(TABS) as CccTab[]).map((key) => ({ id: key, label: TABS[key].label }))}
         size="sm"
-        // Three equal 32px tabs across the row (40 with the pill's padding); -my-px takes up the border the shared Tabs add outside.
-        className="-my-px [&_[role=tab]]:flex-1 [&>[role=tablist]]:w-full"
+        // Three equal 32px tabs across the row (40 with the pill's padding and border).
+        className="[&_[role=tab]]:flex-1 [&>[role=tablist]]:w-full"
       />
       <p className="type-p-xs-regular ui-desktop:type-p-sm-regular">{copy.help[tab]}</p>
       <div className="flex aspect-video shrink-0 items-center justify-center overflow-hidden rounded-4 border border-black-alpha-5 bg-secondary-ivory">

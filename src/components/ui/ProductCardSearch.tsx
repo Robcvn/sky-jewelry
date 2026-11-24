@@ -10,7 +10,8 @@ import { openingVariant } from "@/lib/swatches";
 /**
  * Figma "Product Card", Type=Search (Design System 2990:11354; Search Results mobile 4979:47760): a 120px square photo
  * on the product-image gradient beside the name (heading-sm), the price (ui-xs medium) with an optional note (ui-xs),
- * and the metal swatches, which switch the photo, name and price. The photo and name open the product's page.
+ * and the metal swatches, which switch the photo, name and price. The photo and name open the product's page. A long
+ * name wraps in full and the card grows past the photo's 120px (Figma's sample, "Product Name", is one line).
  */
 export function ProductCardSearch({ product, title, href, priceNote }: { product: Product; title?: string; href: string | ((variant: ProductVariant) => string); priceNote?: (variant: ProductVariant) => string | null }) {
   const [variant, setVariant] = useState(() => openingVariant(product));
@@ -24,7 +25,8 @@ export function ProductCardSearch({ product, title, href, priceNote }: { product
       </span>
       <div className="flex min-w-0 flex-1 flex-col items-start gap-space-3">
         <div className="flex flex-col gap-space-1">
-          <h3 className="type-heading-sm line-clamp-2">
+          {/* The whole name, however many lines (Task 29): Figma's card hugs its content and doesn't truncate its one-line sample. */}
+          <h3 className="type-heading-sm">
             <Link href={typeof href === "string" ? href : href(variant)} className="after:absolute after:inset-0">
               {name}
             </Link>

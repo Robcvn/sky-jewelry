@@ -142,6 +142,7 @@ export function CompositionChart({ parts }: { parts: CompositionPart[] }) {
 
 /** Figma's mobile-only dimensions diagram: an L-shaped ruler around the stone outline (40px). */
 export function DimensionsDiagram() {
+  // Lazy: below the fold, and React preloads any eager <img>, also from a prefetched page's payload (Task 29).
   // eslint-disable-next-line @next/next/no-img-element -- a static SVG exported from Figma
-  return <img src={withBasePath("/images/pdp/dimensions-scale-round.svg")} alt="" width={40} height={40} className="size-space-10" />;
+  return <img src={withBasePath("/images/pdp/dimensions-scale-round.svg")} alt="" width={40} height={40} loading="lazy" className="size-space-10" />;
 }

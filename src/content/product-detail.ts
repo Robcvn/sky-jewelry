@@ -97,7 +97,7 @@ export type Grade = { value: string; label: string; description: string };
 export const gradeScales = {
   color: {
     title: "Color",
-    illustration: { src: "/images/pdp/quality-color-diamond.svg", height: { mobile: 89.2, desktop: 100 } },
+    illustration: { src: "/images/pdp/quality-color-diamond.svg", size: { width: 267, height: 198 }, height: { mobile: 89.2, desktop: 100 } },
     options: ["J", "I", "H", "G", "F", "E", "D"],
     /** Short descriptor for the Stone Info card, and the full description for the Qualities card. */
     grades: {
@@ -110,7 +110,7 @@ export const gradeScales = {
   },
   clarity: {
     title: "Clarity",
-    illustration: { src: "/images/pdp/quality-clarity-diamond.svg", height: { mobile: 86.1, desktop: 76.8 } },
+    illustration: { src: "/images/pdp/quality-clarity-diamond.svg", size: { width: 198, height: 152 }, height: { mobile: 86.1, desktop: 76.8 } },
     options: ["SI2", "SI1", "VS2", "VS1", "VVS2", "VVS1", "IF", "FL"],
     grades: {
       VVS2: {
@@ -122,7 +122,7 @@ export const gradeScales = {
   },
   cut: {
     title: "Cut",
-    illustration: { src: "/images/pdp/quality-cut-diamond.svg", height: { mobile: 93.1, desktop: 100 } },
+    illustration: { src: "/images/pdp/quality-cut-diamond.svg", size: { width: 258, height: 198 }, height: { mobile: 93.1, desktop: 100 } },
     options: ["Good", "Very Good", "Excellent"],
     grades: {
       Excellent: { short: "Exceptional fire and brilliance", description: "Exceptional fire, brilliance, and precise diamond craftsmanship." },

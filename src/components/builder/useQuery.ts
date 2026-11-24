@@ -52,3 +52,18 @@ export function pushQuery(params: URLSearchParams | string) {
   window.history.pushState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
   window.dispatchEvent(new Event(EVENT));
 }
+
+/**
+ * Sends the shopper on from a page that can't show the URL's ring (a missing or unknown piece), replacing the history
+ * entry. On the document the browser first loaded, still at its address, the redirect runs as the page hydrates, before
+ * Next.js has hydrated the page's metadata (rendered in a Suspense boundary and hoisted into <head>). A client-side
+ * navigation then leaves that page's title, description, robots and canonical tags in <head> beside the next page's
+ * (Task 29). So there it loads the next page in full, which gives it a clean <head>; after a client-side navigation it
+ * uses the router as before.
+ */
+export function redirectTo(router: { replace: (href: string) => void }, href: string) {
+  const entry = performance.getEntriesByType("navigation")[0];
+  const firstDocument = !entry || new URL(entry.name).pathname === window.location.pathname;
+  if (firstDocument) window.location.replace(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${href}`);
+  else router.replace(href);
+}

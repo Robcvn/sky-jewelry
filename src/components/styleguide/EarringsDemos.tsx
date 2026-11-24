@@ -123,13 +123,22 @@ export function EarringsDemos({ setting, pair }: { setting: EarringSetting; pair
   return (
     <div className="flex flex-col gap-space-10 text-primary-leather">
       <Demo label="Step bar on Step 2 (Figma 3565:98191): the setting chosen, Select Diamonds current">
-        <EarringsSteps current={2} settings={[setting.product]} earrings={earrings} />
+        {/* Full width below 1024, as on the page: inside the style guide's margins the steps are too narrow for their names. */}
+        <div className="mx-[calc(var(--grid-margin)*-1)] ui-desktop:mx-0">
+          <EarringsSteps current={2} settings={[setting.product]} earrings={earrings} />
+        </div>
       </Demo>
       <Demo label="Step bar on Step 3 (3565:99577): both earlier steps complete, Complete Earrings current">
-        <EarringsSteps current={3} settings={[setting.product]} pair={pair} earrings={earrings} />
+        {/* Full width below 1024, as on the page: inside the style guide's margins the steps are too narrow for their names. */}
+        <div className="mx-[calc(var(--grid-margin)*-1)] ui-desktop:mx-0">
+          <EarringsSteps current={3} settings={[setting.product]} pair={pair} earrings={earrings} />
+        </div>
       </Demo>
       <Demo label="Step bar, pair unavailable (inferred from the ring builder's Unavailable variant)">
-        <EarringsSteps current={3} settings={[setting.product]} pair={pair} pairUnavailable earrings={earrings} />
+        {/* Full width below 1024, as on the page: inside the style guide's margins the steps are too narrow for their names. */}
+        <div className="mx-[calc(var(--grid-margin)*-1)] ui-desktop:mx-0">
+          <EarringsSteps current={3} settings={[setting.product]} pair={pair} pairUnavailable earrings={earrings} />
+        </div>
       </Demo>
 
       <div className="grid gap-space-8 ui-desktop:grid-cols-2">

@@ -34,7 +34,7 @@ import {
   type SettingFilterState,
 } from "./settingFilters";
 import { SettingQuickView } from "./SettingQuickView";
-import { liveQuery, useIsClient, useQuery } from "./useQuery";
+import { liveQuery, redirectTo, useIsClient, useQuery } from "./useQuery";
 
 const { settings: text } = builderContent;
 const { filters: copy, sortOptions, card: cardLabels } = productListContent;
@@ -90,7 +90,7 @@ export function SettingListing({ settings: allSettings, stoneFrom, stones = [] }
   useEffect(() => {
     if (!isClient) return;
     const live = parseRing(liveQuery());
-    if (stoneFirst(live) && !stones.some((stone) => stone.handle === live.stone)) router.replace(stoneFirstStartHref(live));
+    if (stoneFirst(live) && !stones.some((stone) => stone.handle === live.stone)) redirectTo(router, stoneFirstStartHref(live));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient, first, chosen]);
 
@@ -155,12 +155,10 @@ export function SettingListing({ settings: allSettings, stoneFrom, stones = [] }
           Desktop style tiles: Figma "Radio Button" MD, 104 wide, 16px apart. A style with no settings is left out: the
           Design System's Radio Button (Radio 588:1170) draws Inactive, Hover and Active only, no disabled state. On
           narrow screens the gaps close first, then the tiles narrow. Choosing the selected tile again clears it.
-          The shared Radio Button draws its border outside Figma's 90px, so the row is 2px taller; -my-px keeps what
-          follows on Figma's lines.
         */}
         <fieldset className="hidden min-w-0 ui-desktop:block">
           <legend className="sr-only">{text.styleLegend}</legend>
-          <div className="-my-px flex justify-center" style={{ columnGap: `clamp(0px, calc((100% - ${styles.length} * 6.5rem) / ${Math.max(1, styles.length - 1)}), 1rem)` }}>
+          <div className="flex justify-center" style={{ columnGap: `clamp(0px, calc((100% - ${styles.length} * 6.5rem) / ${Math.max(1, styles.length - 1)}), 1rem)` }}>
             {styles.map((style) => (
               <RadioButton
                 key={style.value}

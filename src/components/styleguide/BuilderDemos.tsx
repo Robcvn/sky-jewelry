@@ -51,7 +51,10 @@ export function BuilderDemos({ setting, round, drawn, otherLab }: BuilderDemosPr
   return (
     <div className="flex flex-col gap-space-10 text-primary-leather">
       <Demo label="Step bar (BuilderSteps): Step 1 current. On Step 2 the first step shows the setting named in the URL, with Edit and Remove.">
-        <BuilderSteps current={1} />
+        {/* Full width below 1024, as on the page: inside the style guide's margins the steps are too narrow for their names. */}
+        <div className="mx-[calc(var(--grid-margin)*-1)] ui-desktop:mx-0">
+          <BuilderSteps current={1} />
+        </div>
       </Demo>
 
       <div className="flex flex-wrap items-start gap-space-10">
