@@ -114,7 +114,9 @@ export type FooterContent = {
   social: Array<{ _key: string; label: string; href: string; icon: IconName }>;
   columns: Array<{ _key: string; title: string; links: NavLink[] }>;
   copyright: string;
-  /** Deliberate addition, not in Figma: says this is a portfolio build with sample content. */
+  /** Deliberate addition, not in Figma: the two words at the end of the copyright line that open the demo notice (code only, not in Sanity). */
+  demoLabel: string;
+  /** Deliberate addition, not in Figma: says this is a portfolio build with sample content. Shown in demoLabel's popover. */
   demoNotice: string;
   payments: Array<{ _key: string; label: string; icon: IconName }>;
 };
@@ -610,6 +612,7 @@ export const siteFooter: FooterContent = {
     },
   ],
   copyright: "© All Rights Reserved to Sky Jewelry",
+  demoLabel: "Portfolio demo",
   demoNotice: "Portfolio build by Rob Coven. Not the live Sky Jewelry store; products, prices, reviews and contact details are sample content.",
   payments: [
     { _key: "visa", label: "Visa", icon: "visa" },

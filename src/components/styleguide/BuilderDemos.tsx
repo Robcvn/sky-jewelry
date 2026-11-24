@@ -127,7 +127,7 @@ export function BuilderDemos({ setting, round, drawn, otherLab }: BuilderDemosPr
         <Demo label="Specs tile, a shape without a drawing" className="w-[21.3125rem]">
           <StoneSpecsTile stone={drawn} />
         </Demo>
-        <Demo label="Carat size guide tile (toggle inert: one photo)" className="w-[21.3125rem]">
+        <Demo label="Carat size guide tile (the toggle swaps the photo: 2.5 is Figma’s, the other sizes are retouched from it)" className="w-[21.3125rem]">
           <StoneSizeGuideTile />
         </Demo>
         <Demo label="Certificate tile, GIA" className="w-[21.3125rem]">

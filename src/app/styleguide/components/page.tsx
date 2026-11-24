@@ -1375,8 +1375,14 @@ export default async function ComponentsPage() {
             <li>Post Card topic and date: Figma uses black-alpha-50, 3.36:1 on ivory. Built with black-alpha-60, 4.58:1.</li>
             <li>Mobile menu search placeholder: Figma uses black-alpha-50, 3.36:1. Built with black-alpha-60, 4.58:1.</li>
             <li>
-              Footer demo notice: a deliberate addition, not in Figma. One line under the copyright, in the same style: &ldquo;Portfolio
-              build by Rob Coven. Not the live Sky Jewelry store; products, prices, reviews and contact details are sample content.&rdquo;
+              Footer demo notice: a deliberate addition, not in Figma. The copyright line reads &ldquo;&copy; All Rights Reserved to Sky
+              Jewelry &middot; Portfolio demo&rdquo;, where &ldquo;Portfolio demo&rdquo; is a button in the line&rsquo;s own style, underlined
+              (Task 27; it replaces a second line under the copyright). Hover, keyboard focus, a click or a tap shows the full notice in a
+              small popover above the line: &ldquo;Portfolio build by Rob Coven. Not the live Sky Jewelry store; products, prices, reviews and
+              contact details are sample content.&rdquo; Opened by a click or tap, it stays open until a second click or tap, Escape or a
+              click outside; opened by hover, moving away also closes it; opened by keyboard focus, it closes when focus moves on. The
+              design system has no tooltip, so the popover uses the Dropdown panel&rsquo;s surface (secondary/skin, 1px secondary/gold
+              border, 4px radius, its shadow) with body-xs leather text and 12px padding.
             </li>
             <li>Review Card date and Post Card meta (Home): Figma uses black-alpha-50, 3.36:1 on skin. Built with black-alpha-60, 4.58:1.</li>
             <li>
@@ -1654,7 +1660,8 @@ export default async function ComponentsPage() {
             </li>
             <li>Metal swatches (product cards, search cards, quick views, the setting page&rsquo;s card): one swatch per distinct photo, on trial (GROUP_SWATCHES_BY_PHOTO, Rob&rsquo;s decision, Nov 22). Metals that share a main photo (14K and 18K of a colour, white gold and platinum) share a swatch, which stands for the card&rsquo;s metal when it is in the group, otherwise for the group&rsquo;s first. The round solitaire&rsquo;s yellow gold photo shows the ring worn on a hand, so a card opened without a Metal filter starts on the product&rsquo;s first metal with a studio photo (the natural diamond ring opens on white gold, like the other two round solitaires), and the yellow gold photo gets a swatch only when the Metal filter chose yellow gold (Rob&rsquo;s decision, Nov 22). Every metal can still be chosen on the product and setting pages and with the Metal filter.</li>
             <li>Product card hover panel (every card with Info and Add to Bag, Choose Setting or Customize: product lists, search, the ring and earrings builders and the Best Sellers rows): below a card of about 276px (a viewport of about 1330px on the product list, wider in the Best Sellers rows, whose cards are 6px narrower) the panel&rsquo;s spacing tightens so every label stays on one line, widths Figma doesn&rsquo;t draw. From Figma&rsquo;s values at 276px to a 211px card (1024px): panel and button side padding 16 to 8, the label&rsquo;s side padding 8 to 0 and Info&rsquo;s width 76 to 56; the gap stays 8 and the text size, labels and chevron are unchanged. From 276px up every value is Figma&rsquo;s. Rob&rsquo;s decision, Nov 22.</li>
-            <li>Product rows (carousels with product cards, such as Shop our Best Sellers): a hovered or focused card rises over the carousel arrow it overlaps, so that arrow fades out (opacity 0, no pointer events) until the pointer or focus leaves the card; it stays in the tab order and shows once focused. Figma draws no hovered card beside an arrow (all 46 product cards next to arrows on the desktop frames are State=Default). Rob&rsquo;s decision, Nov 22.</li>
+            <li>Product rows (carousels with product cards, such as Shop our Best Sellers): a hovered or focused card rises over the carousel arrow it overlaps, so that arrow fades out (opacity 0, no pointer events) until the pointer or focus leaves the card; it stays in the tab order. A card under the pointer always hides the arrow it overlaps, wherever focus is; an arrow shows through a focused card only while it has keyboard focus itself (focus-visible), and never while a hovered card overlaps it (Task 27). Figma draws no hovered card beside an arrow (all 46 product cards next to arrows on the desktop frames are State=Default). Rob&rsquo;s decision, Nov 22.</li>
+            <li>Account pages, desktop side menu (Profile, Orders, Log Out): sticky in its column while the page scrolls, its top 40px under the sticky header (the column&rsquo;s own 40px above the menu), as other side content on the site stays in view. The column and its rule still run the content&rsquo;s full height, and the menu stops with the column, above the footer. Figma&rsquo;s frames show the page at rest only (Task 27).</li>
             <li>Sideways scrollers can be dragged with a mouse (useDragScroll): carousels, scroll areas, the category strip, the announcement messages, option rows, tabs, Perfectly Paired Wedding Bands and the swiping galleries. Below 1024px Figma draws no arrows and no scrollbar handle, so a plain mouse could not reach what is off screen. Mouse only: a drag starts after 5px, the row follows the pointer and settles on a snap point; the click that ends a drag is ignored. At rest the only difference is the grab cursor. Touch, trackpads, Shift + wheel, the keyboard and the desktop arrows are unchanged; article tables keep their native scrollbar. An interaction Figma doesn&rsquo;t draw (planning chat&rsquo;s recommendation, Nov 22).</li>
           </ul>
         </Section>
@@ -1822,7 +1829,13 @@ export default async function ComponentsPage() {
               page it is on. Built without it, as the mobile frame draws the card there.
             </li>
             <li>Setting page, Meet With Our Consultant: Figma&rsquo;s &ldquo;inour showroom&rdquo; is built as &ldquo;in our showroom&rdquo;.</li>
-            <li>Stone page, mobile carat toggle: Figma marks 1.0 under a &ldquo;Shown with 2.50 CT&rdquo; badge. Built marking 2.5, as the desktop frame does.</li>
+            <li>Stone page, mobile carat toggle: Figma marks 1.0 under a &ldquo;Shown with 2.50 CT&rdquo; badge. Built with 2.5 selected at first, as the desktop frame does.</li>
+            <li>
+              Stone page, Diamond Carat Size Guide (Task 27): the carat toggle works. Figma has one photo, at 2.50 ct; the 1.0, 1.5, 2.0 and
+              3.0 photos are retouched from it, with the stone&rsquo;s diameter scaled by the cube root of the carat ratio (a smooth radial warp
+              around the stone; the rest of the photo is untouched). Choosing a size swaps the photo, the badge and the alt text, with a short
+              cross-fade. Real photos per carat are still wanted (Open questions).
+            </li>
             <li>Filters / Stone - Expanded draws Polish twice (after Price and again at the end of Advanced Filters). Built once, after Price.</li>
             <li>Stone page specs drawing: Figma labels the side view &ldquo;57.0mm&rdquo; and &ldquo;62.4mm&rdquo;. Those are the table and depth percentages with the wrong unit: built as the stone&rsquo;s table % and depth %, with a % sign.</li>
             <li>Modal - Drop a Hint draws a fifth &ldquo;Recipient Name *&rdquo; field after Your Email (desktop and mobile). Left out.</li>
@@ -1937,8 +1950,8 @@ export default async function ComponentsPage() {
             <li>
               Product photos of the other metals for necklaces, earrings and bracelets (white gold, rose gold and platinum). Figma has these
               designs in yellow gold only, so their cards show one metal swatch. For the ring builder: photos for oval, princess, asscher,
-              heart and pear diamonds and the other coloured stones (they show a line drawing for now); a photo per carat size for the carat
-              toggle; a cut-out ring for the step bar; a studio photo of the round solitaire in yellow gold.
+              heart and pear diamonds and the other coloured stones (they show a line drawing for now); real photos per carat size for the stone page&rsquo;s carat
+              toggle (1.0, 1.5, 2.0 and 3.0 are retouched from the 2.50 ct photo for now); a cut-out ring for the step bar; a studio photo of the round solitaire in yellow gold.
             </li>
             <li>360° image sequences needed: the 360° marker, tabs and viewer stay off (SHOW_360) until they exist. Requested: a turntable sequence of each ring setting in each metal colour, of the earring setting, and of one diamond per shape (36 frames per turn, square, on the same background and lighting as the product photos), named &ldquo;&lt;photo&gt;-spin-01&rdquo; to &ldquo;-spin-36&rdquo;. Recommendation: start with the six listed ring settings and the earring setting, then add the diamonds.</li>
             <li>

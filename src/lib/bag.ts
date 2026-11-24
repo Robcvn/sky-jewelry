@@ -20,7 +20,8 @@ import { completeHref, parseShape } from "@/components/builder/ring";
 import { earringsCompleteHref } from "@/components/earrings/routes";
 import type { ImageRef } from "@/components/ui/Picture";
 import { METALS, type MetalId } from "@/content/metals";
-import { imagesFor, productHref, type Product, type ProductVariant } from "@/content/products";
+import { metalCaratQuery } from "@/components/pdp/productFacts";
+import { imagesFor, isFineJewelry, productHref, type Product, type ProductVariant } from "@/content/products";
 import {
   addCartLines,
   createCart,
@@ -196,7 +197,7 @@ export function mapCartLine(line: ShopifyCartLine): BagLine {
     variantId: merchandise.id,
     handle: product.handle,
     category,
-    href: productHref({ category, slug: product.handle }),
+    href: lineHref(productHref({ category, slug: product.handle }), category, metalOf(merchandise.selectedOptions, product.tags), caratOf(merchandise.selectedOptions)),
     name: shortName(product.title),
     title: product.title,
     metal: metalOf(merchandise.selectedOptions, product.tags),
@@ -318,12 +319,22 @@ export function mapCart(cart: ShopifyCart): Bag {
 
 type LocalLine = Omit<BagLine, "subtotal" | "total">;
 
+/**
+ * A piece's line links to its product page on the line's metal and carat, in Product Detail's own query format
+ * (metalCaratQuery; Task 27). Always explicit, as the bag doesn't know the product's default variant. Ring and earring
+ * parts (settings, stones) keep their links. Lines saved locally before this get it when read.
+ */
+function lineHref(href: string, category: string, metal: MetalId, carat: number | null) {
+  if (!isFineJewelry(category)) return href;
+  return `${href.split("?")[0]}?${metalCaratQuery(metal, carat)}`;
+}
+
 const readLocal = (): LocalLine[] => {
   try {
     const parsed = JSON.parse(read(LOCAL_LINES_KEY) ?? "[]");
     // Lines saved before rings existed have no title, ring or stone; rings saved before earrings have no build.
     return Array.isArray(parsed)
-      ? parsed.map((line: LocalLine) => ({ ...line, title: line.title ?? line.name, ring: line.ring ? { ...line.ring, build: line.ring.build ?? "ring" } : null, stone: line.stone ?? null }))
+      ? parsed.map((line: LocalLine) => ({ ...line, href: lineHref(line.href, line.category, line.metal, line.carat), title: line.title ?? line.name, ring: line.ring ? { ...line.ring, build: line.ring.build ?? "ring" } : null, stone: line.stone ?? null }))
       : [];
   } catch {
     return [];
@@ -417,7 +428,7 @@ export function addToBag(product: Product, variant: ProductVariant, quantity = 1
           variantId: variant.id,
           handle: product._id,
           category: product.category,
-          href: productHref(product),
+          href: lineHref(productHref(product), product.category, variant.metal, variant.carat),
           name: shortName(product.name),
           title: product.name,
           metal: variant.metal,

@@ -6,7 +6,7 @@ import type { IconName } from "@/components/ui/Icon";
 import type { ImageRef } from "@/components/ui/Picture";
 import { metalById, parseMetal, type MetalId } from "@/content/metals";
 import { gradeScales, sampleDiamondGrades, sampleGemstoneColor, shapeDimensions } from "@/content/product-detail";
-import { imagesFor, type Product, type ProductVariant } from "@/content/products";
+import { imagesFor, isFineJewelry, productHref, type Product, type ProductVariant } from "@/content/products";
 
 /** What the piece is called in "Pendant Info" and "Pendant Details". */
 export function pieceNoun(product: Product) {
@@ -48,11 +48,33 @@ export function variantFromQuery(product: Product, search: string): ProductVaria
   return findVariant(product, metal, params.has("carat") && Number.isFinite(carat) ? carat : first.carat);
 }
 
-export function variantQuery(product: Product, variant: ProductVariant) {
-  if (variant === product.variants[0]) return "";
-  const params = new URLSearchParams({ metal: variant.metal });
-  if (variant.carat !== null) params.set("carat", variant.carat.toFixed(2));
+/** The query Product Detail reads for a metal and carat: metal=14k-white-gold&carat=1.00. */
+export function metalCaratQuery(metal: MetalId, carat: number | null) {
+  const params = new URLSearchParams({ metal });
+  if (carat !== null) params.set("carat", carat.toFixed(2));
   return params.toString();
+}
+
+/** A variant's query on Product Detail; none for the default (first) variant. */
+export function variantQuery(product: Product, variant: ProductVariant) {
+  const first = product.variants[0];
+  if (variant === first || (variant.metal === first.metal && variant.carat === first.carat)) return "";
+  return metalCaratQuery(variant.metal, variant.carat);
+}
+
+/**
+ * A product's page opened on a variant, in the address format that page reads (Task 27): Product Detail takes
+ * variantQuery (nothing for the default variant); a ring or earring setting's page takes ?metal=, as the builders'
+ * own cards link. Canonical links stay on productHref.
+ */
+export function variantHref(product: Product, variant: ProductVariant) {
+  const path = productHref(product);
+  if (isFineJewelry(product.category)) {
+    const query = variantQuery(product, variant);
+    return query ? `${path}?${query}` : path;
+  }
+  if (product.category === "engagement-rings" || product.category === "earring-settings") return `${path}?${new URLSearchParams({ metal: variant.metal })}`;
+  return path;
 }
 
 /** The loose round diamond photo from Figma's gallery, shown for pieces with a round diamond. */

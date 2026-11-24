@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/ui/Icon";
 import { cx, withBasePath } from "@/components/ui/shared";
 import { builderContent, GEM_COLORS, GEM_TYPES, shapeIcon, shapeLabel } from "@/content/builder";
@@ -94,60 +93,8 @@ export function StoneSpecsTile({ stone, className }: { stone: Stone; className?:
   );
 }
 
-const GUIDE_CARATS = ["1.0", "1.5", "2.0", "2.5", "3.0"];
-const GUIDE_SHOWN = "2.5";
-
-/**
- * The hand photo (desktop 3565:100875, mobile "Diamond Carat Size Guide" 3587:125982): Figma's one photo, its
- * "Shown with 2.50ct" badge and the carat toggle. Figma has a photo for one size only, so the toggle is drawn but
- * not interactive (Held for review), with 2.5 marked on both breakpoints to agree with the badge.
- */
-export function StoneSizeGuideTile({ className }: { className?: string }) {
-  const src = (width: number) => withBasePath(`/images/builder/stone-size-guide-hand-${width}.webp`);
-  return (
-    <div data-stone-size-guide className={cx("relative aspect-square overflow-hidden rounded-4", className)}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- Figma's photo, pre-sized */}
-      <img
-        src={src(342)}
-        srcSet={`${src(342)} 342w, ${src(700)} 700w, ${src(1024)} 1024w`}
-        sizes="(width >= 64rem) 24vw, calc(100vw - 2.5rem)"
-        alt="A hand with blue nails wearing a round diamond solitaire ring, shown with a 2.50 carat stone"
-        width={342}
-        height={342}
-        loading="lazy"
-        className="absolute inset-0 size-full object-cover"
-      />
-      <div aria-hidden="true" className="absolute inset-x-0 top-space-4 flex justify-center">
-        {/* Desktop: sentence case in ui-xs/medium. Mobile: the overline style, as each frame draws it. */}
-        <span className="hidden ui-desktop:inline-flex">
-          <Badge overlay size="xs" className="min-h-space-6">
-            Shown with 2.50ct
-          </Badge>
-        </span>
-        <span className="inline-flex ui-desktop:hidden">
-          <Badge overlay size="sm" className="min-h-space-6">
-            Shown with 2.50 ct
-          </Badge>
-        </span>
-      </div>
-      <div aria-hidden="true" className="absolute inset-x-space-4 bottom-space-4 flex justify-center">
-        <ul className="flex w-full max-w-[19.3125rem] rounded-full border border-white-alpha-20 bg-white-alpha-10 p-[3px] backdrop-blur-md ui-desktop:w-auto">
-          {GUIDE_CARATS.map((carat) => (
-            <li
-              key={carat}
-              className={cx(
-                "type-ui-2xs-medium flex h-space-6 flex-1 items-center rounded-full px-space-2 ui-desktop:flex-none",
-                carat === GUIDE_SHOWN ? "bg-secondary-skin text-primary-leather" : "text-base-white",
-              )}
-            >
-              {carat}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
+/** The hand photo with its carat toggle: a client component (the toggle is interactive). */
+export { StoneSizeGuideTile } from "./StoneSizeGuide";
 
 /**
  * The certificate tile (desktop 3565:100879): the lab, what the stone is, and "view certificate". Figma draws the

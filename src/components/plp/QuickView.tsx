@@ -11,7 +11,8 @@ import { PaginationDots } from "@/components/ui/Pagination";
 import { Picture, slotImage } from "@/components/ui/Picture";
 import { Installments, MetalSwatches, type ProductCardLabels } from "@/components/ui/ProductCard";
 import { metalById, type MetalId } from "@/content/metals";
-import { formatCarat, formatPrice, imagesFor, productHref, variantName, type Product, type ProductVariant } from "@/content/products";
+import { variantHref } from "@/components/pdp/productFacts";
+import { formatCarat, formatPrice, imagesFor, variantName, type Product, type ProductVariant } from "@/content/products";
 import { MetalBadge } from "@/components/ui/MetalBadge";
 import { useDragScroll } from "@/components/ui/useDragScroll";
 
@@ -141,7 +142,7 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
             </div>
 
             <div className="flex gap-space-2">
-              <ButtonLink href={productHref(product)} size="sm" variant="secondary" className="w-19 shrink-0">
+              <ButtonLink href={variantHref(product, variant)} size="sm" variant="secondary" className="w-19 shrink-0">
                 {labels.info}
               </ButtonLink>
               <Button size="sm" rightIcon="chevron-right" className="flex-1" disabled={busy || !variant.available} onClick={() => onAddToBag(product, variant)}>

@@ -74,6 +74,8 @@ function attachDragScroll(el: HTMLElement) {
 
   const onPointerDown = (event: PointerEvent) => {
     if (event.pointerType !== "mouse" || event.button !== 0 || !scrollable()) return;
+    // A control that must never start a drag (the size guide's carat toggle).
+    if (event.target instanceof Element && event.target.closest("[data-no-drag-scroll]")) return;
     window.clearTimeout(settleTimer);
     press = {
       id: event.pointerId,

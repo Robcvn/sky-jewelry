@@ -17,7 +17,8 @@ type AccountShellProps = {
  * the line tabs (mobile: Figma "Tabs - Line"), then the page. Log Out has no drawn destination: shown, inert.
  *
  * Desktop grid: the menu spans columns 1 to 3 plus one gutter (318px at 1440, 278px in the 1280 frame), the page
- * columns 5 to 12 (822px / 716px), as both Figma widths draw it.
+ * columns 5 to 12 (822px / 716px), as both Figma widths draw it. The column (and its rule) runs the content's full
+ * height; the menu inside it is sticky.
  */
 export function AccountShell({ active, current = true, children }: AccountShellProps) {
   const items = accountContent.nav;
@@ -53,7 +54,9 @@ export function AccountShell({ active, current = true, children }: AccountShellP
 
       <div className="mt-space-8 ui-desktop:site-grid ui-desktop:mt-0">
         <aside className="hidden border-r border-primary-leather pt-space-10 pr-space-10 ui-desktop:col-span-3 ui-desktop:mr-[calc(var(--grid-gutter)*-1)] ui-desktop:block">
-          <nav aria-label={`${accountContent.navLabel} pages`}>
+          {/* Sticky in its column (Task 27, Deviations): the menu's top stays 40px under the sticky header while the page
+              scrolls, as the column's own 40px puts it at first; it stops with the column, so it never reaches the footer. */}
+          <nav aria-label={`${accountContent.navLabel} pages`} className="sticky top-[calc(var(--sticky-header-height)+var(--spacing-space-10))]">
             <ul className="flex flex-col gap-space-2">
               {items.map((item) => {
                 const style = cx(

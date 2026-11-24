@@ -7,7 +7,6 @@ import {
   formatInstallment,
   formatPrice,
   imagesFor,
-  productHref,
   variantName,
   type Product,
   type ProductVariant,
@@ -17,6 +16,7 @@ import { PaginationDots } from "./Pagination";
 import { Picture } from "./Picture";
 import { Swatch } from "./Swatch";
 import { cx } from "./shared";
+import { variantHref } from "@/components/pdp/productFacts";
 import { SHOW_360 } from "@/lib/features";
 import { swatchMetals } from "@/lib/swatches";
 import { DOTS_ABOVE_HINT, Hint360 } from "./Viewer360";
@@ -168,7 +168,8 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
   const images = imagesFor(product, variant.metal);
   const image = images[Math.min(view, images.length - 1)];
   const name = builder?.title ?? variantName(product, variant);
-  const href = builder ? builder.href(variant) : productHref(product);
+  // The card opens its page on the variant it shows (Task 27).
+  const href = builder ? builder.href(variant) : variantHref(product, variant);
   const priceNote = builder?.priceNote(variant) ?? null;
 
   const chooseVariant = (next: ProductVariant) => {

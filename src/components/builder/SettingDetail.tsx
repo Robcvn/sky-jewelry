@@ -21,7 +21,8 @@ import { DOTS_ABOVE_HINT, Hint360 } from "@/components/ui/Viewer360";
 import { builderContent, SETTING_SHAPE_ORDER, shapeIcon, shapeLabel, styleIcon, styleLabel, type StoneShape } from "@/content/builder";
 import { metalById, type MetalId } from "@/content/metals";
 import { metalComposition, productDetailContent } from "@/content/product-detail";
-import { formatInstallment, formatPrice, imagesFor, productHref, variantName, type Product } from "@/content/products";
+import { variantHref } from "@/components/pdp/productFacts";
+import { formatInstallment, formatPrice, imagesFor, variantName, type Product } from "@/content/products";
 import type { RingSetting, StoneSummary } from "@/lib/builder";
 import { completeHref, parseRing, parseShape, ringParams, settingShapes, settingsHref, settingVariant, stoneFirst, stoneFirstStartHref, stonesHref } from "./ring";
 import { liveQuery, useIsClient, useQuery } from "./useQuery";
@@ -344,7 +345,7 @@ function BandCard({ product }: { product: Product }) {
       </div>
       <div className="flex flex-col gap-space-1 px-space-2 pt-space-3">
         <h3 className="type-heading-xs">
-          <Link href={productHref(product)} className="rounded-4 after:absolute after:inset-0">
+          <Link href={variantHref(product, variant)} className="rounded-4 after:absolute after:inset-0">
             {name}
           </Link>
         </h3>

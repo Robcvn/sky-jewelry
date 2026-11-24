@@ -9,6 +9,9 @@ import { useDragScroll } from "./useDragScroll";
 type CarouselItem = { key: string; node: ReactNode };
 type Box = { left: number; right: number; top: number; bottom: number };
 const EMPTY: Box = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity };
+/** What hides an arrow: a hovered card over it, a card holding focus over it, or nothing. */
+type CoveredBy = false | "hover" | "focus";
+type Covered = { prev: CoveredBy; next: CoveredBy };
 
 type CarouselProps = {
   /** Accessible name for the scrolling list, e.g. "Best selling engagement rings". */
@@ -60,7 +63,9 @@ export function Carousel({
   const nextRef = useRef<HTMLButtonElement>(null);
   const lastPressed = useRef<"prev" | "next" | null>(null);
 
-  // When the button you pressed disappears at an end, keep focus on the other one.
+  // When the button you pressed disappears at an end, keep focus on the other one. Only when the pressed button had
+  // focus (a keyboard press, or a click in a browser that focuses buttons); the moved focus is focus-visible only
+  // after a keyboard press, so it never keeps an arrow showing for a mouse user (see covered below).
   useEffect(() => {
     if (lastPressed.current === "prev" && atStart) nextRef.current?.focus();
     if (lastPressed.current === "next" && atEnd) prevRef.current?.focus();
@@ -69,7 +74,8 @@ export function Carousel({
   const page = (direction: -1 | 1) => {
     const node = ref.current;
     if (!node) return;
-    lastPressed.current = direction < 0 ? "prev" : "next";
+    const pressed = direction < 0 ? prevRef.current : nextRef.current;
+    lastPressed.current = pressed && document.activeElement === pressed ? (direction < 0 ? "prev" : "next") : null;
     const style = getComputedStyle(node);
     const amount = node.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) + parseFloat(style.columnGap || "0");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -78,11 +84,15 @@ export function Carousel({
 
   // With hoverRoom, a hovered or focused product card rises above the arrows (z-20, with its 8px shell). An arrow the
   // card's box (with its shell and actions panel, [data-hover-shell]) overlaps is hidden while that lasts: opacity 0
-  // and no pointer events, still in the tab order, and shown again once it has focus.
+  // and no pointer events, still in the tab order.
+  // - The card under the pointer always hides the arrow it overlaps, whichever arrow and wherever focus is (Task 27:
+  //   after a click at the end of the row, focus sits on Previous and used to keep it showing).
+  // - A card holding keyboard focus hides the arrow it overlaps too; an arrow shows through that only while it has
+  //   keyboard focus itself (focus-visible).
   const prevWrap = useRef<HTMLSpanElement>(null);
   const nextWrap = useRef<HTMLSpanElement>(null);
   const hovered = useRef<HTMLElement | null>(null);
-  const [covered, setCovered] = useState({ prev: false, next: false });
+  const [covered, setCovered] = useState<Covered>({ prev: false, next: false });
   const itemOf = useCallback(
     (target: EventTarget | null) => {
       const scroller = ref.current;
@@ -94,18 +104,21 @@ export function Carousel({
   const measure = useCallback(() => {
     if (!hoverRoom) return;
     requestAnimationFrame(() => {
-      const cards = [hovered.current, itemOf(document.activeElement)].filter((card): card is HTMLElement => card !== null);
-      const boxes = cards.map((card) =>
-        [card, ...card.querySelectorAll<HTMLElement>("[data-hover-shell]")]
-          .map((el) => el.getBoundingClientRect())
-          .filter((r) => r.width > 0 && r.height > 0)
-          .reduce<Box>((u, r) => ({ left: Math.min(u.left, r.left), right: Math.max(u.right, r.right), top: Math.min(u.top, r.top), bottom: Math.max(u.bottom, r.bottom) }), EMPTY),
-      );
-      const hits = (wrap: HTMLSpanElement | null) => {
+      const boxOf = (card: HTMLElement | null) =>
+        card
+          ? [card, ...card.querySelectorAll<HTMLElement>("[data-hover-shell]")]
+              .map((el) => el.getBoundingClientRect())
+              .filter((r) => r.width > 0 && r.height > 0)
+              .reduce<Box>((u, r) => ({ left: Math.min(u.left, r.left), right: Math.max(u.right, r.right), top: Math.min(u.top, r.top), bottom: Math.max(u.bottom, r.bottom) }), EMPTY)
+          : null;
+      const hoverBox = boxOf(hovered.current);
+      const focusBox = boxOf(itemOf(document.activeElement));
+      const hits = (wrap: HTMLSpanElement | null, b: Box | null) => {
         const a = wrap?.getBoundingClientRect();
-        return Boolean(a && a.width && boxes.some((b) => b.left < a.right && b.right > a.left && b.top < a.bottom && b.bottom > a.top));
+        return Boolean(a && a.width && b && b.left < a.right && b.right > a.left && b.top < a.bottom && b.bottom > a.top);
       };
-      const next = { prev: hits(prevWrap.current), next: hits(nextWrap.current) };
+      const side = (wrap: HTMLSpanElement | null): CoveredBy => (hits(wrap, hoverBox) ? "hover" : hits(wrap, focusBox) ? "focus" : false);
+      const next = { prev: side(prevWrap.current), next: side(nextWrap.current) };
       setCovered((current) => (current.prev === next.prev && current.next === next.next ? current : next));
     });
   }, [hoverRoom, itemOf]);
@@ -131,7 +144,12 @@ export function Carousel({
   };
 
   const arrow = "absolute z-10 hidden -translate-y-1/2 ui-desktop:block";
-  const hidden = "ui-transition pointer-events-none opacity-0 focus-within:pointer-events-auto focus-within:opacity-100";
+  const hidden = (by: CoveredBy) =>
+    by &&
+    cx(
+      "pointer-events-none opacity-0",
+      by === "focus" && "has-[:focus-visible]:pointer-events-auto has-[:focus-visible]:opacity-100",
+    );
 
   return (
     <div className={cx("@container relative", className)}>
@@ -158,12 +176,12 @@ export function Carousel({
       {desktop === "carousel" ? (
         <>
           {!atStart ? (
-            <span ref={prevWrap} className={cx(arrow, hoverRoom && "ui-transition", covered.prev && hidden)} style={{ top: arrowTop, left: "calc(var(--grid-margin) - 1.75rem)" }}>
+            <span ref={prevWrap} className={cx(arrow, hoverRoom && "ui-transition", hidden(covered.prev))} style={{ top: arrowTop, left: "calc(var(--grid-margin) - 1.75rem)" }}>
               <IconButton ref={prevRef} icon="chevron-left" size="lg" label={`Previous: ${label}`} onClick={() => page(-1)} />
             </span>
           ) : null}
           {!atEnd ? (
-            <span ref={nextWrap} className={cx(arrow, hoverRoom && "ui-transition", covered.next && hidden)} style={{ top: arrowTop, right: "calc(var(--grid-margin) - 1.75rem)" }}>
+            <span ref={nextWrap} className={cx(arrow, hoverRoom && "ui-transition", hidden(covered.next))} style={{ top: arrowTop, right: "calc(var(--grid-margin) - 1.75rem)" }}>
               <IconButton ref={nextRef} icon="chevron-right" size="lg" label={`Next: ${label}`} onClick={() => page(1)} />
             </span>
           ) : null}

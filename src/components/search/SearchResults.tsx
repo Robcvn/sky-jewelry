@@ -27,7 +27,8 @@ import type { PromoCard as PromoCardContent } from "@/content/builder";
 import { builderContent } from "@/content/builder";
 import { earringsContent } from "@/content/earrings";
 import { productListContent } from "@/content/product-list";
-import { formatPrice, productHref, type ProductVariant } from "@/content/products";
+import { variantHref } from "@/components/pdp/productFacts";
+import { formatPrice, type ProductVariant } from "@/content/products";
 import { searchContent as text, type SearchType } from "@/content/search";
 import { siteHeader } from "@/content/site";
 import { addToBag } from "@/lib/bag";
@@ -313,7 +314,7 @@ function Products({ items, pages, promos }: { items: SearchProduct[]; pages: num
           const builder = card(item);
           return (
             <li key={item.id}>
-              <ProductCardSearch product={item.product} title={builder?.title} href={builder ? builder.href : () => productHref(item.product)} priceNote={builder?.priceNote} />
+              <ProductCardSearch product={item.product} title={builder?.title} href={builder ? builder.href : (variant) => variantHref(item.product, variant)} priceNote={builder?.priceNote} />
             </li>
           );
         })}
