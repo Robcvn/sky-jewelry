@@ -118,6 +118,7 @@ export function AnnouncementBar({ content = announcementBar, mode, breakpoint, l
             role={scrollable ? "group" : undefined}
             aria-label={scrollable ? "Announcement messages, scroll for more" : undefined}
             tabIndex={scrollable ? 0 : undefined}
+            data-scroll-region
             className="ui-focus:outline-base-white overflow-x-auto [scrollbar-width:none] ui-desktop:overflow-visible [&::-webkit-scrollbar]:hidden"
           >
             <ul className="flex w-max gap-space-4 px-space-4 ui-desktop:mx-auto ui-desktop:gap-space-6 ui-desktop:px-0">

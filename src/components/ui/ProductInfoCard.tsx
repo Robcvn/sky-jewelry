@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { Swatch } from "./Swatch";
 import { cx, withBasePath } from "./shared";
+import { EQUAL_INFO_CARD_HEIGHTS } from "@/lib/features";
 
 type ProductInfoCardProps = {
   label: string;
@@ -23,6 +24,16 @@ type ProductInfoCardProps = {
  * radius 4; an overline label, an 18/24 value, optional content, and a short note. Figma draws the 1px border inside
  * its 12 / 16 padding, so the padding here is 11 / 15.
  */
+/**
+ * EQUAL_INFO_CARD_HEIGHTS (Task 28, on trial): the info grid's rows share one height (the tallest card's: grid rows of
+ * 1fr) and every card stretches to it, with its note at the bottom (spread). A card's own fixed height becomes a
+ * minimum, so the drawn tallest card keeps its height. Off: the grid and the cards' classes are exactly as before.
+ * Both class lists are written out in full (Tailwind only generates classes it finds in the source).
+ */
+export const INFO_GRID_ROWS = EQUAL_INFO_CARD_HEIGHTS ? "auto-rows-fr items-stretch" : "items-start";
+export const infoHeight = (off: string, on: string) => (EQUAL_INFO_CARD_HEIGHTS ? on : off);
+export const INFO_CARD_SPREAD = EQUAL_INFO_CARD_HEIGHTS;
+
 export function ProductInfoCard({ label, value, children, note, spread = false, gap = "sm", className }: ProductInfoCardProps) {
   const space = gap === "md" ? "gap-space-3" : "gap-space-2";
   return (

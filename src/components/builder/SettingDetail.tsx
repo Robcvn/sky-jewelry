@@ -104,6 +104,7 @@ function MobileGallery({ photos, name }: { photos: Tile[]; name: string }) {
         role="region"
         aria-label={`Photos of ${name}`}
         tabIndex={shown.length > 1 ? 0 : undefined}
+        data-scroll-region
         onScroll={(event) => setCurrent(Math.round(event.currentTarget.scrollLeft / Math.max(1, event.currentTarget.clientWidth)))}
         className="relative flex size-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] focus-visible:-outline-offset-2 [&::-webkit-scrollbar]:hidden"
       >
@@ -374,7 +375,7 @@ export function PairedBands({ bands }: { bands: Product[] }) {
       </h2>
       {/* A size container, so the arrows can centre on the square photos (a third of the row wide). */}
       <div className="@container relative">
-        <ul ref={dragRef} tabIndex={0} aria-label={text.paired} className="flex gap-space-4 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <ul ref={dragRef} tabIndex={0} data-scroll-region aria-label={text.paired} className="flex gap-space-4 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {bands.map((band) => (
             <li key={band.slug} className="w-[calc((100%-2rem)/3)] shrink-0">
               <BandCard product={band} />

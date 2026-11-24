@@ -126,6 +126,7 @@ export function EarringsMobileGallery({ photos, stone, name }: { photos: ImageRe
           role="region"
           aria-label={`Photos of ${name}`}
           tabIndex={photos.length > 1 ? 0 : undefined}
+          data-scroll-region
           className="relative flex size-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] focus-visible:-outline-offset-2 [&::-webkit-scrollbar]:hidden"
         >
           {photos.map((image, index) => (

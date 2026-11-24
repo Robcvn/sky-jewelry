@@ -34,7 +34,7 @@ export function useDragScroll<T extends HTMLElement>(ref?: RefObject<T | null>) 
 }
 
 function attachDragScroll(el: HTMLElement) {
-  let press: { id: number; x: number; left: number; dragging: boolean } | null = null;
+  let press: { id: number; x: number; left: number; dragging: boolean; focused: Element | null } | null = null;
   let swallowClick = false;
   let settleTimer: number | undefined;
 
@@ -82,6 +82,8 @@ function attachDragScroll(el: HTMLElement) {
       x: event.clientX,
       left: el.scrollLeft,
       dragging: false,
+      // What had focus before the press: the press itself may focus a link or the row (Task 28).
+      focused: document.activeElement,
     };
   };
 
@@ -104,8 +106,12 @@ function attachDragScroll(el: HTMLElement) {
   const onPointerUp = (event: PointerEvent) => {
     if (!press || event.pointerId !== press.id) return;
     const dragged = press.dragging;
+    const focusedBefore = press.focused;
     press = null;
     if (!dragged) return;
+    // Blur whatever the press focused inside the row (a card's link, the row itself), so nothing stays raised.
+    const focusedNow = document.activeElement;
+    if (focusedNow !== focusedBefore && focusedNow instanceof HTMLElement && el.contains(focusedNow)) focusedNow.blur();
     if (el.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
     swallowClick = event.type === "pointerup";
     window.setTimeout(() => (swallowClick = false), 0);

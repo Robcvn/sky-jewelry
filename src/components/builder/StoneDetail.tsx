@@ -8,7 +8,7 @@ import { Icon } from "@/components/ui/Icon";
 import { IconBlock } from "@/components/ui/IconBlock";
 import { cx } from "@/components/ui/shared";
 import { Hint360 } from "@/components/ui/Viewer360";
-import { DimensionsDiagram, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
+import { DimensionsDiagram, INFO_CARD_SPREAD, INFO_GRID_ROWS, infoHeight, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
 import { builderContent, DIAMOND_SCALES, GEM_COLORS, GEM_TYPES, gradeLabel, shapeIcon } from "@/content/builder";
 import { CLARITY_GRADES, COLOR_GRADES, CUT_GRADES } from "@/content/builder-grades";
 import { productDetailContent } from "@/content/product-detail";
@@ -202,10 +202,10 @@ export function StoneInfoSection({
     <section aria-labelledby={headingId} className={cx("flex flex-col gap-space-5 border-t border-secondary-gold ui-desktop:gap-space-8", className ?? "pt-[calc(var(--spacing-space-5)-1px)] ui-desktop:pt-[calc(var(--spacing-space-8)-1px)]")}>
       <div id={headingId}>{stoneSectionHeading(stone.shape, heading ?? (diamond ? copy.diamondInfo : copy.stoneInfo))}</div>
       {/* Figma: 171px cards 8 apart on mobile, 245px cards 16 apart on desktop, each with its own height. */}
-      <div data-stone-info-grid className="grid grid-cols-2 items-start gap-space-2 ui-desktop:gap-space-4">
-        <ProductInfoCard label="Carat" value={stone.carat.toFixed(2)} note={caratNote} spread className="h-[8.5rem] ui-desktop:h-[9.375rem]" />
+      <div data-stone-info-grid className={cx("grid grid-cols-2", INFO_GRID_ROWS, "gap-space-2 ui-desktop:gap-space-4")}>
+        <ProductInfoCard label="Carat" value={stone.carat.toFixed(2)} note={caratNote} spread className={infoHeight("h-[8.5rem] ui-desktop:h-[9.375rem]", "min-h-[8.5rem] ui-desktop:min-h-[9.375rem]")} />
         {diamond ? (
-          <ProductInfoCard label="Color" value={stone.color} note={COLOR_GRADES[stone.color]?.short} className="min-h-[8.5rem] ui-desktop:min-h-0">
+          <ProductInfoCard label="Color" value={stone.color} note={COLOR_GRADES[stone.color]?.short} spread={INFO_CARD_SPREAD} className="min-h-[8.5rem] ui-desktop:min-h-0">
             <InfoScale kind="color" position={colorPosition(stone.color)} label={`Color ${stone.color} on a scale from colorless to tinted`} />
           </ProductInfoCard>
         ) : (
@@ -214,15 +214,15 @@ export function StoneInfoSection({
             value={GEM_COLORS.find((item) => item.value === stone.color)?.label ?? stone.color}
             note={GEM_TYPES.find((item) => item.value === stone.gem)?.label}
             spread
-            className="h-[8.5rem] ui-desktop:h-[9.375rem]"
+            className={infoHeight("h-[8.5rem] ui-desktop:h-[9.375rem]", "min-h-[8.5rem] ui-desktop:min-h-[9.375rem]")}
           />
         )}
         {diamond ? (
-          <ProductInfoCard label="Clarity" value={stone.clarity} note={CLARITY_GRADES[stone.clarity]?.short} className={cx(mobileRow2 === "earrings" ? "min-h-[9.125rem]" : "min-h-[10.25rem]", "ui-desktop:min-h-0")}>
+          <ProductInfoCard label="Clarity" value={stone.clarity} note={CLARITY_GRADES[stone.clarity]?.short} spread={INFO_CARD_SPREAD} className={cx(mobileRow2 === "earrings" ? "min-h-[9.125rem]" : "min-h-[10.25rem]", "ui-desktop:min-h-0")}>
             <InfoScale kind="clarity" position={clarityPosition(stone.clarity)} label={`Clarity ${stone.clarity} on a scale from flawless to included`} />
           </ProductInfoCard>
         ) : (
-          <ProductInfoCard label="Clarity" value={stone.clarity} className="h-[10.25rem] ui-desktop:h-[10.375rem]" />
+          <ProductInfoCard label="Clarity" value={stone.clarity} spread={INFO_CARD_SPREAD} className={infoHeight("h-[10.25rem] ui-desktop:h-[10.375rem]", "min-h-[10.25rem] ui-desktop:min-h-[10.375rem]")} />
         )}
         <ProductInfoCard
           label="Dimensions (mm)"
@@ -233,7 +233,7 @@ export function StoneInfoSection({
             </span>
           }
           spread
-          className={cx(mobileRow2 === "earrings" ? "h-[9.375rem]" : "h-[10.25rem]", "ui-desktop:h-[10.375rem]")}
+          className={infoHeight(cx(mobileRow2 === "earrings" ? "h-[9.375rem]" : "h-[10.25rem]", "ui-desktop:h-[10.375rem]"), cx(mobileRow2 === "earrings" ? "min-h-[9.375rem]" : "min-h-[10.25rem]", "ui-desktop:min-h-[10.375rem]"))}
         >
           {/* Figma's ruler drawing is of a round stone: shown for round stones, between the value and the ratio. */}
           {stone.shape === "round" ? (
@@ -247,13 +247,14 @@ export function StoneInfoSection({
           value={diamond ? gradeLabel(DIAMOND_SCALES.cut, stone.cut) : stone.cut}
           note={diamond ? CUT_GRADES[stone.cut]?.short : undefined}
           spread
-          className="h-[9.75rem] ui-desktop:h-[10.625rem]"
+          className={infoHeight("h-[9.75rem] ui-desktop:h-[10.625rem]", "min-h-[9.75rem] ui-desktop:min-h-[10.625rem]")}
         />
         <ProductInfoCard
           label="Certification"
           value={stone.certificate}
           // View Certificate needs a certificate file per stone, which the catalogue doesn't have: shown, not linked.
           note={<span className="underline decoration-black-alpha-25 underline-offset-2 ui-desktop:font-medium">{copy.viewCertificate}</span>}
+          spread={INFO_CARD_SPREAD}
           className="min-h-36"
         >
           {/* Figma draws the GIA seal here; labs are shown by icon and name (see StoneCertificateTile). */}

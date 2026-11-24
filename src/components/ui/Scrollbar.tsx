@@ -75,6 +75,7 @@ export function ScrollArea({ label, overlay = false, className, regionClassName,
         role="region"
         aria-label={label}
         tabIndex={0}
+        data-scroll-region
         className={cx("flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", regionClassName)}
       >
         {children}

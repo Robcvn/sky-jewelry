@@ -239,9 +239,11 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
                     {block}
                   </div>
                 ))}
-                {/* Figma shows Shop All both at the end of the list and as the fixed bar below. */}
-                <ShopAllRow link={category.menu.shopAll} size="sm" />
               </div>
+              {/* One Shop All: the fixed bar Figma's frames show (e.g. 3587:124914). Figma also ends the list with a second
+                  Shop All row, dropped (Corrected design oversights). The bar sits below the scrolling list, so the list's
+                  last block scrolls fully clear of it, and its top border is the only rule between them (the last block
+                  has none). */}
               <ShopAllRow link={category.menu.shopAll} className="shrink-0" />
             </>
           ) : null}

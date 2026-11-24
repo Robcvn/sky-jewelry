@@ -95,6 +95,7 @@ export function MobileGallery({ product, variant, name }: { product: Product; va
               role="region"
               aria-label={`Photos of ${name}`}
               tabIndex={photos.length > 1 ? 0 : undefined}
+              data-scroll-region
               onScroll={(event) => setCurrent(Math.round(event.currentTarget.scrollLeft / Math.max(1, event.currentTarget.clientWidth)))}
               className="relative flex size-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] focus-visible:-outline-offset-2 [&::-webkit-scrollbar]:hidden"
             >

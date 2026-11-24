@@ -332,6 +332,7 @@ export function SettingListing({ settings: allSettings, stoneFrom, stones = [] }
                 <li data-setting={setting.handle}>
                   <ProductCard
                     product={setting.product}
+                    priority={index < 4}
                     initialVariant={variant}
                     labels={cardLabels}
                     metalFilter={state.metals}

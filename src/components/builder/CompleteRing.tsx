@@ -133,6 +133,7 @@ function MobileGallery({ ring, stone, name }: { ring: Tile[]; stone: Stone; name
           role="region"
           aria-label={`Photos of ${name}`}
           tabIndex={ring.length > 1 ? 0 : undefined}
+          data-scroll-region
           onScroll={(event) => setCurrent(Math.round(event.currentTarget.scrollLeft / Math.max(1, event.currentTarget.clientWidth)))}
           className="relative flex size-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] focus-visible:-outline-offset-2 [&::-webkit-scrollbar]:hidden"
         >

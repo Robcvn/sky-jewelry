@@ -17,6 +17,7 @@ export function CategoryStrip({ content }: { content: CategoryStripContent }) {
         role="region"
         aria-label={`${content.label}, scroll for more`}
         tabIndex={scrollable ? 0 : undefined}
+        data-scroll-region
         className="snap-x snap-mandatory overflow-x-auto border-y border-primary-leather [scrollbar-width:none] focus-visible:-outline-offset-2 ui-desktop:overflow-visible [&::-webkit-scrollbar]:hidden"
       >
         <ul className="flex">

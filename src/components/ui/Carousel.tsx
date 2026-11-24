@@ -87,7 +87,7 @@ export function Carousel({
   // and no pointer events, still in the tab order.
   // - The card under the pointer always hides the arrow it overlaps, whichever arrow and wherever focus is (Task 27:
   //   after a click at the end of the row, focus sits on Previous and used to keep it showing).
-  // - A card holding keyboard focus hides the arrow it overlaps too; an arrow shows through that only while it has
+  // - A card holding keyboard focus (focus inside while the last input was the keyboard) hides the arrow it overlaps too; an arrow shows through that only while it has
   //   keyboard focus itself (focus-visible).
   const prevWrap = useRef<HTMLSpanElement>(null);
   const nextWrap = useRef<HTMLSpanElement>(null);
@@ -112,7 +112,9 @@ export function Carousel({
               .reduce<Box>((u, r) => ({ left: Math.min(u.left, r.left), right: Math.max(u.right, r.right), top: Math.min(u.top, r.top), bottom: Math.max(u.bottom, r.bottom) }), EMPTY)
           : null;
       const hoverBox = boxOf(hovered.current);
-      const focusBox = boxOf(itemOf(document.activeElement));
+      // Only keyboard focus raises a card (Task 28, the same rule as the card's CSS): focus a mouse press leaves
+      // behind doesn't count.
+      const focusBox = boxOf(document.documentElement.dataset.input === "keyboard" ? itemOf(document.activeElement) : null);
       const hits = (wrap: HTMLSpanElement | null, b: Box | null) => {
         const a = wrap?.getBoundingClientRect();
         return Boolean(a && a.width && b && b.left < a.right && b.right > a.left && b.top < a.bottom && b.bottom > a.top);
@@ -159,6 +161,7 @@ export function Carousel({
         role="region"
         aria-label={`${label}, carousel`}
         tabIndex={scrollable ? 0 : undefined}
+        data-scroll-region
         className={cx(
           "relative flex snap-x snap-mandatory scroll-px-(--grid-margin) gap-space-4 overflow-x-auto px-(--grid-margin) [scrollbar-width:none] focus-visible:-outline-offset-2 ui-desktop:gap-space-6 [&::-webkit-scrollbar]:hidden",
           desktop === "grid" && cx("ui-desktop:grid ui-desktop:overflow-visible", gridClassName),

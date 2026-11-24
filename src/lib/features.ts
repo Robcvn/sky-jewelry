@@ -20,3 +20,11 @@ export const SHOW_360 = false;
  * variant, as before.
  */
 export const GROUP_SWATCHES_BY_PHOTO = true;
+
+/**
+ * Info cards at one height (Task 28, on trial): in "Your Diamond Info" (the builders' stone pages and Step 3) and the
+ * product page's stone info section, every card is as tall as the section's tallest; label, value and any scale stay
+ * at the top and the note sits at the bottom. Each card's drawn height is kept as a minimum. Off (this one line):
+ * every card at its own height, as Figma draws them.
+ */
+export const EQUAL_INFO_CARD_HEIGHTS = true;

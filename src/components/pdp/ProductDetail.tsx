@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { IconLabelButton } from "@/components/ui/IconButton";
 import { IconBlock } from "@/components/ui/IconBlock";
-import { CompositionChart, DimensionsDiagram, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
+import { CompositionChart, DimensionsDiagram, INFO_CARD_SPREAD, INFO_GRID_ROWS, InfoScale, ProductInfoCard } from "@/components/ui/ProductInfoCard";
 import { metalComposition, productDetailContent } from "@/content/product-detail";
 import { formatInstallment, formatPrice, imagesFor, variantName, type Product, type ProductVariant } from "@/content/products";
 import { addToBag } from "@/lib/bag";
@@ -203,7 +203,7 @@ export function ProductDetail({ product }: { product: Product }) {
         {stone ? (
           <section aria-labelledby="pdp-stone-info" className="flex flex-col gap-space-5 border-t border-secondary-gold pt-space-6 ui-desktop:gap-space-8 ui-desktop:pt-space-8">
             <div id="pdp-stone-info">{sectionHeading(labels.stoneInfo, (stone.shape as "round" | "oval" | "emerald") ?? "round")}</div>
-            <div className="grid grid-cols-2 items-start gap-space-2 ui-desktop:gap-space-3">
+            <div className={`grid grid-cols-2 ${INFO_GRID_ROWS} gap-space-2 ui-desktop:gap-space-3`}>
               <ProductInfoCard
                 label="Carat"
                 value={stone.carat.toFixed(2)}
@@ -213,12 +213,12 @@ export function ProductDetail({ product }: { product: Product }) {
                 className="h-full min-h-[8.5rem] ui-desktop:min-h-0"
               />
               {stone.color ? (
-                <ProductInfoCard label="Color" value={stone.color.grade} note={stone.color.short || undefined}>
+                <ProductInfoCard label="Color" value={stone.color.grade} note={stone.color.short || undefined} spread={INFO_CARD_SPREAD}>
                   {stone.diamond ? <InfoScale kind="color" position={stone.color.position} label={`Color ${stone.color.grade} on a scale from colorless to tinted`} /> : null}
                 </ProductInfoCard>
               ) : null}
               {stone.clarity ? (
-                <ProductInfoCard label="Clarity" value={stone.clarity.grade} note={stone.clarity.short}>
+                <ProductInfoCard label="Clarity" value={stone.clarity.grade} note={stone.clarity.short} spread={INFO_CARD_SPREAD}>
                   <InfoScale kind="clarity" position={stone.clarity.position} label={`Clarity ${stone.clarity.grade} on a scale from flawless to included`} />
                 </ProductInfoCard>
               ) : null}
@@ -243,6 +243,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 <ProductInfoCard
                   label="Certification"
                   value={stone.lab}
+                  spread={INFO_CARD_SPREAD}
                   // View Certificate needs a certificate file per stone, which the catalogue doesn't have: shown, not linked.
                   // Desktop: 24px from the lab to View Certificate (Medium, ui-xs/link). Mobile keeps 12, as built
                   // since its logo row was left out (Deviations).

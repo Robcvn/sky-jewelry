@@ -1115,7 +1115,7 @@ export default async function ComponentsPage() {
         <Section id="cards" title="Cards">
           {(["desktop", "mobile"] as const).map((bp) => (
             <Group key={bp} title={`Breakpoint=${bp === "desktop" ? "Desktop" : "Mobile"}`}>
-              <div role="region" aria-label={`Cards preview, ${bp}`} tabIndex={0} className="relative overflow-x-auto pb-space-2">
+              <div role="region" aria-label={`Cards preview, ${bp}`} tabIndex={0} data-scroll-region className="relative overflow-x-auto pb-space-2">
               <div data-breakpoint={bp} className="flex w-max items-start gap-space-8">
                 <Item label="Category Card - Quick">
                   <div className={bp === "desktop" ? "w-[18rem]" : "w-[16.25rem]"}>
@@ -1215,7 +1215,7 @@ export default async function ComponentsPage() {
                     key={`${breakpoint}-${mode}`}
                     label={`Variant=${mode === "messages" ? "Default" : "Timer"}, Breakpoint=${breakpoint === "desktop" ? "Desktop" : "Mobile"}`}
                   >
-                    <div role="region" aria-label={`Top bar preview, ${mode}, ${breakpoint}`} tabIndex={0} className="overflow-x-auto">
+                    <div role="region" aria-label={`Top bar preview, ${mode}, ${breakpoint}`} tabIndex={0} data-scroll-region className="overflow-x-auto">
                       <div className={breakpoint === "desktop" ? "w-[90rem]" : "w-[24.375rem]"}>
                         <AnnouncementBar
                           breakpoint={breakpoint}
@@ -1245,7 +1245,7 @@ export default async function ComponentsPage() {
                 },
               ].map((variant) => (
                 <Item key={variant.name} label={variant.name}>
-                  <div role="region" aria-label={`Header preview, ${variant.name}`} tabIndex={0} className="overflow-x-auto">
+                  <div role="region" aria-label={`Header preview, ${variant.name}`} tabIndex={0} data-scroll-region className="overflow-x-auto">
                     <div className={variant.breakpoint === "desktop" ? "w-[90rem]" : "w-[24.375rem]"}>
                       <Header
                         breakpoint={variant.breakpoint}
@@ -1264,7 +1264,7 @@ export default async function ComponentsPage() {
             <div className="flex flex-col gap-space-6">
               {siteHeader.primary.map((link) => (
                 <Item key={link._key} label={`Mega Menu / ${link.label}`}>
-                  <div role="region" aria-label={`Mega menu preview, ${link.label}`} tabIndex={0} className="overflow-x-auto">
+                  <div role="region" aria-label={`Mega menu preview, ${link.label}`} tabIndex={0} data-scroll-region className="overflow-x-auto">
                     <div className="w-[90rem]" data-breakpoint="desktop">
                       <MegaMenuPanel menu={link.menu} label={`${link.label} preview`} inline />
                     </div>
@@ -1272,7 +1272,7 @@ export default async function ComponentsPage() {
                 </Item>
               ))}
               <Item label="Mega Menu / Search">
-                <div role="region" aria-label="Search panel preview" tabIndex={0} className="overflow-x-auto">
+                <div role="region" aria-label="Search panel preview" tabIndex={0} data-scroll-region className="overflow-x-auto">
                   <div className="w-[90rem]" data-breakpoint="desktop">
                     <SearchPanel content={siteHeader.searchPanel} inline />
                   </div>
@@ -1327,7 +1327,7 @@ export default async function ComponentsPage() {
           </p>
           {(["desktop", "mobile"] as const).map((bp) => (
             <Group key={bp} title={`Breakpoint=${bp === "desktop" ? "Desktop" : "Mobile"}`}>
-              <div role="region" aria-label={`Education and Blog preview, ${bp}`} tabIndex={0} className="relative overflow-x-auto pb-space-2">
+              <div role="region" aria-label={`Education and Blog preview, ${bp}`} tabIndex={0} data-scroll-region className="relative overflow-x-auto pb-space-2">
                 <ContentDemos bp={bp} />
               </div>
             </Group>
@@ -1660,7 +1660,8 @@ export default async function ComponentsPage() {
             </li>
             <li>Metal swatches (product cards, search cards, quick views, the setting page&rsquo;s card): one swatch per distinct photo, on trial (GROUP_SWATCHES_BY_PHOTO, Rob&rsquo;s decision, Nov 22). Metals that share a main photo (14K and 18K of a colour, white gold and platinum) share a swatch, which stands for the card&rsquo;s metal when it is in the group, otherwise for the group&rsquo;s first. The round solitaire&rsquo;s yellow gold photo shows the ring worn on a hand, so a card opened without a Metal filter starts on the product&rsquo;s first metal with a studio photo (the natural diamond ring opens on white gold, like the other two round solitaires), and the yellow gold photo gets a swatch only when the Metal filter chose yellow gold (Rob&rsquo;s decision, Nov 22). Every metal can still be chosen on the product and setting pages and with the Metal filter.</li>
             <li>Product card hover panel (every card with Info and Add to Bag, Choose Setting or Customize: product lists, search, the ring and earrings builders and the Best Sellers rows): below a card of about 276px (a viewport of about 1330px on the product list, wider in the Best Sellers rows, whose cards are 6px narrower) the panel&rsquo;s spacing tightens so every label stays on one line, widths Figma doesn&rsquo;t draw. From Figma&rsquo;s values at 276px to a 211px card (1024px): panel and button side padding 16 to 8, the label&rsquo;s side padding 8 to 0 and Info&rsquo;s width 76 to 56; the gap stays 8 and the text size, labels and chevron are unchanged. From 276px up every value is Figma&rsquo;s. Rob&rsquo;s decision, Nov 22.</li>
-            <li>Product rows (carousels with product cards, such as Shop our Best Sellers): a hovered or focused card rises over the carousel arrow it overlaps, so that arrow fades out (opacity 0, no pointer events) until the pointer or focus leaves the card; it stays in the tab order. A card under the pointer always hides the arrow it overlaps, wherever focus is; an arrow shows through a focused card only while it has keyboard focus itself (focus-visible), and never while a hovered card overlaps it (Task 27). Figma draws no hovered card beside an arrow (all 46 product cards next to arrows on the desktop frames are State=Default). Rob&rsquo;s decision, Nov 22.</li>
+            <li>Product rows (carousels with product cards, such as Shop our Best Sellers): a hovered or keyboard-focused card (a focus-visible element inside; focus left by a mouse press or a drag doesn&rsquo;t count, Task 28) rises over the carousel arrow it overlaps, so that arrow fades out (opacity 0, no pointer events) until the pointer or focus leaves the card; it stays in the tab order. A card under the pointer always hides the arrow it overlaps, wherever focus is; an arrow shows through a focused card only while it has keyboard focus itself (focus-visible), and never while a hovered card overlaps it (Task 27). Figma draws no hovered card beside an arrow (all 46 product cards next to arrows on the desktop frames are State=Default). Rob&rsquo;s decision, Nov 22.</li>
+            <li>Info cards at one height, on trial (Task 28; EQUAL_INFO_CARD_HEIGHTS in src/lib/features.ts): in &ldquo;Your Diamond Info&rdquo; on the builders&rsquo; stone pages and Step 3, and in the product page&rsquo;s stone info section, every card is as tall as the section&rsquo;s tallest, on desktop and mobile. Label, value and any scale stay at the top and the note sits at the bottom; gaps, paddings and widths are unchanged, and each card&rsquo;s drawn height is kept as a minimum. Figma draws each card at its own height; one line turns the trial off.</li>
             <li>Account pages, desktop side menu (Profile, Orders, Log Out): sticky in its column while the page scrolls, its top 40px under the sticky header (the column&rsquo;s own 40px above the menu), as other side content on the site stays in view. The column and its rule still run the content&rsquo;s full height, and the menu stops with the column, above the footer. Figma&rsquo;s frames show the page at rest only (Task 27).</li>
             <li>Sideways scrollers can be dragged with a mouse (useDragScroll): carousels, scroll areas, the category strip, the announcement messages, option rows, tabs, Perfectly Paired Wedding Bands and the swiping galleries. Below 1024px Figma draws no arrows and no scrollbar handle, so a plain mouse could not reach what is off screen. Mouse only: a drag starts after 5px, the row follows the pointer and settles on a snap point; the click that ends a drag is ignored. At rest the only difference is the grab cursor. Touch, trackpads, Shift + wheel, the keyboard and the desktop arrows are unchanged; article tables keep their native scrollbar. An interaction Figma doesn&rsquo;t draw (planning chat&rsquo;s recommendation, Nov 22).</li>
           </ul>
@@ -1668,6 +1669,7 @@ export default async function ComponentsPage() {
 
         <Section id="corrected-oversights" title="Corrected design oversights">
           <ul className="type-body-sm-regular flex max-w-[48rem] list-disc flex-col gap-space-2 pl-space-5">
+            <li>Mobile menu sub-menus: Figma ends each list with a &ldquo;Shop All&rdquo; row and also shows the same link as the fixed bar at the bottom, so on a phone it appeared twice at the end. Built with the fixed bar only (e.g. 3587:124914), in all six sub-menus; one rule separates the list&rsquo;s last block from the bar (Rob&rsquo;s decision, Nov 23; until Task 28 both were built, as drawn).</li>
             <li>Clarity scale (product page, desktop): Figma&rsquo;s export of the bar&rsquo;s texture ends in a transparent strip, so some instances draw a light gap at the bar&rsquo;s right end (about 9px at 215px). The texture is cropped to its opaque part and fills the bar flush with its border on all four sides (Rob&rsquo;s request, Nov 22). The mobile bar was already flush.</li>
             <li>
               Stand-in menu icons. Figma shows setting and shape icons on band and jewelry links. Built with the matching Assets icons:

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
+import { FocusModality } from "@/components/site/FocusModality";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
 import { ADOBE_FONTS_STYLESHEET, fontClassName, fontStyle } from "@/fonts";
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <Header contact={contact} menuPosts={menuPosts} />
         {children}
         <Footer content={siteFooter} />
+        <FocusModality />
       </body>
     </html>
   );

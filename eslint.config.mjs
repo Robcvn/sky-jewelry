@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // The Sanity Studio has its own package and settings.
     "studio/**",
+    // Local notes, check scripts and their node_modules: not in git, not part of the site.
+    "notes/**",
   ]),
 ]);
 

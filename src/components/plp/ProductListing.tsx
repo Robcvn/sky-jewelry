@@ -218,10 +218,11 @@ export function ProductListing({ category, products }: ProductListingProps) {
 
         {shown.length ? (
           <ul ref={gridRef} className="grid grid-cols-2 gap-x-space-2 gap-y-space-4 ui-desktop:grid-cols-4 ui-desktop:gap-space-4">
-            {shown.map(({ product, variant }) => (
+            {shown.map(({ product, variant }, index) => (
               <li key={`${product.slug}-${variant.metal}-${variant.carat ?? ""}`}>
                 <ProductCard
                   product={product}
+                  priority={index < 4}
                   initialVariant={variant}
                   labels={content.card}
                   busy={busy === product.slug}

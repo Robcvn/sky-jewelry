@@ -211,10 +211,11 @@ export function EarringSettingListing({ settings }: { settings: EarringSetting[]
 
         {shown.length ? (
           <ul ref={gridRef} data-earring-settings className="grid grid-cols-2 gap-x-space-2 gap-y-space-4 ui-desktop:grid-cols-4 ui-desktop:gap-space-4">
-            {shown.map(({ setting, variant }) => (
+            {shown.map(({ setting, variant }, index) => (
               <li key={setting.handle} data-setting={setting.handle}>
                 <ProductCard
                   product={setting.product}
+                  priority={index < 4}
                   initialVariant={variant}
                   labels={cardLabels}
                   metalFilter={state.metals}

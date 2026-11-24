@@ -115,3 +115,20 @@ body > header [data-header-row] :is(a, button) {
   cursor: grabbing !important;
   user-select: none;
 }
+
+/*
+ * Focusable sideways scrollers (role=region with tabindex 0: carousels, swiping galleries, ScrollArea and others) show
+ * their outline for keyboard focus only (Task 28). FocusModality stamps data-focus-by when one gains focus; a tap or a
+ * click inside (iOS Safari focuses the region and calls it focus-visible) gets none. Controls inside keep theirs.
+ */
+[data-scroll-region][data-focus-by="pointer"] {
+  outline: none;
+}
+
+/*
+ * Product cards (Task 28): a card rises and shows its hover shell and panel for keyboard focus inside it, never for
+ * focus left by a mouse press or a drag. FocusModality sets data-input on <html> from the last input. focus-within (not
+ * :has(:focus-visible)) so the panel stays up while Tab moves between the card's controls.
+ */
+@custom-variant keyboard-focus-within (:root[data-input="keyboard"] &:focus-within);
+@custom-variant card-keyboard-focus (:root[data-input="keyboard"] .group\/card:focus-within &);
