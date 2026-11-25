@@ -89,7 +89,7 @@ function DesktopGallery({ ring, stone }: { ring: Tile[]; stone: Stone }) {
   const second = ring[1] ?? { key: "worn", ...WORN[0] };
   const photo = (tile: Tile, priority: boolean, hint360 = false) => (
     <div className={cx("relative aspect-square overflow-hidden rounded-4", TILE_BG)}>
-      <Picture image={tile.image} priority={priority} sizes={{ desktop: "(width >= 90rem) 21.3rem, 24vw", mobile: "100vw" }} className={cx("size-full object-cover", !tile.carat && "mix-blend-multiply")} />
+      <Picture image={tile.image} priority={priority} sizes={{ desktop: "(width > 90rem) min(calc(29.38vw - 82px), 482px), (width >= 90rem) 21.3rem, 24vw", mobile: "100vw" }} className={cx("size-full object-cover", !tile.carat && "mix-blend-multiply")} />
       {tile.carat ? <ShownWith carat={tile.carat} /> : null}
       {hint360 ? <Hint360 className="bottom-space-4" /> : null}
     </div>
@@ -98,7 +98,7 @@ function DesktopGallery({ ring, stone }: { ring: Tile[]; stone: Stone }) {
     <div data-complete-gallery className="grid grid-cols-2 gap-space-3">
       {photo(ring[0], true, true)}
       <div data-stone-photo className={cx("relative aspect-square overflow-hidden rounded-4", stone.image ? STONE_TILE_BG : STONE_DRAWING_BG)}>
-        <StonePicture stone={stone} sizes={{ desktop: "(width >= 90rem) 21.3rem, 24vw", mobile: "100vw" }} />
+        <StonePicture stone={stone} sizes={{ desktop: "(width > 90rem) min(calc(29.38vw - 82px), 482px), (width >= 90rem) 21.3rem, 24vw", mobile: "100vw" }} />
       </div>
       <StoneCertificateTile stone={stone} />
       {photo(second, false)}

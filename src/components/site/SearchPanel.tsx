@@ -62,7 +62,7 @@ export function SearchPanel({ content, id, open = true, inputRef, onSubmitted, i
         action={withBasePath("/search/")}
         method="get"
         onSubmit={onSubmit}
-        className="flex flex-col gap-space-6 px-space-6 pt-space-6 pb-space-10"
+        className="flex flex-col gap-space-6 wide-px-6 pt-space-6 pb-space-10"
       >
         <label htmlFor={inputId} className="type-overline-xs-medium">
           {content.label}

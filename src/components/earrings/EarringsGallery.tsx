@@ -76,7 +76,7 @@ export type GalleryTile =
   | { key: string; kind: "model"; images: ImageRef[]; name: string; badge?: string }
   | { key: string; kind: "stone"; stone: Pick<Stone, "image" | "shape" | "title">; hint360?: boolean };
 
-const DESKTOP_SIZES = { desktop: "(width >= 90rem) 21.3rem, 24vw", mobile: "100vw" };
+const DESKTOP_SIZES = { desktop: "(width > 90rem) min(calc(29.38vw - 82px), 482px), (width >= 90rem) 21.3rem, 24vw", mobile: "100vw" };
 
 /**
  * The desktop gallery of Setting Info and Complete (Figma 3565:98709 and 3565:99574, "images"): a 2 x 2 grid of
@@ -202,7 +202,7 @@ export function PairStoneViews({ stone, name, variant }: { stone: Stone; name: s
       <div className={cx("relative aspect-square overflow-hidden", view === "photo" && photoBg)}>
         {view === "photo" ? (
           <>
-            <StonePicture stone={stone} priority sizes={{ desktop: "(width >= 90rem) 20.2rem, 23vw", mobile: "100vw" }} />
+            <StonePicture stone={stone} priority sizes={{ desktop: "(width > 90rem) min(calc(29.38vw - 102px), 462px), (width >= 90rem) 20.2rem, 23vw", mobile: "100vw" }} />
             <Hint360 className="bottom-space-4" />
           </>
         ) : view === "specs" ? (

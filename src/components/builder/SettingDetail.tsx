@@ -66,7 +66,7 @@ function DesktopGallery({ tiles }: { tiles: Tile[] }) {
           <Picture
             image={wide(index) ? slotImage(tile.image, "gallery-d-wide") : tile.image}
             priority={index === 0}
-            sizes={{ desktop: wide(index) ? "min(43.375rem, 48.2vw)" : "(width >= 80rem) 25vw, 45vw", mobile: "100vw" }}
+            sizes={{ desktop: wide(index) ? "(width > 90rem) min(calc(58.75vw - 152px), 976px), min(43.375rem, 48.2vw)" : "(width >= 80rem) 25vw, 45vw", mobile: "100vw" }}
             className={cx("size-full object-cover", !tile.carat && "mix-blend-multiply")}
           />
           {tile.carat ? <ShownWith carat={tile.carat} /> : null}
@@ -342,7 +342,7 @@ function BandCard({ product }: { product: Product }) {
   return (
     <article className="relative flex flex-col text-center text-primary-leather">
       <div className={cx("relative aspect-square overflow-hidden rounded-4", TILE_BG)}>
-        <Picture image={imagesFor(product, variant.metal)[0]} sizes={{ desktop: "(width >= 90rem) 13.75rem, 15vw", mobile: "45vw" }} className="size-full object-cover mix-blend-multiply" />
+        <Picture image={imagesFor(product, variant.metal)[0]} sizes={{ desktop: "(width > 90rem) min(calc(19.59vw - 61px), 315px), (width >= 90rem) 13.75rem, 15vw", mobile: "45vw" }} className="size-full object-cover mix-blend-multiply" />
       </div>
       <div className="flex flex-col gap-space-1 px-space-2 pt-space-3">
         {/* Desktop: heading-sm (22/26), as the setting page's and Step 3's frames draw the band's name (Task 30). */}

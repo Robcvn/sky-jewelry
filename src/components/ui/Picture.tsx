@@ -29,7 +29,11 @@ const srcSet = (key: ImageKey) => imageManifest[key].map((file) => `${withBasePa
 
 type PictureProps = {
   image: ImageRef;
-  /** The rendered width at each breakpoint, as a sizes value, e.g. "100vw". */
+  /**
+   * The rendered width at each breakpoint, as a sizes value, e.g. "100vw". Pictures that keep growing past 1440 lead
+   * with a "(width > 90rem) min(calc(Avw - Bpx), Cpx)" entry (Task 32): their drawn width measured at 1440 and 1920 as
+   * a line, capped at the 1920 width, so wide screens load a file as wide as the picture. 1440 itself keeps its entry.
+   */
   sizes: { desktop: string; mobile: string };
   /** Above the fold: load eagerly with high priority. Everything else lazy-loads. */
   priority?: boolean;

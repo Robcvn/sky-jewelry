@@ -11,7 +11,9 @@ type GradeScaleProps = {
 
 /**
  * Figma "Slider Option" row, read-only: one segment per grade with a 2px top border (gold, leather when
- * selected) and a 20px white thumb over the selected grade. Figma's option is 32 tall on mobile and 36 on desktop:
+ * selected). Figma also draws a 20px white thumb over the selected grade; it is left out because it read as a handle
+ * that could be dragged (Rob, Nov 24; Deviations). It was absolutely positioned, so nothing else moved.
+ * Figma's option is 32 tall on mobile and 36 on desktop:
  * 10 / 12 above the label counting the 2px border, the 14 / 16 label (a block, so the card's line height doesn't
  * stretch the row) and 8 below. Figma draws it static, so it is a labelled list
  * with the current grade marked, not a control.
@@ -31,12 +33,6 @@ export function GradeScale({ label, options, selected, className }: GradeScalePr
               isSelected ? "border-primary-leather text-primary-leather" : "border-secondary-gold text-black-alpha-70",
             )}
           >
-            {isSelected ? (
-              <span
-                aria-hidden="true"
-                className="absolute -top-[11px] left-1/2 size-space-5 -translate-x-1/2 rounded-full border border-primary-leather bg-base-white shadow-md"
-              />
-            ) : null}
             <span className="type-ui-2xs-medium block ui-desktop:type-ui-xs-regular">{option}</span>
             {isSelected ? <span className="sr-only"> (this diamond)</span> : null}
           </li>

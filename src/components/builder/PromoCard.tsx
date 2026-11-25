@@ -28,7 +28,7 @@ export function PromoCard({ promo, breakpoint, className }: PromoCardProps) {
     >
       <Picture
         image={promo.image}
-        sizes={{ desktop: wide ? "(width >= 90rem) 38.5rem, 43vw" : "(width >= 90rem) 18.75rem, 21vw", mobile: wide ? "calc(100vw - 2.5rem)" : "45vw" }}
+        sizes={{ desktop: wide ? "(width > 90rem) min(calc(50vw - 104px), 856px), (width >= 90rem) 38.5rem, 43vw" : "(width > 90rem) min(calc(25vw - 60px), 420px), (width >= 90rem) 18.75rem, 21vw", mobile: wide ? "calc(100vw - 2.5rem)" : "45vw" }}
         className={cx("absolute inset-0 size-full object-cover", wide && "object-bottom")}
       />
       <span

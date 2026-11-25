@@ -321,7 +321,7 @@ function DesktopBar({ content, layout, labelSuffix, pathname, bagCount, bagLabel
     >
       {layout === "two-row" ? (
         <>
-          <div className="grid min-h-space-13 grid-cols-[1fr_auto_1fr] items-center border-b border-primary-leather px-space-6 py-space-2">
+          <div className="grid min-h-space-13 grid-cols-[1fr_auto_1fr] items-center border-b border-primary-leather wide-px-6 py-space-2">
             {utilityNav}
             {logo}
             <div className="flex items-center justify-end gap-space-6">
@@ -343,13 +343,13 @@ function DesktopBar({ content, layout, labelSuffix, pathname, bagCount, bagLabel
               </nav>
             </div>
           </div>
-          <div className="flex min-h-space-10 items-center justify-center border-b border-primary-leather px-space-6">
+          <div className="flex min-h-space-10 items-center justify-center border-b border-primary-leather wide-px-6">
             {mainNav}
           </div>
         </>
       ) : (
         // Figma's bar is 66px with its bottom border inside: 13px above the 40px controls, 12px and the border below.
-        <div className="grid min-h-(--sticky-header-height) grid-cols-[1fr_auto_1fr] items-center border-b border-primary-leather px-space-6 pt-[0.8125rem] pb-[calc(0.8125rem-1px)]">
+        <div className="grid min-h-(--sticky-header-height) grid-cols-[1fr_auto_1fr] items-center border-b border-primary-leather wide-px-6 pt-[0.8125rem] pb-[calc(0.8125rem-1px)]">
           {logo}
           {mainNav}
           <div className="flex items-center justify-end gap-space-2">

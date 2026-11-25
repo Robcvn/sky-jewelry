@@ -51,6 +51,11 @@ export const productImageManifest = {
       "src": "/images/products/earrings-solitaire-studs-yellow-gold-342.webp",
       "w": 342,
       "h": 342
+    },
+    {
+      "src": "/images/products/earrings-solitaire-studs-yellow-gold-600.webp",
+      "w": 600,
+      "h": 600
     }
   ],
   "product-necklace-paperclip-chain-yellow-gold": [
@@ -75,6 +80,11 @@ export const productImageManifest = {
       "src": "/images/products/necklace-solitaire-pendant-yellow-gold-angled-342.webp",
       "w": 342,
       "h": 342
+    },
+    {
+      "src": "/images/products/necklace-solitaire-pendant-yellow-gold-angled-600.webp",
+      "w": 600,
+      "h": 600
     }
   ],
   "product-necklace-solitaire-pendant-yellow-gold-worn": [
@@ -99,6 +109,11 @@ export const productImageManifest = {
       "src": "/images/products/necklace-solitaire-pendant-yellow-gold-342.webp",
       "w": 342,
       "h": 342
+    },
+    {
+      "src": "/images/products/necklace-solitaire-pendant-yellow-gold-600.webp",
+      "w": 600,
+      "h": 600
     }
   ],
   "product-ring-classic-band-yellow-gold-angled": [
@@ -208,6 +223,11 @@ export const productImageManifest = {
       "src": "/images/products/ring-pave-emerald-yellow-gold-342.webp",
       "w": 342,
       "h": 342
+    },
+    {
+      "src": "/images/products/ring-pave-emerald-yellow-gold-588.webp",
+      "w": 588,
+      "h": 588
     }
   ],
   "product-ring-rose-gold": [
@@ -232,6 +252,11 @@ export const productImageManifest = {
       "src": "/images/products/ring-round-halo-rose-gold-342.webp",
       "w": 342,
       "h": 342
+    },
+    {
+      "src": "/images/products/ring-round-halo-rose-gold-588.webp",
+      "w": 588,
+      "h": 588
     }
   ],
   "product-ring-round-solitaire-white-gold": [
@@ -239,6 +264,11 @@ export const productImageManifest = {
       "src": "/images/products/ring-round-solitaire-white-gold-342.webp",
       "w": 342,
       "h": 342
+    },
+    {
+      "src": "/images/products/ring-round-solitaire-white-gold-588.webp",
+      "w": 588,
+      "h": 588
     }
   ],
   "product-ring-round-solitaire-yellow-gold-closeup": [
@@ -280,6 +310,11 @@ export const productImageManifest = {
       "src": "/images/products/ring-side-stone-white-gold-342.webp",
       "w": 342,
       "h": 342
+    },
+    {
+      "src": "/images/products/ring-side-stone-white-gold-588.webp",
+      "w": 588,
+      "h": 588
     }
   ],
   "product-ring-twig-band-yellow-gold": [
@@ -287,6 +322,11 @@ export const productImageManifest = {
       "src": "/images/products/ring-twig-band-yellow-gold-342.webp",
       "w": 342,
       "h": 342
+    },
+    {
+      "src": "/images/products/ring-twig-band-yellow-gold-440.webp",
+      "w": 440,
+      "h": 440
     }
   ],
   "product-ring-vine-rose-gold": [

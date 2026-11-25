@@ -28,12 +28,12 @@ export function GradeScale({ block }: { block: GradeScaleBlock }) {
   return (
     <div className="flex flex-col">
       <div className="relative aspect-[4/3] overflow-hidden rounded-4 bg-secondary-ivory">
-        <Picture image={block.image} sizes={{ desktop: "(width >= 90rem) 51.5rem, 57vw", mobile: "calc(100vw - 40px)" }} className="absolute inset-0 size-full object-cover" />
+        <Picture image={block.image} sizes={{ desktop: "(width > 90rem) min(calc(66.05vw - 127px), 1141px), (width >= 90rem) 51.5rem, 57vw", mobile: "calc(100vw - 40px)" }} className="absolute inset-0 size-full object-cover" />
         {/* Figma's loupe ring is faint: a 4px #fcfcfa stroke at 10% (res-1440-6; Task 30). */}
         {block.loupe ? (
           // Figma: 310 at (124, 73) on the 824 x 618 photo; 132 at (53, 31) on the 350 x 263 one: the same place, larger on desktop.
           <span className="absolute top-[11.8%] left-[15.1%] block aspect-square w-[37.7%] overflow-hidden rounded-full border-4 border-white-alpha-10 shadow-lg ui-desktop:left-[15%] ui-desktop:w-[37.6%]">
-            <Picture image={block.loupe} sizes={{ desktop: "310px", mobile: "132px" }} className="size-full object-cover" />
+            <Picture image={block.loupe} sizes={{ desktop: "(width > 90rem) min(calc(24.8vw - 55px), 421px), 310px", mobile: "132px" }} className="size-full object-cover" />
           </span>
         ) : null}
       </div>
@@ -278,7 +278,7 @@ export function Gallery({ items, label }: { items: Array<{ _key: string; image: 
         {items.map((item) => (
           <li key={item._key} className="flex w-[18.0625rem] shrink-0 snap-start flex-col gap-space-3 ui-desktop:w-auto ui-desktop:gap-space-4">
             <span className="relative block aspect-[4/3] overflow-hidden rounded-4 bg-secondary-ivory">
-              <Picture image={item.image} sizes={{ desktop: "259px", mobile: "289px" }} className="absolute inset-0 size-full object-cover" />
+              <Picture image={item.image} sizes={{ desktop: "(width > 90rem) min(calc(22.09vw - 59px), 365px), 259px", mobile: "289px" }} className="absolute inset-0 size-full object-cover" />
             </span>
             <span className="type-body-sm-medium ui-desktop:type-body-md-medium">{item.caption}</span>
           </li>

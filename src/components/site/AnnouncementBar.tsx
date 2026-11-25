@@ -102,7 +102,7 @@ export function AnnouncementBar({ content = announcementBar, mode, breakpoint, l
       </Link>
       <Link
         href={content.contact.href}
-        className="ui-transition ui-focus:outline-base-white absolute top-0 left-space-6 hidden py-space-2 text-secondary-ivory hover:text-base-white ui-desktop:inline-flex"
+        className="ui-transition ui-focus:outline-base-white absolute top-0 wide-left-6 hidden py-space-2 text-secondary-ivory hover:text-base-white ui-desktop:inline-flex"
       >
         {content.contact.label}
       </Link>

@@ -13,4 +13,4 @@ export const BULLET_ITEM =
  * constant exported from a "use client" file reaches a server component as a client reference, so ArticleBody's photos
  * got undefined sizes (found in Task 30).
  */
-export const ARTICLE_SIZES = { desktop: "(width >= 90rem) 51.5rem, 57vw", mobile: "calc(100vw - 40px)" };
+export const ARTICLE_SIZES = { desktop: "(width > 90rem) min(calc(66.05vw - 127px), 1141px), (width >= 90rem) 51.5rem, 57vw", mobile: "calc(100vw - 40px)" };

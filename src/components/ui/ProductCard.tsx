@@ -196,7 +196,7 @@ export function ProductCard({ product, initialVariant, labels, onAddToBag, onQui
           <Picture
             image={image}
             priority={priority && view === 0}
-            sizes={{ desktop: "(width >= 90rem) 20rem, 23vw", mobile: carousel ? "18.125rem" : "45vw" }}
+            sizes={{ desktop: carousel ? "(width > 90rem) calc(25.84vw - 78px), (width >= 90rem) 20rem, 23vw" : "(width > 90rem) min(calc(25vw - 60px), 420px), (width >= 90rem) 20rem, 23vw", mobile: carousel ? "18.125rem" : "45vw" }}
             className="size-full object-cover mix-blend-multiply transition-transform duration-300 ease-out motion-reduce:transition-none ui-desktop:group-hover/card:scale-[1.067] ui-desktop:card-keyboard-focus:scale-[1.067] motion-reduce:scale-100!"
           />
           {SHOW_360 && builder?.hint360 ? (

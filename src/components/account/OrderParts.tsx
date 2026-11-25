@@ -119,7 +119,7 @@ export function OrderCard({ order, compact = false, headingLevel = "h3" }: Order
           <ul className="flex flex-col gap-space-3 ui-desktop:grid ui-desktop:grid-cols-4 ui-desktop:gap-space-6">
             {order.lines.map((line) => (
               <li key={line.key} className="flex items-center gap-space-3 ui-desktop:flex-col ui-desktop:items-stretch">
-                <OrderPhoto line={line} className="size-space-15 ui-desktop:aspect-square ui-desktop:size-auto" sizes={{ desktop: "176px", mobile: "80px" }} />
+                <OrderPhoto line={line} className="size-space-15 ui-desktop:aspect-square ui-desktop:size-auto" sizes={{ desktop: "(width > 90rem) min(calc(16.67vw - 64px), 256px), 176px", mobile: "80px" }} />
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="type-ui-sm-medium">{line.name}</p>
                   <p className="type-ui-xs-regular">{lineConfig(line)}</p>

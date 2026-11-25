@@ -364,7 +364,7 @@ function Education({ items, pages }: { items: SearchIndex["education"]; pages: n
               readTime={item.readTime ?? undefined}
               href={item.href}
               image={item.image}
-              sizes={{ desktop: "(width >= 90rem) 25rem, 28vw", mobile: "calc(100vw - 40px)" }}
+              sizes={{ desktop: "(width > 90rem) min(calc(33.34vw - 80px), 560px), (width >= 90rem) 25rem, 28vw", mobile: "calc(100vw - 40px)" }}
             />
           </li>
         ))}
@@ -382,7 +382,7 @@ function Education({ items, pages }: { items: SearchIndex["education"]; pages: n
 
 function Stories({ items, pages }: { items: SearchIndex["stories"]; pages: number }) {
   const card = (item: SearchIndex["stories"][number]) => (
-    <FeatureCard title={item.title} body={item.excerpt} ctaLabel={text.storyCta} href={item.href} image={item.image} sizes={{ desktop: "(width >= 90rem) 25rem, 28vw", mobile: "288px" }} className="aspect-[4/5] w-full" />
+    <FeatureCard title={item.title} body={item.excerpt} ctaLabel={text.storyCta} href={item.href} image={item.image} sizes={{ desktop: "(width > 90rem) min(calc(33.34vw - 80px), 560px), (width >= 90rem) 25rem, 28vw", mobile: "288px" }} className="aspect-[4/5] w-full" />
   );
   return (
     <>

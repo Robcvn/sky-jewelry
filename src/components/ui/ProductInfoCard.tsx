@@ -36,12 +36,15 @@ export const INFO_CARD_SPREAD = EQUAL_INFO_CARD_HEIGHTS;
 
 export function ProductInfoCard({ label, value, children, note, spread = false, gap = "sm", className }: ProductInfoCardProps) {
   const space = gap === "md" ? "gap-space-3" : "gap-space-2";
+  // With the trial on, every card's note sits at its bottom edge, including cards that hold a diagram, an icon or a
+  // scale (the setting page's Profile card kept its note under the icon; Rob, Task 32). Off: as passed, as before.
+  const toBottom = spread || INFO_CARD_SPREAD;
   return (
     <div
       className={cx(
         "flex flex-col rounded-4 border border-black-alpha-5 bg-secondary-pure-white p-[0.6875rem] text-primary-leather ui-desktop:p-[0.9375rem]",
         space,
-        spread && "justify-between",
+        toBottom && "justify-between",
         className,
       )}
     >

@@ -222,7 +222,7 @@ export function ContentList({ kind, items, topics, pageSize, labels }: ContentLi
                 readTime={item.readTime}
                 href={item.href}
                 image={item.image}
-                sizes={{ desktop: "(width >= 90rem) 25rem, 28vw", mobile: "calc(100vw - 40px)" }}
+                sizes={{ desktop: "(width > 90rem) min(calc(33.34vw - 80px), 560px), (width >= 90rem) 25rem, 28vw", mobile: "calc(100vw - 40px)" }}
               />
             </li>
           ))}

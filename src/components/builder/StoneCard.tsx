@@ -114,7 +114,7 @@ export function StoneCard({ stone, href, completeHref, actionLabel = copy.comple
       />
       <div className="relative flex flex-col overflow-hidden rounded-8 border border-black-alpha-10 bg-secondary-skin ui-desktop:group-hover/card:border-transparent ui-desktop:group-hover/card:bg-transparent ui-desktop:group-focus-within/card:border-transparent ui-desktop:group-focus-within/card:bg-transparent">
         <div className="relative aspect-square overflow-hidden rounded-t-4 bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))] ui-desktop:rounded-4">
-          <StonePicture stone={stone} sizes={{ desktop: "(width >= 90rem) 18.75rem, 21vw", mobile: "45vw" }} />
+          <StonePicture stone={stone} sizes={{ desktop: "(width > 90rem) min(calc(25vw - 60px), 420px), (width >= 90rem) 18.75rem, 21vw", mobile: "45vw" }} />
           {SHOW_360 ? (
             <div className="hidden ui-desktop:group-hover/card:block ui-desktop:group-focus-within/card:block">
               <Hint360 className="bottom-space-4" />

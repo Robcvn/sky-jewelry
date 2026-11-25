@@ -39,7 +39,7 @@ export function EducationCenter({ content, variant = "home" }: { content: Educat
       <div className="flex flex-col gap-space-8 ui-desktop:grid ui-desktop:grid-cols-[718fr_506fr] ui-desktop:items-start ui-desktop:gap-space-6">
         <ResourceCardLarge
           {...content.featured}
-          sizes={{ desktop: "calc(50vw - 40px)", mobile: "calc(100vw - 40px)" }}
+          sizes={{ desktop: "(width > 90rem) min(calc(58.55vw - 140px), 984px), calc(50vw - 40px)", mobile: "calc(100vw - 40px)" }}
         />
         <ul className="flex flex-col gap-space-4 ui-desktop:gap-space-6">
           {content.resources.map((resource) => (

@@ -44,7 +44,7 @@ function PairHalf({ stone, first, sheet = false }: { stone: Stone; first: boolea
   return (
     <div className={cx("flex min-w-0 flex-1 flex-col overflow-hidden", first && "border-r border-black-alpha-10")}>
       <div className={cx("relative aspect-square overflow-hidden", TILE_BG, sheet ? "" : "rounded-t-4 ui-desktop:rounded-none")}>
-        <StonePicture stone={stone} sizes={{ desktop: "(width >= 90rem) 19.25rem, 21vw", mobile: sheet ? "min(11.6875rem, 48vw)" : "45vw" }} />
+        <StonePicture stone={stone} sizes={{ desktop: "(width > 90rem) min(calc(24.8vw - 50px), 426px), (width >= 90rem) 19.25rem, 21vw", mobile: sheet ? "min(11.6875rem, 48vw)" : "45vw" }} />
       </div>
       <div className={cx("flex flex-col gap-space-3", sheet ? "py-space-3" : "py-space-2 ui-desktop:gap-space-4 ui-desktop:py-space-3")}>
         <p aria-hidden="true" className={cx("text-center", sheet ? "type-heading-sm" : "type-heading-xs ui-desktop:type-heading-sm")}>

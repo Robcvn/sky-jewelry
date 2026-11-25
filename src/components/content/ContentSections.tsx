@@ -96,7 +96,7 @@ export function PostHeader({ title, topic, date, readTime, image, back }: { titl
         </p>
       ) : null}
       <div className="relative mt-space-8 aspect-[4/3] w-full overflow-hidden rounded-4 bg-secondary-ivory ui-desktop:mt-space-11 ui-desktop:aspect-[1034/581] ui-desktop:w-[82.85%]">
-        <Picture image={image} sizes={{ desktop: "(width >= 90rem) 64.625rem, 72vw", mobile: "calc(100vw - 40px)" }} priority className="absolute inset-0 size-full object-cover" />
+        <Picture image={image} sizes={{ desktop: "(width > 90rem) min(calc(82.92vw - 160px), 1432px), (width >= 90rem) 64.625rem, 72vw", mobile: "calc(100vw - 40px)" }} priority className="absolute inset-0 size-full object-cover" />
       </div>
     </header>
   );
@@ -110,7 +110,7 @@ export function NextResource({ label, title, body, href, image, cta }: { label: 
   return (
     <section aria-label={label} className="flex flex-col gap-space-6 text-primary-leather ui-desktop:flex-row ui-desktop:items-center ui-desktop:gap-space-10">
       <Link href={href} tabIndex={-1} aria-hidden="true" className="relative block aspect-square w-full shrink-0 overflow-hidden rounded-4 bg-secondary-ivory ui-desktop:w-[35.6%]">
-        <Picture image={image} sizes={{ desktop: "(width >= 90rem) 18.3rem, 21vw", mobile: "calc(100vw - 40px)" }} className="absolute inset-0 size-full object-cover" />
+        <Picture image={image} sizes={{ desktop: "(width > 90rem) min(calc(23.55vw - 46px), 406px), (width >= 90rem) 18.3rem, 21vw", mobile: "calc(100vw - 40px)" }} className="absolute inset-0 size-full object-cover" />
       </Link>
       <div className="flex flex-col items-start">
         <p className="type-overline-xs-medium">{label}</p>
@@ -136,7 +136,7 @@ export function FeaturedPost({ title, excerpt, topic, date, readTime, href, imag
   return (
     <article className="flex flex-col gap-space-4 text-primary-leather ui-desktop:flex-row ui-desktop:items-center ui-desktop:gap-space-15">
       <Link href={href} tabIndex={-1} aria-hidden="true" className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden rounded-4 bg-secondary-ivory ui-desktop:w-[46.8%]">
-        <Picture image={image} sizes={{ desktop: "(width >= 90rem) 36.5rem, 41vw", mobile: "calc(100vw - 40px)" }} priority className="absolute inset-0 size-full object-cover" />
+        <Picture image={image} sizes={{ desktop: "(width > 90rem) min(calc(46.88vw - 91px), 809px), (width >= 90rem) 36.5rem, 41vw", mobile: "calc(100vw - 40px)" }} priority className="absolute inset-0 size-full object-cover" />
       </Link>
       <div className="flex flex-col items-start">
         <p className="type-overline-xs-medium flex flex-wrap items-center gap-space-2 text-black-alpha-60">

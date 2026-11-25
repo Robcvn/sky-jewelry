@@ -2,7 +2,8 @@
 // square WebP files in public/images/products at the widths the cards need, and
 // src/content/product-image-manifest.ts. Stands in for Sanity's / Shopify's image pipeline.
 // Widths: 342 (mobile card 171px at 2x), 640 (desktop card 300px and its 320px hover zoom at 2x),
-// 748 (mobile quick view 374px at 2x). Never upscales: widths above the source are dropped.
+// 748 (mobile quick view 374px at 2x). Never upscales: widths above the source are dropped, and a source narrower than
+// 640 adds its own width instead.
 // Run: npm run images:products
 //
 // Gallery-only mode (npm run images:gallery, or --gallery): writes only public/images/products/gallery and
@@ -20,6 +21,9 @@ const SOURCE = "shopify/images";
 const OUT = "public/images/products";
 const MANIFEST = "src/content/product-image-manifest.ts";
 const WIDTHS = [342, 640, 748];
+// The loose stones' photos (stone-*.jpg) are in the same folder for the builder's Shopify import, but the site shows
+// them from the builder's own crops (src/lib/builder.ts), so they get no card files here.
+const isProductPhoto = (name) => name.endsWith(".jpg") && !name.startsWith("stone-");
 
 if (process.argv.includes("--gallery")) {
   const GALLERY_OUT = path.join(OUT, "gallery");
@@ -29,7 +33,7 @@ if (process.argv.includes("--gallery")) {
   fs.mkdirSync(GALLERY_OUT, { recursive: true });
   const gallery = {};
   let bytes = 0;
-  for (const file of fs.readdirSync(SOURCE).filter((name) => name.endsWith(".jpg")).sort()) {
+  for (const file of fs.readdirSync(SOURCE).filter(isProductPhoto).sort()) {
     const name = path.basename(file, ".jpg");
     const input = path.join(SOURCE, file);
     const { width } = await sharp(input).metadata();
@@ -67,12 +71,14 @@ fs.mkdirSync(OUT, { recursive: true });
 
 const manifest = {};
 let total = 0;
-for (const file of fs.readdirSync(SOURCE).filter((name) => name.endsWith(".jpg")).sort()) {
+for (const file of fs.readdirSync(SOURCE).filter(isProductPhoto).sort()) {
   const name = path.basename(file, ".jpg");
   const input = path.join(SOURCE, file);
   const { width } = await sharp(input).metadata();
   const widths = WIDTHS.filter((w) => w <= width);
-  if (!widths.length) widths.push(width);
+  // A source narrower than the desktop card's 640 also gets a file at its own width (Task 32): without it, wide screens
+  // (cards up to 420px at 1920, 574 in the 2560 carousels) were left with the 342 file. Still never upscaled.
+  if (width < WIDTHS[1] && !widths.includes(width)) widths.push(width);
   manifest[`product-${name}`] = [];
   for (const w of widths) {
     const out = `${name}-${w}.webp`;

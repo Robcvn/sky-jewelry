@@ -86,7 +86,7 @@ export function ShopAllRow({ link, size = "md", className }: { link: NavLink; si
       href={link.href}
       className={cx(
         "ui-transition-fast type-overline-xs-medium flex items-center gap-space-1 border-y border-primary-leather bg-secondary-ivory text-primary-leather ui-hover:text-black-alpha-50 focus-visible:-outline-offset-2",
-        size === "md" ? "px-space-6 py-[calc(var(--spacing-space-6)-1px)]" : "px-space-5 py-[calc(var(--spacing-space-5)-1px)]",
+        size === "md" ? "wide-px-6 py-[calc(var(--spacing-space-6)-1px)]" : "px-space-5 py-[calc(var(--spacing-space-5)-1px)]",
         className,
       )}
     >
@@ -128,7 +128,7 @@ export function MegaMenuPanel({ menu, id, label, open = true, inline = false, cl
         className,
       )}
     >
-      <div className="flex">
+      <div className="wide-px-0 flex">
         {columns.map((column, index) => (
           <div
             key={column.key}

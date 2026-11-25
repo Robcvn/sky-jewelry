@@ -25,6 +25,23 @@
   padding-inline: var(--grid-margin);
 }
 
+/*
+ * Full-width header rows and panels (Task 32): their background and rules run edge to edge, but on screens wider than
+ * the 1920 page box their content stays inside that box, centred, the way it sits at 1920. Up to 1920 the extra inset
+ * is 0, so these equal px-space-6, px-0 and left-space-6. Percentages resolve against the full-width containing block.
+ */
+@utility wide-px-0 {
+  padding-inline: max(0px, calc((100% - var(--grid-max-width)) / 2));
+}
+
+@utility wide-px-6 {
+  padding-inline: calc(max(0px, calc((100% - var(--grid-max-width)) / 2)) + var(--spacing-space-6));
+}
+
+@utility wide-left-6 {
+  left: calc(max(0px, calc((100% - var(--grid-max-width)) / 2)) + var(--spacing-space-6));
+}
+
 @utility site-grid {
   display: grid;
   grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
