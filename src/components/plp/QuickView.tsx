@@ -23,6 +23,8 @@ type QuickViewProps = {
   initialVariant: ProductVariant;
   open: boolean;
   onClose: () => void;
+  /** After the sheet has closed (DialogShell). */
+  onClosed?: () => void;
   onAddToBag: (product: Product, variant: ProductVariant) => void;
   busy?: boolean;
   labels: QuickViewLabels;
@@ -38,7 +40,7 @@ const SHAPE_ICON: Record<string, IconName> = { round: "round", oval: "oval", eme
  * The Metal and Stone tiles show the current choice; in Figma their chevrons point to pickers that belong
  * to the product page, so they are not interactive here (flagged).
  */
-export function QuickView({ product, initialVariant, open, onClose, onAddToBag, busy = false, labels, metalFilter }: QuickViewProps) {
+export function QuickView({ product, initialVariant, open, onClose, onClosed, onAddToBag, busy = false, labels, metalFilter }: QuickViewProps) {
   const id = useId();
   const [variant, setVariant] = useState(initialVariant);
   const [view, setView] = useState(0);
@@ -59,7 +61,7 @@ export function QuickView({ product, initialVariant, open, onClose, onAddToBag, 
 
   return (
     <>
-    <DialogShell open={open} onClose={onClose} labelledBy={`${id}-title`}>
+    <DialogShell open={open} onClose={onClose} onClosed={onClosed} labelledBy={`${id}-title`}>
       {({ visible }) => (
         // Figma 3587:127035: 8px padding and no gap, so the text block starts right under the photo.
         <div

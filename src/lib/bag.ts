@@ -413,8 +413,15 @@ const errorText = (error: unknown) => (error instanceof Error ? error.message : 
 /**
  * Adds a variant to the bag and opens the bag panel. Never throws: a failure is shown in the panel and returned.
  * `openPanel: false` (Secure Checkout on the product page, which goes to the bag page instead) skips the panel.
+ * `panelOnError: false` (the quick view, which closes first and then opens the panel with openBagPanel) keeps the
+ * error but leaves the panel shut.
  */
-export function addToBag(product: Product, variant: ProductVariant, quantity = 1, { openPanel = true } = {}): Promise<AddResult> {
+export function addToBag(
+  product: Product,
+  variant: ProductVariant,
+  quantity = 1,
+  { openPanel = true, panelOnError = true } = {},
+): Promise<AddResult> {
   return serial(async () => {
     await start();
     if (!variant.id || !shopifyConfig()) {
@@ -447,12 +454,12 @@ export function addToBag(product: Product, variant: ProductVariant, quantity = 1
       return { ok: true, simulated: true } as const;
     }
 
-    return addCart([{ merchandiseId: variant.id, quantity }], shortName(product.name), openPanel);
+    return addCart([{ merchandiseId: variant.id, quantity }], shortName(product.name), openPanel, panelOnError);
   });
 }
 
 /** Adds lines to the saved cart, or a new cart when there is none (or it expired). Runs inside serial(). */
-async function addCart(cartLines: CartLineInput[], name: string, openPanel: boolean): Promise<AddResult> {
+async function addCart(cartLines: CartLineInput[], name: string, openPanel: boolean, panelOnError = true): Promise<AddResult> {
   try {
     const cartId = read(CART_KEY);
     let cart: ShopifyCart | null = null;
@@ -468,8 +475,8 @@ async function addCart(cartLines: CartLineInput[], name: string, openPanel: bool
     set({ bag: mapCart(cart), loaded: true, error: null, panelOpen: openPanel || state.panelOpen });
     return { ok: true, simulated: false };
   } catch (error) {
-    // A failure always opens the panel, where the message shows.
-    set({ error: `We couldn't add ${name} to your bag. Please try again.`, panelOpen: true });
+    // A failure opens the panel, where the message shows (the quick view opens it itself once it has closed).
+    set({ error: `We couldn't add ${name} to your bag. Please try again.`, panelOpen: panelOnError || state.panelOpen });
     return { ok: false, message: errorText(error) };
   }
 }

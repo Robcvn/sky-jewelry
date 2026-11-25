@@ -23,16 +23,30 @@ export function IconLink({
   size,
   label,
   onClick,
+  dot = false,
 }: {
   link: NavLink;
   icon: IconName;
   size: "md" | "sm";
   label: string;
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+  /**
+   * The bag's dot (Rob's request, Nov 24; Figma draws none): an 8px primary/leather circle at the icon's top right while
+   * the bag has an item. Decorative: the label gives the count. Absolutely placed, so the button keeps its size; its
+   * corner meets the icon box's (inset by the button's 1px border).
+   */
+  dot?: boolean;
 }) {
   return (
-    <Link href={link.href} aria-label={label} onClick={onClick} className={headerIconButtonClasses(size)}>
+    <Link href={link.href} aria-label={label} onClick={onClick} className={cx("relative", headerIconButtonClasses(size))}>
       <Icon name={icon} size={24} />
+      {dot ? (
+        <span
+          aria-hidden="true"
+          data-bag-dot=""
+          className={cx("pointer-events-none absolute size-2 rounded-full bg-primary-leather", size === "md" ? "top-1.75 right-1.75" : "top-0.75 right-0.75")}
+        />
+      ) : null}
     </Link>
   );
 }
@@ -40,6 +54,8 @@ export function IconLink({
 type MobileBarProps = {
   content: HeaderContent;
   bagLabel: string;
+  /** The bag has an item: the bag icon shows its dot. */
+  bagDot?: boolean;
   menuOpen: boolean;
   onMenuClick: () => void;
   menuButtonRef?: Ref<HTMLButtonElement>;
@@ -49,7 +65,7 @@ type MobileBarProps = {
 };
 
 /** The 56px mobile header row: menu or close button, centred logo, account and bag. */
-export function MobileBar({ content, bagLabel, menuOpen, onMenuClick, menuButtonRef, controls, className }: MobileBarProps) {
+export function MobileBar({ content, bagLabel, bagDot = false, menuOpen, onMenuClick, menuButtonRef, controls, className }: MobileBarProps) {
   return (
     <div
       // Hook for the sticky header's scroll rule in components.css.
@@ -73,7 +89,7 @@ export function MobileBar({ content, bagLabel, menuOpen, onMenuClick, menuButton
       <Logo width={140} className="absolute left-1/2 -translate-x-1/2" />
       <div className="flex items-center gap-space-2">
         <IconLink link={content.account} icon="account" size="sm" label={content.account.label} />
-        <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} onClick={bagLinkClick} />
+        <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} onClick={bagLinkClick} dot={bagDot} />
       </div>
     </div>
   );

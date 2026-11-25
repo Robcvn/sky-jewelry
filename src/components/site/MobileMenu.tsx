@@ -10,6 +10,7 @@ import { MenuBlogBlock, MenuGroupBlock, ShopAllRow } from "./MegaMenu";
 import { MenuLinkItem } from "./MenuLinkItem";
 import { NavItem } from "./NavItem";
 import { useSearchSubmit } from "./SearchPanel";
+import { lockScroll } from "@/lib/scrollLock";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -19,6 +20,8 @@ const SCREEN = "absolute inset-0 flex flex-col bg-secondary-ivory transition-tra
 type MobileMenuProps = {
   content: HeaderContent;
   bagLabel: string;
+  /** The bag has an item: the menu's own header row shows the bag icon's dot. */
+  bagDot?: boolean;
   /** Distance from the top of the viewport, so the announcement bar stays visible when the page is at the top. */
   top?: number;
   onClose: () => void;
@@ -31,7 +34,7 @@ type MobileMenuProps = {
 };
 
 /** Figma "Nav / Main" and the category sub-screens: the full-screen mobile navigation. */
-export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false, initialCategory, labelSuffix = "" }: MobileMenuProps) {
+export function MobileMenu({ content, bagLabel, bagDot = false, top = 0, onClose, inline = false, initialCategory, labelSuffix = "" }: MobileMenuProps) {
   const [active, setActive] = useState<string | null>(initialCategory ?? null);
   // The last category stays rendered while its screen slides away.
   const [shown, setShown] = useState<string | null>(initialCategory ?? null);
@@ -53,13 +56,9 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
   // Scroll lock and first focus for the real (fixed) menu.
   useEffect(() => {
     if (inline) return;
-    const root = document.documentElement;
-    const previous = root.style.overflow;
-    root.style.overflow = "hidden";
+    const release = lockScroll();
     closeRef.current?.focus();
-    return () => {
-      root.style.overflow = previous;
-    };
+    return release;
   }, [inline]);
 
   useEffect(() => {
@@ -142,7 +141,7 @@ export function MobileMenu({ content, bagLabel, top = 0, onClose, inline = false
           : "fixed inset-x-0 bottom-0 z-50 transition-opacity duration-200 ease-out starting:opacity-0 ui-desktop:hidden",
       )}
     >
-      <MobileBar content={content} bagLabel={bagLabel} menuOpen onMenuClick={onClose} menuButtonRef={closeRef} />
+      <MobileBar content={content} bagLabel={bagLabel} bagDot={bagDot} menuOpen onMenuClick={onClose} menuButtonRef={closeRef} />
 
       <div className="relative flex-1 overflow-hidden">
         {/* Main screen */}

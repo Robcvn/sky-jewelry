@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, type KeyboardEvent, type PointerEvent } from "react";
+import { useRef, type KeyboardEvent } from "react";
 import { cx } from "@/components/ui/shared";
+import { useRangeDrag } from "@/components/ui/useRangeDrag";
 import type { Option } from "@/content/builder";
 
 type GradeRangeProps = {
@@ -21,11 +22,11 @@ type GradeRangeProps = {
  * gold outside) and its grade below (36px tall with 12/16 labels on desktop, 32px with 10/14 on mobile), and two
  * 20px handles on the border line: one where the range starts, one where it ends, flush with the row at its ends.
  * Keyboard: each handle is a slider; arrows move it one grade, Home and End to the ends; they never cross.
- * Pointer: press a grade to move the nearer handle there, or drag.
+ * Pointer: press a grade to move the nearer handle there, or drag. A pressed handle is the one dragged (useRangeDrag),
+ * and it goes to the boundary nearest its centre.
  */
 export function GradeRange({ name, options, value, onChange, className }: GradeRangeProps) {
   const rowRef = useRef<HTMLDivElement>(null);
-  const dragging = useRef<0 | 1 | null>(null);
   const last = options.length - 1;
   const [min, max] = [Math.max(0, Math.min(value[0], last)), Math.max(0, Math.min(value[1], last))];
 
@@ -40,16 +41,28 @@ export function GradeRange({ name, options, value, onChange, className }: GradeR
     return Math.max(0, Math.min(last, Math.floor(((clientX - rect.left) / Math.max(1, rect.width)) * options.length)));
   };
 
-  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return;
-    const index = indexAt(event.clientX);
-    // Outside the range the nearer end moves; inside it, the end the press is closer to.
-    const handle: 0 | 1 = index < min ? 0 : index > max ? 1 : index - min < max - index ? 0 : 1;
-    dragging.current = handle;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    event.currentTarget.querySelectorAll<HTMLElement>("[role=slider]")[handle]?.focus();
-    setHandle(handle, index);
+  // The boundary (0 to options.length) whose handle centre is nearest x, with the handles placed as `left` places them.
+  const boundaryAt = (x: number) => {
+    const rect = rowRef.current!.getBoundingClientRect();
+    const size = rowRef.current!.querySelector<HTMLElement>("[role=slider]")?.offsetWidth ?? 20;
+    const centre = (boundary: number) => rect.left + Math.min(Math.max(0, (boundary / options.length) * rect.width - size / 2), rect.width - size) + size / 2;
+    let best = 0;
+    for (let boundary = 1; boundary <= options.length; boundary++) if (Math.abs(centre(boundary) - x) < Math.abs(centre(best) - x)) best = boundary;
+    return best;
   };
+
+  const pointer = useRangeDrag({
+    // Outside the range the nearer end moves; inside it, the end the press is closer to.
+    onTrackPress: (clientX) => {
+      const index = indexAt(clientX);
+      const handle: 0 | 1 = index < min ? 0 : index > max ? 1 : index - min < max - index ? 0 : 1;
+      setHandle(handle, index);
+      return handle;
+    },
+    onTrackMove: (handle, clientX) => setHandle(handle, indexAt(clientX)),
+    // The lower handle sits where its first grade starts, the upper where its last grade ends.
+    onHandleMove: (handle, centreX) => setHandle(handle, boundaryAt(centreX) - handle),
+  });
 
   const onKeyDown = (handle: 0 | 1) => (event: KeyboardEvent<HTMLDivElement>) => {
     const current = handle === 0 ? min : max;
@@ -65,12 +78,7 @@ export function GradeRange({ name, options, value, onChange, className }: GradeR
   return (
     <div
       ref={rowRef}
-      onPointerDown={onPointerDown}
-      onPointerMove={(event) => {
-        if (dragging.current !== null) setHandle(dragging.current, indexAt(event.clientX));
-      }}
-      onPointerUp={() => (dragging.current = null)}
-      onPointerCancel={() => (dragging.current = null)}
+      {...pointer}
       className={cx("relative cursor-pointer touch-none pt-space-2 select-none", className)}
     >
       <div className="flex gap-0.5">

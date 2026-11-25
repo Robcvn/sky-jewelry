@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { QuickView } from "@/components/plp/QuickView";
 import { Carousel } from "@/components/ui/Carousel";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { productListContent } from "@/content/product-list";
 import type { Product, ProductVariant } from "@/content/products";
-import { addToBag } from "@/lib/bag";
+import { addToBag, openBagPanel } from "@/lib/bag";
 import { openingVariant } from "@/lib/swatches";
 import { CARD_ITEM, CARD_W } from "./SectionHeading";
 
@@ -38,6 +38,22 @@ export function ProductRows({
     setBusy(product.slug);
     await addToBag(product, variant);
     setBusy(null);
+  }, []);
+  // The quick view (Rob, Nov 24): an add closes the sheet. A successful one leaves the bag panel shut (the header's bag
+  // icon shows a dot); a failed one opens the bag panel once the sheet has closed, so its error shows straight away
+  // (opened earlier, the panel would sit under the modal sheet, unable to take focus).
+  const failedAdd = useRef(false);
+  const onQuickViewAdd = useCallback(async (product: Product, variant: ProductVariant) => {
+    setBusy(product.slug);
+    const result = await addToBag(product, variant, 1, { openPanel: false, panelOnError: false });
+    setBusy(null);
+    failedAdd.current = !result.ok;
+    setQuickView((current) => (current ? { ...current, open: false } : current));
+  }, []);
+  const onQuickViewClosed = useCallback(() => {
+    if (!failedAdd.current) return;
+    failedAdd.current = false;
+    openBagPanel();
   }, []);
 
   return (
@@ -74,7 +90,8 @@ export function ProductRows({
           initialVariant={quickView.variant}
           open={quickView.open}
           onClose={() => setQuickView({ ...quickView, open: false })}
-          onAddToBag={onAddToBag}
+          onClosed={onQuickViewClosed}
+          onAddToBag={onQuickViewAdd}
           busy={busy === quickView.product.slug}
           labels={{ ...productListContent.card, close: "Close" }}
         />

@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, type KeyboardEvent, type PointerEvent } from "react";
+import { useRef, type KeyboardEvent } from "react";
 import { cx } from "./shared";
+import { useRangeDrag } from "./useRangeDrag";
 
 export type RangeValue = [number, number];
 
@@ -25,11 +26,11 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
  * Figma range slider (Price dropdown, Filters sheet): a 2px track, gold outside the range and leather inside,
  * with two 20px handles that sit flush inside the track at its ends.
  * Keyboard: arrows move one step, Page Up/Down ten steps, Home/End to the ends. The handles never cross.
- * Pointer: press anywhere on the track to move the nearer handle there, then drag.
+ * Pointer: press anywhere on the track to move the nearer handle there, then drag. A pressed handle is the one dragged
+ * (useRangeDrag), and its centre follows the pointer.
  */
 export function RangeSlider({ min, max, step, value, onChange, labels, formatValue = String, className }: RangeSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const dragging = useRef<0 | 1 | null>(null);
   const span = max - min || 1;
   const decimals = (String(step).split(".")[1] ?? "").length;
   const snap = (raw: number) => Number(clamp(Math.round((raw - min) / step) * step + min, min, max).toFixed(decimals));
@@ -48,16 +49,17 @@ export function RangeSlider({ min, max, step, value, onChange, labels, formatVal
     return min + ratio * span;
   };
 
-  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return;
-    const target = valueAt(event.clientX);
-    const index: 0 | 1 =
-      Math.abs(target - value[0]) < Math.abs(target - value[1]) || (value[0] === value[1] && target < value[0]) ? 0 : 1;
-    dragging.current = index;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    (event.currentTarget.querySelectorAll<HTMLElement>("[role=slider]")[index])?.focus();
-    setHandle(index, target);
-  };
+  const pointer = useRangeDrag({
+    onTrackPress: (clientX) => {
+      const target = valueAt(clientX);
+      const index: 0 | 1 =
+        Math.abs(target - value[0]) < Math.abs(target - value[1]) || (value[0] === value[1] && target < value[0]) ? 0 : 1;
+      setHandle(index, target);
+      return index;
+    },
+    onTrackMove: (index, clientX) => setHandle(index, valueAt(clientX)),
+    onHandleMove: (index, centreX) => setHandle(index, valueAt(centreX)),
+  });
 
   const onKeyDown = (index: 0 | 1) => (event: KeyboardEvent<HTMLDivElement>) => {
     const current = value[index];
@@ -83,12 +85,7 @@ export function RangeSlider({ min, max, step, value, onChange, labels, formatVal
   return (
     <div
       ref={trackRef}
-      onPointerDown={onPointerDown}
-      onPointerMove={(event) => {
-        if (dragging.current !== null) setHandle(dragging.current, valueAt(event.clientX));
-      }}
-      onPointerUp={() => (dragging.current = null)}
-      onPointerCancel={() => (dragging.current = null)}
+      {...pointer}
       className={cx("relative h-space-5 w-full cursor-pointer touch-none select-none", className)}
     >
       <span aria-hidden="true" className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-secondary-gold" />

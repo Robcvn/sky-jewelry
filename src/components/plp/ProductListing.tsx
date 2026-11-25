@@ -13,7 +13,7 @@ import { cx } from "@/components/ui/shared";
 import { metalById } from "@/content/metals";
 import { productListContent } from "@/content/product-list";
 import { formatPrice, type FineJewelryCategory, type Product, type ProductVariant } from "@/content/products";
-import { addToBag } from "@/lib/bag";
+import { addToBag, openBagPanel } from "@/lib/bag";
 import { FilterBar } from "./FilterBar";
 import { formatCaratValue } from "./FilterControls";
 import { FilterSheet } from "./FilterSheet";
@@ -111,6 +111,22 @@ export function ProductListing({ category, products }: ProductListingProps) {
     setBusy(product.slug);
     await addToBag(product, variant);
     setBusy(null);
+  }, []);
+  // The quick view (Rob, Nov 24): an add closes the sheet. A successful one leaves the bag panel shut (the header's bag
+  // icon shows a dot); a failed one opens the bag panel once the sheet has closed, so its error shows straight away
+  // (opened earlier, the panel would sit under the modal sheet, unable to take focus).
+  const failedAdd = useRef(false);
+  const onQuickViewAdd = useCallback(async (product: Product, variant: ProductVariant) => {
+    setBusy(product.slug);
+    const result = await addToBag(product, variant, 1, { openPanel: false, panelOnError: false });
+    setBusy(null);
+    failedAdd.current = !result.ok;
+    setQuickView((current) => (current ? { ...current, open: false } : current));
+  }, []);
+  const onQuickViewClosed = useCallback(() => {
+    if (!failedAdd.current) return;
+    failedAdd.current = false;
+    openBagPanel();
   }, []);
 
   const sortOptions = content.sortOptions;
@@ -286,7 +302,8 @@ export function ProductListing({ category, products }: ProductListingProps) {
           initialVariant={quickView.variant}
           open={quickView.open}
           onClose={() => setQuickView({ ...quickView, open: false })}
-          onAddToBag={onAddToBag}
+          onClosed={onQuickViewClosed}
+          onAddToBag={onQuickViewAdd}
           busy={busy === quickView.product.slug}
           labels={{ ...content.card, close: "Close" }}
           metalFilter={state.metals}

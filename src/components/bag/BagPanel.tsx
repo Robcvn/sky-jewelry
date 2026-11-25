@@ -14,6 +14,7 @@ import type { HeaderContent } from "@/content/site";
 import { bagItems, closeBagPanel, removeLine, removeLines, setLineQuantity, useBag, type BagLine } from "@/lib/bag";
 import { carePlansTotal, setCarePlan, useCarePlans } from "@/lib/carePlans";
 import { BagPanelRing } from "./BagRing";
+import { lockScroll } from "@/lib/scrollLock";
 import { BagCount, CheckoutBar, lineSummary, PillButton, QuantitySelect, unitPriceLabel } from "./BagParts";
 
 export const TILE_BG = "bg-[radial-gradient(var(--color-base-white),var(--color-secondary-skin))]";
@@ -142,13 +143,11 @@ function MobileBagScreen({ content, bagLabel, getTop, headingId, total, onClose 
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const root = document.documentElement;
-    const previous = root.style.overflow;
-    root.style.overflow = "hidden";
+    const release = lockScroll();
     const returnTo = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
     return () => {
-      root.style.overflow = previous;
+      release();
       returnTo?.focus();
     };
   }, []);

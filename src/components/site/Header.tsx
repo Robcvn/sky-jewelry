@@ -358,7 +358,7 @@ function DesktopBar({ content, layout, labelSuffix, pathname, bagCount, bagLabel
               <IconLink link={content.account} icon="account" size="sm" label={content.account.label} />
             </div>
             <div data-header-key="bag" className="contents">
-              <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} onClick={bagLinkClick} />
+              <IconLink link={content.bag} icon="bag" size="sm" label={bagLabel} onClick={bagLinkClick} dot={bagCount > 0} />
             </div>
           </div>
         </div>
@@ -531,6 +531,7 @@ export function Header({
             <MobileBar
               content={content}
               bagLabel={bagLabel}
+              bagDot={bagCount > 0}
               menuOpen={menuOpen}
               onMenuClick={menuOpen ? closeMenu : openMenu}
               menuButtonRef={menuButtonRef}
@@ -538,7 +539,7 @@ export function Header({
             />
           </div>
           <div id={mobilePanelId} hidden={!menuOpen} className="ui-desktop:hidden">
-            {menuOpen ? <MobileMenu content={content} bagLabel={bagLabel} top={menuTop} onClose={closeMenu} /> : null}
+            {menuOpen ? <MobileMenu content={content} bagLabel={bagLabel} bagDot={bagCount > 0} top={menuTop} onClose={closeMenu} /> : null}
           </div>
         </>
       )}

@@ -6,6 +6,7 @@ import { IconButton } from "./IconButton";
 import { TextButton } from "./TextButton";
 import { cx } from "./shared";
 import { useIsDesktop } from "./useIsDesktop";
+import { lockScroll } from "@/lib/scrollLock";
 
 type Breakpoint = "desktop" | "mobile";
 
@@ -132,6 +133,21 @@ export function ModalPanel({
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+/**
+ * The control last pressed (pointerdown, capture). Safari doesn't focus a button it taps or clicks, so when a dialog
+ * opens from one nothing focusable has focus; the dialog then returns focus to this control on close (Task 31).
+ */
+let lastPressed: HTMLElement | null = null;
+// From the moment this module loads in the browser, so the press that opens the first dialog is seen.
+if (typeof document !== "undefined") {
+  document.addEventListener("pointerdown", (event) => (lastPressed = (event.target as Element | null)?.closest?.<HTMLElement>(FOCUSABLE) ?? null), true);
+}
+const returnTarget = () => {
+  const active = document.activeElement as HTMLElement | null;
+  if (active && active !== document.body && active.matches(FOCUSABLE)) return active;
+  return lastPressed?.isConnected ? lastPressed : active;
+};
+
 type DialogShellProps = {
   open: boolean;
   onClose: () => void;
@@ -143,6 +159,8 @@ type DialogShellProps = {
   placement?: "center" | "top-end";
   /** Classes for the panel wrapper, e.g. a width. Its children are the panel itself. */
   children: (state: { visible: boolean }) => ReactNode;
+  /** After the dialog has closed and focus has gone back (the quick view then opens the bag panel on a failed add). */
+  onClosed?: () => void;
 };
 
 /**
@@ -153,9 +171,15 @@ type DialogShellProps = {
  * (overflow: clip): the panels scroll inside, so focusing the close button while the panel is still sliding in
  * can't leave the dialog scrolled.
  */
-export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint, placement = "center", children }: DialogShellProps) {
+export function DialogShell({ open, onClose, onClosed, labelledBy, describedBy, breakpoint, placement = "center", children }: DialogShellProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
+  // This dialog's own scroll lock (src/lib/scrollLock.ts): held from showModal until close or unmount.
+  const releaseRef = useRef<(() => void) | null>(null);
+  const onClosedRef = useRef(onClosed);
+  useEffect(() => {
+    onClosedRef.current = onClosed;
+  });
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -164,9 +188,10 @@ export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint
 
     if (open) {
       if (!dialog.open) {
-        returnFocusRef.current = document.activeElement as HTMLElement | null;
+        returnFocusRef.current = returnTarget();
         dialog.showModal();
-        document.documentElement.style.overflow = "hidden";
+        releaseRef.current?.();
+        releaseRef.current = lockScroll();
       }
       // Scheduled on every run, so a dialog mounted already open still fades in when effects run twice (dev).
       const frame = requestAnimationFrame(() => setVisible(true));
@@ -178,8 +203,10 @@ export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint
       const frame = requestAnimationFrame(() => setVisible(false));
       const timer = window.setTimeout(() => {
         dialog.close();
-        document.documentElement.style.overflow = "";
+        releaseRef.current?.();
+        releaseRef.current = null;
         returnFocusRef.current?.focus();
+        onClosedRef.current?.();
       }, reduced ? 0 : 300);
       return () => {
         cancelAnimationFrame(frame);
@@ -190,7 +217,8 @@ export function DialogShell({ open, onClose, labelledBy, describedBy, breakpoint
 
   useEffect(
     () => () => {
-      document.documentElement.style.overflow = "";
+      releaseRef.current?.();
+      releaseRef.current = null;
     },
     [],
   );
